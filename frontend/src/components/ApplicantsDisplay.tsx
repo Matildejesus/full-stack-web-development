@@ -1,5 +1,5 @@
-import { LecturerSelection } from "@/types/lecturerSelection";
-import { User } from "@/types/user";
+import { LecturerSelection } from "../types/lecturerSelection";
+import { User } from "../types/user";
 import { Button, FormControl, FormLabel, Input } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import ApplicationDisplay from "./ApplicationDisplay";

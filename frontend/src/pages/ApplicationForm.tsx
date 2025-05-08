@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import ApplicationDisplay from "../components/ApplicationDisplay";
 import { DEFAULT_SUBJECTS, Subject } from "../types/subject";
-import { JobSummary } from "@/types/JobSummary";
+import { JobSummary } from "../types/JobSummary";
 
 interface Availabilty {
     AvailabiltyType: string

@@ -17,15 +17,17 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "baseUrl": "src", 
     "paths": {
       "@/*": [
-        "./src/*"
+        "*",
+        
       ]
     },
     "forceConsistentCasingInFileNames": true
   },
   "include": [
-    "next-env.d.ts",
+    "frontend/next-env.d.ts",
     "**/*.ts",
     "**/*.tsx"
   ],

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { DEFAULT_SUBJECTS, Subject } from "@/types/subject";
+import { DEFAULT_SUBJECTS, Subject } from "../types/subject";
 
 interface SidebarProps {
   onClick: (subject: string) => void;

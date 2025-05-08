@@ -11,9 +11,9 @@ import {
 import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/router";
 import ReCAPTCHA from "react-google-recaptcha";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import { validateEmail, validatePassword } from "@/utils/validation";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import { validateEmail, validatePassword } from "../utils/validation";
 
 export default function SignIn(){
   const toast = useToast();

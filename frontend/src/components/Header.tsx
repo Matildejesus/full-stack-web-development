@@ -1,6 +1,6 @@
 import React, { FormEvent, useState } from "react";
 import Link from "next/link";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/router";
 const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);

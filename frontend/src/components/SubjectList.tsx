@@ -1,4 +1,4 @@
-import { DEFAULT_SUBJECTS, Subject } from "@/types/subject";
+import { DEFAULT_SUBJECTS, Subject } from "../types/subject";
 import React, { FormEvent, useEffect, useState } from "react";
 
 const SubjectList: React.FC = () => {

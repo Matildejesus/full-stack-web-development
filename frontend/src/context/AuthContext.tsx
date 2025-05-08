@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { User, DEFAULT_USERS } from "../types/user";
 
-import { LecturerSelection } from "@/types/lecturerSelection";
-import { JobSummary } from "@/types/JobSummary";
+import { LecturerSelection } from "../types/lecturerSelection";
+import { JobSummary } from "../types/JobSummary";
 
 
 interface AuthContextType {

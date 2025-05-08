@@ -1,5 +1,5 @@
-import { useAuth } from "@/context/AuthContext";
-import { User } from "@/types/user";
+import { useAuth } from "../context/AuthContext";
+import { User } from "../types/user";
 import { useState, useEffect } from "react";
 
 interface useApplicantStatsResult {

@@ -1,7 +1,7 @@
 import React from "react";
 import Footer from "../components/Footer";
-import SubjectList from "@/components/SubjectList";
-import Header from "@/components/Header";
+import SubjectList from "../components/SubjectList";
+import Header from "../components/Header";
 import { useRouter } from "next/router";
 
 export default function TutorApplicant() {
