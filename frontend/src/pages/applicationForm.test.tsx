@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import ApplicationForm from "./applicationForm";
+import ApplicationForm from "./ApplicationForm";
 import { useAuth } from "../context/AuthContext";
 import '@testing-library/jest-dom';
 

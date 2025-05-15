@@ -6,10 +6,14 @@ import SelectionBar from "../components/SelectionBar";
 import Sidebar from "../components/Sidebar";
 import { useAuth } from "../context/AuthContext";
 import { LecturerSelection } from "../types/lecturerSelection";
-import { DEFAULT_USERS, User } from "../types/user";
+// import { DEFAULT_USERS, User } from "../types/user";
 import { useToast } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { applicationApi, Application,userApi, User } from "@/services/api";
+import App from "./_app";
+import { AppleImage } from "next/dist/lib/metadata/types/extra-types";
+
 
 export default function LecturerHome(){
     const [selectedSubject, setSelectedSubject] = useState<string>("all");
@@ -20,33 +24,86 @@ export default function LecturerHome(){
     const [selectedSort, setSelectedSort] = useState<string>("");
     const [selectedSearch, setSelectedSearch] = useState<string>("");
     const [inputText, setInputText] = useState<string>("");
-
     const {updateJobApplications } = useAuth(); 
-
     const toast = useToast(); 
     const router = useRouter();
+    const[applications, setApplications]= useState<Application[]>([]);
 
     useEffect(() => {
-        const storedUsers = localStorage.getItem("users");
-        if (!storedUsers) {
-            localStorage.setItem("users", JSON.stringify(DEFAULT_USERS));
-            setUsers(DEFAULT_USERS);
-        } else {
-            setUsers(JSON.parse(storedUsers));
-        } 
+        // NEW code
+        fetchSavedApplications();
+        // const storedUsers = localStorage.getItem("users");
+        // if (!storedUsers) {
+        //     localStorage.setItem("users", JSON.stringify(DEFAULT_USERS));
+        //     setUsers(DEFAULT_USERS);
+        // } else {
+        //     setUsers(JSON.parse(storedUsers));
+        // } 
     },[]);
-
+// NEW
+    const fetchSavedApplications=async()=>{
+        try{
+            const data=await applicationApi.getAllApplications();
+            setApplications(data);
+        }catch(error){
+            console.error("Error fetching applications",error);
+        }
+    }
     useEffect(() => {
-        setInputText("");
-        setSelectedCandidates([]);
-        let applicationList = users.map(u => ({
-            ...u,
-            jobSummary: u.jobSummary.filter(summary => summary.course === selectedSubject)
-        })).filter(user => user.jobSummary.length > 0); 
-        setFilteredUsers(applicationList);
-    }, [users, selectedSubject]);
+    const fetchUsers = async () => {
+        try {
+            const data = await userApi.getAllUsers(); 
+            console.log("Fetched users data:", data);
+            setUsers(data);
+        } catch (error) {
+            console.error("Error fetching users", error);
+        }
+    };
+
+    fetchUsers();
+}, []);
+
+// old
+    // useEffect(() => {
+    //     setInputText("");
+    //     setSelectedCandidates([]);
+    //     let applicationList = users.map(u => ({
+    //         ...u,
+    //         applicationSummary: u.applicationSummary.filter(summary => summary.course === selectedSubject)
+    //     })).filter(user => user.applicationSummary.length > 0); 
+    //     setFilteredUsers(applicationList);
+    // }, [users, selectedSubject]);
+// new
+useEffect(() => {
+    setInputText("");
+    setSelectedCandidates([]);
+
+    const usersWithSelectedSubject = users.map(user => {
+        // Filter applications for this user and selected course
+        const userApplications = applications.filter(app => 
+            app.email === user.email && app.course_Name === selectedSubject
+        );
+
+        // Returns user + applications only if there's a match
+        if (userApplications.length > 0) {
+            return {
+                ...user,
+                applications: userApplications // override applications to include only matching ones
+            };
+        }
+        return null;
+    }).filter(user => user !== null); // Remove users with no matching apps
+
+    // Step 2: Save to state
+    console.log("User with selected subjects",usersWithSelectedSubject)
+    setFilteredUsers(usersWithSelectedSubject);
+
+
+}, [users, applications, selectedSubject]);
+
 
     const filteredUsersLength = filteredUsers.length;
+// Ranking
 
     const handleRankingChange = (rank: number, applicantId: string) => {
         const currSelection = selectedCandidates.find((u) => u.userId === applicantId);
@@ -124,23 +181,35 @@ export default function LecturerHome(){
         if (selectedSearch === "availability") {
             sorting = [...sorting].map(u => ({
                 ...u,
-                jobSummary: u.jobSummary.filter(summary => summary.availability.toLowerCase() === inputText.toLowerCase())
-            })).filter(user => user.jobSummary.length > 0);     
+                applicationSummary: u.applicationSummary.filter(summary => summary.availability.toLowerCase() === inputText.toLowerCase())
+            })).filter(user => user.applicationSummary.length > 0);     
         } else if (selectedSearch === "tutor") {
             sorting = [...sorting].filter(selection => selection.firstname.toLowerCase() === inputText.toLowerCase());
         } else if (selectedSearch === "skillset") {
             sorting = [...sorting].map(u => ({
                 ...u,
-                jobSummary: u.jobSummary.filter(summary => summary.skills.some(
+                applicationSummary: u.applicationSummary.filter(summary => summary.skills.some(
                     skill=>skill.split(", ").some((skillItem) => {
                        return skillItem.toLowerCase().includes(inputText.toLowerCase())
                     }) )
                 
             )
-            })).filter(user => user.jobSummary.length > 0);  
+            })).filter(user => user.applicationSummary.length > 0);  
         }
         setFilteredUsers(sorting);
     }
+
+    console.log('Users: ', users);
+    console.log("Applications:", applications);
+
+    const applicationWithUserDetails = applications.map((application, index) => {
+    const userApplicant = users.find(u => u.email === application.email);
+    if (!userApplicant) {
+    console.log(`No user found for application with email: ${application.email}`);
+  }
+    return { ...application, userApplicant };
+    });
+
 
     return(
         <div className="flex flex-col min-h-screen">
@@ -160,15 +229,32 @@ export default function LecturerHome(){
                     />
                     {selectedSubject === "all" ? 
                         (<div className="grid grid-cols-2">
-                        {users.map((u) => 
+                            
+                            
+                    {applicationWithUserDetails.map((application,index) => (
+                        <div key={index} className="p-4 border rounded">
+                          <p className="text-gray-800">Applicant Name: {application.userApplicant?.firstName}{" "}{application.userApplicant?.lastName}</p>
+                          <p className="text-gray-800">ApplicantEmail: {application.email}</p>
+                          <p className="text-gray-800">JobRole: {application.jobRole}</p>
+                          <p className="text-gray-800">Skills: {application.skills}</p>
+                          <p className="text-gray-800">Availability: {application.availability}</p>
+                          <p className="text-gray-800 mt-2">Highest Academic Qualification:{application.academic}</p>
+                          <p className="text-gray-800">Course Name: {application.course_Name}</p>
+                          <p className="text-gray-800">Previous Role: {application.previousRole}</p>
+                          
+                        </div>
+                      ))}
+
+
+                        {/* {users.map((u) => 
                             u.role === "Tutor" && (
                                 <div key={u.id} className="pt-8 pl-4 pr-4">
-                                    {u.jobSummary.length > 0 && <h3 className="font-bold text-lg">{u.firstname}</h3> }
+                                    {u.applicationSummary.length > 0 && <h3 className="font-bold text-lg">{u.firstname}</h3> }
                                     <ApplicationDisplay user={u} isLoggedInUser={false} sort={selectedSort}/> 
                                 </div>
                             )
                             
-                        )}
+                        )} */}
                         </div>
                         ) : (
                             <ApplicantsDisplay 
@@ -184,7 +270,8 @@ export default function LecturerHome(){
                         )
                     }
                 </div>
-            </div>            
+            </div>  
+
             <div className="pt-13">
                 <Footer />
             </div>

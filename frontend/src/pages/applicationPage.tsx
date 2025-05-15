@@ -1,4 +1,4 @@
-import ApplicationForm from "@/pages/applicationForm";
+import ApplicationForm from "./ApplicationForm";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 

@@ -6,26 +6,20 @@ import {
   FormControl,
   useToast,
   VStack,
-  Text
+  Text,
+  Select
 } from "@chakra-ui/react";
 import Link from "next/link";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-
-interface SignUpData {
-  firstname: string;
-  email: string;
-  password: string;
-}
+import { userApi } from "@/services/api";
+import { useRouter } from "next/router";
 
 export default function SignUp(){
   const toast = useToast();
   const [error, setError] = useState("");
-  const [signUpData, setSignUpdata] = useState<SignUpData>({
-    firstname: "",
-    email: "",
-    password: ""
-  });
+  const router = useRouter();
+
 
   const [submitted, setSubmitted] = useState<boolean>(false);
   
@@ -33,34 +27,59 @@ export default function SignUp(){
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setSignUpdata((prevState) => ({
+    setNewUser((prevState) => ({
       ...prevState,
       [name]: value,
     }));
   }
+// create or save new user signup data---NEW
+const[newUser,setNewUser]=useState({
+  firstName: "",
+  lastName:"",
+  email: "",
+  role:"",
+  password: ""
+});
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    localStorage.setItem("user", JSON.stringify(signUpData));
-    if (!signUpData.firstname || !signUpData.email || !signUpData.password) {
-      setError("Information missing");
-      return;
-    }
+const handleCreateUser= async(e:React.FormEvent)=>{
+  e.preventDefault();
+  try{
+    await userApi.createUser(newUser);
+
     setSubmitted(true);
+    setNewUser({
+      firstName: "",
+      lastName:"",
+      email: "",
+      role:"",
+      password: ""
+    });
     toast({
-      title: "Account created.",
-      description: "You have successfully registered.",
+      title: "User created.",
+      description: "Account registered successfully.",
       status: "success",
       duration: 3000,
       isClosable: true,
     });
+    const createdUser = await userApi.getUserByEmailPassword(newUser.email, newUser.password);
+    
+  }catch(err:any){
+    if (err.response?.status === 409) {
+      setError("This email is already registered."); // display under email field
+    } else {
+      setError("Failed to create user. Please try again.");
+    }
+    console.error("Error creating user:", err); 
   }
+}
 
   return (
   <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
     <Header />
     <main className="flex-grow pt-20">
-        {submitted? (
+        {
+        submitted? 
+        (
           <>
             <p>Thanks for registering!</p>
             <Button>
@@ -71,19 +90,32 @@ export default function SignUp(){
               </Link>
             </Button>
           </>
-        ):(
-        <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-md w-96">
+        ):
+        (
+        <form onSubmit={handleCreateUser} className="bg-white p-8 rounded-lg shadow-md w-96">
           <VStack spacing={4}>
             <FormControl isRequired>
               <FormLabel>First Name</FormLabel>
               <Input
-                name="firstname"
+              id="firstName"
+                name="firstName"
                 type="text"
-                value={signUpData.firstname}
+                value={newUser.firstName}
                 onChange={(e) =>
-                  setSignUpdata({ ...signUpData, firstname: e.target.value })
+                  setNewUser({ ...newUser, firstName: e.target.value })
                 }
                 placeholder="Enter your first name"
+              />
+              <FormLabel>Last Name</FormLabel>
+              <Input
+              id="lastName"
+                name="lastName"
+                type="text"
+                value={newUser.lastName}
+                onChange={(e) =>
+                  setNewUser({ ...newUser, lastName: e.target.value })
+                }
+                placeholder="Enter your last name"
               />
             </FormControl>
             <FormControl isRequired>
@@ -91,21 +123,37 @@ export default function SignUp(){
               <Input
                 name="email"
                 type="email"
-                value={signUpData.email}
+                value={newUser.email}
                 onChange={(e) =>
-                  setSignUpdata({ ...signUpData, email: e.target.value })
+                  setNewUser({ ...newUser, email: e.target.value })
                 }
                 placeholder="Enter your email"
               />
+              {error && <p style={{ color: 'red' }}>{error}</p>}
             </FormControl>
+
+
+            <FormControl isRequired>
+              <FormLabel>Role</FormLabel>
+              <Select
+                name="role"
+                value={newUser.role}
+                onChange={(e) => setNewUser({ ...newUser, role: e.target.value }) }
+                placeholder="Select role">
+                 <option value="Candidate">Candidate</option>
+                 <option value="Lecturer">Lecturer</option>
+                </Select>
+              
+            </FormControl>
+
             <FormControl isRequired>
               <FormLabel>Password</FormLabel>
               <Input
                 name="password"
                 type="password"
-                value={signUpData.password}
+                value={newUser.password}
                 onChange={(e) =>
-                    setSignUpdata({ ...signUpData, password: e.target.value })
+                    setNewUser({ ...newUser, password: e.target.value })
                   }
                   placeholder="Enter your password"
                 />

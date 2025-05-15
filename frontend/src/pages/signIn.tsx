@@ -14,6 +14,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { validateEmail, validatePassword } from "../utils/validation";
+import { userApi } from "@/services/api";
 
 export default function SignIn(){
   const toast = useToast();
@@ -21,13 +22,18 @@ export default function SignIn(){
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const recaptchaRef = useRef<ReCAPTCHA>(null);
+  const [user, setUser] = useState({
+    email: "",
+    password: ""
+  });
 
   const { login } = useAuth();
   const router = useRouter();
 
   const [submitted, setSubmitted] = useState<boolean>(false);
-  
-  const handleSubmit = (e: FormEvent) => {
+
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError("");
     const captchaToken = recaptchaRef.current?.getValue();
@@ -43,25 +49,33 @@ export default function SignIn(){
       setError("Password should have uppercase, lowercase, numbers and more than 8 chars in length.");
       return;
     }
-    const currentUser = login(email, password);
-    console.log(currentUser);
-    if (currentUser) {
+    // NEW code databse
+    try {
+      const userData = await userApi.getUserByEmailPassword(email, password);
+      if (userData) {
+         login(email, password); // 
+
         toast({
-            title: "Sign In Successful.",
-            description: "You have successfully signed in.",
-            status: "success",
-            duration: 3000,
-            isClosable: true,
-          });
-        console.log("current user : ", currentUser.jobSummary);
-        if (currentUser.role === "Tutor") {
-          router.push("/TutorApplicant");
+          title: "Sign In Successful.",
+          description: "You have successfully signed in.",
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+        localStorage.setItem("currentUser", JSON.stringify(userData));
+
+        if (userData.role === "Candidate") {
+          router.push("/CandidateHomePage");
         } else {
           router.push("/lecturerHome")
         }
         
     } else {
         setError("Invalid username or password");
+    }
+  }catch (err) {
+      console.error("Login error:", err);
+      setError("Login failed. Please try again.");
     }
     recaptchaRef.current?.reset();
   }

@@ -1,14 +1,15 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { User, DEFAULT_USERS } from "../types/user";
-
+// import { User, DEFAULT_USERS } from "../types/user";
+import { Candidate, User } from "@/services/api";
 import { LecturerSelection } from "../types/lecturerSelection";
 import { JobSummary } from "../types/JobSummary";
-
+import { userApi } from "@/services/api";
 
 interface AuthContextType {
+  candidate:Candidate|null;
   user: User | null;
-  users: User[];
-  login: (username: string, password: string) => User | null;
+  // users: User[];
+  login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   saveJobApplication: (application:JobSummary)=>boolean;
   updateJobApplications: (selectedCandidates: LecturerSelection) => boolean;
@@ -21,50 +22,12 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [users, setUsers] = useState<User[]>([]);
 
-  useEffect(() => {
-    const storedUsers = localStorage.getItem("users");
-    if (!storedUsers) {
-      localStorage.setItem("users", JSON.stringify(DEFAULT_USERS));
-      setUsers(DEFAULT_USERS);
-    } else {
-      setUsers(JSON.parse(storedUsers));
-    }
-
-    // Check for existing login
-    const storedUser = localStorage.getItem("currentUser");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-  }, []);
-
-  const login = (email: string, password: string):  User | null => {
-    console.log('Attempting to log in with:', email, password);
-    console.log(users);
-    const foundUser = users.find(
-      
-
-      (u) => u.email === email && u.password === password
-
-    );
-    if (foundUser) {
-      const storedUsers = JSON.parse(localStorage.getItem("users") || "[]");
-    const latestUser = storedUsers.find((u: User) => u.email === foundUser.email);
-
-    if (latestUser) {
-      setUser(latestUser);
-      localStorage.setItem("currentUser", JSON.stringify(latestUser));
-      return latestUser;
-    }
-    
-      console.log('User found:', foundUser); // Log the found user details
-      setUser(foundUser);
-      localStorage.setItem('currentUser', JSON.stringify(foundUser));
-      return foundUser;
-    } else {
-      console.log('No user found with the provided credentials.');
-      return null;
+  const login = async (email: string, password: string) => {
+    const userData = await userApi.getUserByEmailPassword(email, password);
+  
+    if (userData) {
+      setUser(userData as User); // Save full user object
     }
   };
 
@@ -84,7 +47,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return false;
   }
   
-    const updatedUsers = users.map((u) =>
+    const updatedUsers = user.map((u) =>
       u.email === user.email
         ? { ...u, jobSummary: [...(u.jobSummary || []), application] }
         : u
@@ -103,7 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   
   const updateJobApplications = (selectedCandidate: LecturerSelection): boolean => {
 
-    const updatedUser = users.map((u) =>
+    const updatedUser = user.map((u) =>
       u.id === selectedCandidate.userId 
         ?  { ...u, jobSummary: u.jobSummary.map(summary =>
           summary.course === selectedCandidate.course
@@ -121,10 +84,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   
-  const getJobApplications = (userId: string): JobSummary[] => {
-    const foundUser = users.find((u) => u.email === userId);
-    return foundUser?.jobSummary || [];
-  };
+  // const getJobApplications = (userId: string): JobSummary[] => {
+  //   const foundUser = user.find((u) => u.email === userId);
+  //   return foundUser?.jobSummary || [];
+  // };
 
   const saveSelection = (selection: LecturerSelection[]): boolean => {
     if (!user) return false;
@@ -154,14 +117,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   return (
     <AuthContext.Provider value={{ 
       user, 
-      users, 
+      // users, 
       login, 
       logout, 
-      saveJobApplication,
-      getJobApplications, 
-      updateJobApplications,
-      saveSelection,
-      getSelection
+      // saveJobApplication,
+      // getJobApplications, 
+      // updateJobApplications,
+      // saveSelection,
+      // getSelection
      }}>
       {children}
     </AuthContext.Provider>

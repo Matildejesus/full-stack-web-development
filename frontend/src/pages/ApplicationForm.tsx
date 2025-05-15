@@ -1,181 +1,128 @@
-import React, { useState, useEffect } from "react";
-import { useAuth } from "../context/AuthContext";
-import ApplicationDisplay from "../components/ApplicationDisplay";
+import { applicationApi, Application } from "@/services/api";
+import { useState, useEffect } from "react";
 import { DEFAULT_SUBJECTS, Subject } from "../types/subject";
-import { JobSummary } from "../types/JobSummary";
+import { useAuth } from "../context/AuthContext";
 
-interface Availabilty {
-    AvailabiltyType: string
-}
-interface Course {
-    CourseName: string
-}
-const ApplicationForm: React.FC = () => {
-
-    const { user, getJobApplications, saveJobApplication } = useAuth(); 
+// Altered
+export default function applicationForm(){
+    const { user  } = useAuth(); 
+    const{candidate}=useAuth();
     
-    const [applicationData, setApplicationData] = useState<JobSummary>();
+    const [applications, setApplications] = useState<Application[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
  
-    const [applications, setApplications] = useState<JobSummary[]>([]); 
-
-    const [selectedAvailability, setSelectedAvailability] = useState<Availabilty>({
-        AvailabiltyType: "FullTime",
+    const [newApplication, setNewApplication] = useState({
+        course_Name:"",
+        jobRole:"",
+        skills:"",
+        previousRole:"",
+        academic:"",
+        availability:"",
+        email:user?.email //users email
     });
-    const [selectedCourse, setSelectedCourse] = useState<Subject>(DEFAULT_SUBJECTS[0]);
-
-    type FormData = {
-        previousRole: string;
-        skills: string; 
-        academic: string;
-      };
-
-      
-    const [formData, setFormData] = useState<FormData>({
-        previousRole: "",
-        skills: "",
-        academic: "",
-    });
-
     const [errors, setErrors] = useState({
-        course: "",
-        previousRole: "",
-        availability: "",
-        skills: "",
-        academic: "",
-    });
-
-    const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
-    };
-
-      
-
-// Submits the application form data
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-
-        // Reset errors
-        setErrors({
-            course: "",
+            course_Name: "",
             previousRole: "",
             availability: "",
             skills: "",
             academic: "",
+            jobRole:""
         });
+        
+    
+    useEffect(()=>{
+        fetchApplications();
+    },[]);
 
-        console.log("Form Data before validation:", formData);
-        console.log("Selected Availability:", selectedAvailability);
-        console.log("@@@Selected Course:", selectedCourse);
 
-        // You can add form validation here before submitting
-        if ( !formData.previousRole || !selectedCourse.name ||
-            selectedAvailability.AvailabiltyType.trim()==="" || !formData.skills || !formData.academic) {
+    const fetchApplications=async ()=>{
+        try{
+            const data=await applicationApi.getAllApplications();
+            setApplications(data);
+            setError(null);
+        }catch(err){
+            setError("Failed to fetch applications");
+        }finally{
+            setLoading(false);
+        }
+    }
+
+    const handleSaveApplication=async(e:React.FormEvent)=>{
+        e.preventDefault();
+        console.log("handleSaveApplication triggered");
+
+        if ( !newApplication.previousRole || !newApplication.availability|| !newApplication.course_Name
+            || !newApplication.skills || !newApplication.academic || !newApplication.jobRole) {
             setErrors({
-                course: selectedCourse.name ? "" : "Select the course interested to Teach.",
-                previousRole: formData.previousRole ? "" : "Previous role is required.",
-                availability: selectedAvailability.AvailabiltyType ? "" : "Select Availability (part-time or full-time)",
-                skills: formData.skills ? "" : "Skills are required.",
-                academic: formData.academic ? "" : "Academic credentials are required.",
+                course_Name: newApplication.course_Name ? "" : "Select the course interested to Teach.",
+                previousRole: newApplication.previousRole ? "" : "Previous role is required.",
+                availability: newApplication.availability ? "" : "Select Availability (part-time or full-time)",
+                skills: newApplication.skills ? "" : "Skills are required.",
+                academic: newApplication.academic ? "" : "Academic credentials are required.",
+                jobRole:newApplication.jobRole?"":"Select the Job Role."
             });
             return;
         }
-        if (!user) {
-            alert("User is not logged in.");
-            return; 
-        }
-        // const existingApplication = applications.find(
-        //     (application) => application.email === user.email && application.course === selectedCourse.name
-        // );
+        if (!user?.email) {
+            setError("You must be logged in to apply.");
+            return;
+          }
+          console.log("User email is",user.email);
 
-        // if (existingApplication) {
-        //     alert("You have already applied for this course.");
-        //     setErrors((prevErrors) => ({
-        //         ...prevErrors,
-        //         submission: "You have already applied for this course.",
-        //     }));
-        //     return;
-        // }
-
-
-        const skillsSplitted=formData.skills
-        .split(",")
-        .map(skill=>skill.trim())
-        .filter(skill=>skill);
-
-        const applicationData: JobSummary = {
-            course: selectedCourse.name,
-            previousRole: formData.previousRole,
-            availability: selectedAvailability.AvailabiltyType,
-            skills: skillsSplitted,
-            academic: formData.academic,
-            selectedCount: 0,
-            // email:user?.email || " ",
+        try{
+            const applicationWithEmail = {
+                ...newApplication,
+                email: user.email
+            };
+            const getAppl=await applicationApi.getAllApplications();
             
+            const allApplications = await applicationApi.getAllApplications();
+            console.log("Checking duplicates for:", {
+                userEmail: user.email,
+                newCourseName: newApplication.course_Name,
+                jobRole: newApplication.jobRole,
+                allApplications,
+              });
+            const duplicate = allApplications.find(
+                (app: Application) =>
+                  app.email === newApplication.email &&
+                  app.course_Name === newApplication.course_Name &&
+                  app.jobRole === newApplication.jobRole
+              );
+               if (duplicate) {
+                setError("You have already applied for this course and role.");
+                return;
+              }
+
+    await applicationApi.saveApplication(newApplication);            
+    setNewApplication({
+                
+                course_Name:"",
+                jobRole:"",
+                skills:"",
+                previousRole:"",
+                academic:"",
+                availability:"",
+                email:user.email,
+                
+
+
+            });
+            fetchApplications();
             
-        };
-        console.log("@@@@@Full applicationData:", applicationData);
-       
-        const success = saveJobApplication(applicationData);
-        if (success && user) {
 
-            const updated = [...applications,applicationData];
-            setApplications(updated);
-            alert("Application submitted successfully!");
-
+        }catch(err){
+            setError("Failed to save application");
         }
-
-        console.log("Application submitted successfully!");
     };
 
-    useEffect(() => {
-        // localStorage.clear();
-        const savedData = localStorage.getItem("tutorApplications");
-        if (savedData) {
-            try {
-                const parsedData = JSON.parse(savedData);
-                const fixedData = parsedData.map((entry: any) => ({
-                    ...entry,
-                    skills: Array.isArray(entry.skills)
-                      ? entry.skills
-                      : String(entry.skills)
-                          .split("\n")
-                          .map((s) => s.trim())
-                          .filter(Boolean),
-                  }));
-            
-                  setApplications(fixedData);
-                
-                // setApplications(Array.isArray(parsedData) ? parsedData : []);
-
-            } catch (error) {
-                console.error("Error parsing applications:", error);
-                setApplications([]); // Fallback in case of error
-            }
-        }
-        if (user) {
-            const allUserApplications = getJobApplications(user.email);
-    const fixedApplications = allUserApplications.map((app) => ({
-        ...app,
-        skills: Array.isArray(app.skills)
-            ? app.skills
-            : String(app.skills)
-                .split("\n")
-                .map((s) => s.trim())
-                .filter(Boolean),
-    }));
-    setApplications(fixedApplications);
-            }
-          }, []);
 
     return (
         <div>
             <div className=" shadow-sm -space-y-px mb-12 mx-1 bg-red-100 border-2 border-red-500">
                 <p className="p-8 text-2xl font-serif text-center mb-8">Application Form for Tutor/ Lab-Assistants Roles</p>
-                <form onSubmit={handleSubmit} className="mt-3 space-y-6">
+                <form onSubmit={handleSaveApplication} className="mt-3 space-y-6">
 
 
                     {/* A list of pre-populated courses should be made available for the tutor to select. */}
@@ -186,9 +133,9 @@ const ApplicationForm: React.FC = () => {
                         </label>
                         {/* drop down to select course */}
                         <select id="course" name="course"
-                            value={selectedCourse.name}
+                            value={newApplication.course_Name}
                             onChange={(e) =>
-                                setSelectedCourse({ ...selectedCourse, name: e.target.value })
+                                setNewApplication({ ...newApplication, course_Name: e.target.value })
 
                             }
                             className="border p-2 rounded"
@@ -202,40 +149,38 @@ const ApplicationForm: React.FC = () => {
                             ))}
                         </select>
                         
-                        {errors.course && <p className="text-red-500">{errors.course}</p>}
+                        {errors.course_Name && <p className="text-red-500">{errors.course_Name}</p>}
                     </div>
 
                     <div className="rounded-md shadow-sm -space-y-px mx-8">
-                        <label htmlFor="previousRole" className="p-7 text-l font-serif text-center">
-                            List your Previous Roles
+                        <label htmlFor="jobRole" className="p-7 text-l font-serif text-center">
+                            Select the Job Role interested to apply
                         </label>
-                        <textarea
-                            id="previousRole"
-                            name="previousRole"
-                            // required
-                            className="border p-5 rounded w-[70%] h-30"
-                            placeholder="Enter your Previous Role details."
-                            value={formData.previousRole}
-                            onChange={handleChange}
+                        {/* drop down to select jobRole */}
+                        <select id="jobRole" name="jobRole"
+                            value={newApplication.jobRole}
+                            onChange={(e) =>
+                                setNewApplication({...newApplication,jobRole:e.target.value})
+                            }
                             tabIndex={2}
-                        />
-                        {errors.previousRole && <p className="text-red-500">{errors.previousRole}</p>}
-                    </div>
+                            className="border p-2 rounded"
+                        >
+                            <option value="">-- Select a job Role --</option>
+                            <option value="Tutor">Tutor</option>
+                            <option value="Lab_Assistant">Lab_Assistant</option>
+                        </select>
+                        {errors.jobRole && <p className="text-red-500">{errors.jobRole}</p>}
 
+                        </div>
                     <div className="rounded-md shadow-sm -space-y-px mx-8">
                         <label htmlFor="availability" className="p-7 text-l font-serif text-center">
                             Select Availability (part-time or full-time)
                         </label>
                         {/* drop down to select availabilty */}
                         <select id="availability" name="availability"
-                            value={selectedAvailability.AvailabiltyType}
-                            onChange={(e) =>{
-                                const value=e.target.value;
-                                setSelectedAvailability({  AvailabiltyType: value })
-                                console.log("Changed to:", value); 
-
-                            }
-                                
+                            value={newApplication.availability}
+                            onChange={(e) =>
+                                setNewApplication({...newApplication,availability:e.target.value})
                             }
                             tabIndex={3}
                             className="border p-2 rounded"
@@ -246,7 +191,6 @@ const ApplicationForm: React.FC = () => {
                         </select>
                         {errors.availability && <p className="text-red-500">{errors.availability}</p>}
                     </div>
-
                     <div className="rounded-md shadow-sm -space-y-px mx-8">
                         <label htmlFor="skills" className="p-7 text-l font-serif text-center">
                             List your Skills
@@ -255,15 +199,18 @@ const ApplicationForm: React.FC = () => {
                             id="skills"
                             name="skills"
                             // required
-                            className="border p-2 rounded w-[70%]"
+                            className="border p-5 rounded w-[70%] h-40"
                             placeholder="Enter your skills with comma(,) separation."
-                            value={formData.skills}
-                            onChange={handleChange}
+                            value={newApplication.skills}
+                            onChange={(e) =>
+                                setNewApplication({...newApplication,skills:e.target.value})
+                            }
                             rows={10}
                             tabIndex={4}
                         />
                         {errors.skills && <p className="text-red-500">{errors.skills}</p>}
                     </div>
+                
 
                     <div className="rounded-md shadow-sm -space-y-px mx-8">
                         <label htmlFor="academic" className="p-7 text-l font-serif text-center">
@@ -275,38 +222,69 @@ const ApplicationForm: React.FC = () => {
                             // required
                             className="border p-5 rounded w-[70%] h-40 "
                             placeholder="Enter your academic qualification."
-                            value={formData.academic}
-                            onChange={handleChange}
+                            value={newApplication.academic}
+                            onChange={(e) =>
+                                setNewApplication({...newApplication,academic:e.target.value})
+                            }
                             tabIndex={5}
                         />
                         {errors.academic && <p className="text-red-500">{errors.academic}</p>}
+                    </div>
+                    <div className="rounded-md shadow-sm -space-y-px mx-8">
+                        <label htmlFor="previousRole" className="p-7 text-l font-serif text-center">
+                            List your Previous Roles
+                        </label>
+                        <textarea
+                            id="previousRole"
+                            name="previousRole"
+                            // required
+                            className="border p-5 rounded w-[70%] h-30"
+                            placeholder="Enter your Previous Role details."
+                            value={newApplication.previousRole}
+                            onChange={(e)=>
+                                setNewApplication({...newApplication,previousRole:e.target.value})
+                            }
+                            tabIndex={6}
+                        />
+                        {errors.previousRole && <p className="text-red-500">{errors.previousRole}</p>}
                     </div>
 
                     <div >
                         <button type="submit"
                             // font-semibold rounded-md shadow-sm
-                            className=
-                            "font-semibold  w-full rounded-md shadow-sm "
+                            // className=
+                            // "font-semibold  w-full rounded-md shadow-sm "
                         >
-                            Submit
+                            Apply
                         </button>
                     </div>
                 </form>
             </div>
+
+
+
             {/* Displaying submitted form data */}
             <div className="shadow-sm p-8 bg-gray-100 border-2 border-gray-400">
                 <p className="text-2xl font-serif text-center ">Submitted Applications</p>
-                {applications.length === 0 ? (
+                {applications.filter(app => app.email === user?.email).length === 0 ? (
                     <p className="text-center text-gray-500">No applications submitted yet.</p>
                 ) : (
-                    // <ApplicationDisplay allUsers={applications} />
-                    <ApplicationDisplay user={user} />
+                    applications.
+                    filter((applicatn=>applicatn.email===user?.email))
+                    .map((application,index) => (
+                        <div key={index} className="p-4 border rounded">
+                          <h3 className="font-semibold text-xl">JobRole: {application.jobRole}</h3>
+                          <p className="text-gray-800">Skills: {application.skills}</p>
+                          <p className="text-gray-800">Availability: {application.availability}</p>
+                          <p className="text-gray-800 mt-2">Highest Academic Qualification:{application.academic}</p>
+                          <p className="text-gray-800">Course Name: {application.course_Name}</p>
+                          <p className="text-gray-800">Previous Role: {application.previousRole}</p>
+                          
+                        </div>
+                      ))
                 )}
             </div>
         </div>
 
     );
 }
-
-
-export default ApplicationForm;

@@ -4,7 +4,7 @@ import SubjectList from "../components/SubjectList";
 import Header from "../components/Header";
 import { useRouter } from "next/router";
 
-export default function TutorApplicant() {
+export default function CandidateHomePage() {
 
   const router = useRouter();
   return (

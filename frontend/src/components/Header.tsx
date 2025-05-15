@@ -7,16 +7,18 @@ const Header: React.FC = () => {
   const router = useRouter();
   const {user, logout} = useAuth();
 
-  const handleSignOut = (e: FormEvent) => {
-    logout();
-  }
+const handleSignOut = (e: React.MouseEvent) => {
+  logout();
+  router.push("/"); // Redirect to home after logout
+}
   return (
     <header className="bg-red-800 text-white p-8 w-full">
       <div className="flex justify-between items-center">
         <h1 className="font-serif">RMIT TeachingTeam</h1>
-{/* Font sizing is not working */}
-          {user && (
-              <span>Welcome, {user.firstname}!</span>) }
+
+          {user?.firstName? (
+              <span>Welcome, {user.firstName}!</span>
+            ):null }
       
         <button
           className="flex flex-col space-y-1"
@@ -34,10 +36,12 @@ const Header: React.FC = () => {
           {/* <ul className="flex space-x-6"> */}
           <ul className="flex flex-col space-y-2">
             <li><Link href="/">Home</Link></li>
-            {user?.role === "Tutor" && router.pathname != "/TutorApplicant" && <li><Link href="/TutorApplicant">Application</Link></li>}
+            {user?.role === "Candidate" && router.pathname != "/CandidateHomePage" && <li><Link href="/TutorApplicant">Application</Link></li>}
+            {user?.role === "Candidate" && router.pathname == "/CandidateHomePage" && <li><Link href="/Profile">Profile</Link></li>}
+
             {user?.role === "Lecturer" && router.pathname !="/LecturerHome" && <li><Link href="/LecturerHome">Lecturer Page</Link></li>}
             {user?.role === "Lecturer" && router.pathname !="/ApplicantStatus" && <li><Link href="/ApplicantStatus">Application Status</Link></li>}
-            {user && router.pathname === "/tutorProfile" && <li><Link href="/tutorApplicant">Application</Link></li>}
+            {user && router.pathname === "/tutorProfile" && <li><Link href="/CandidateHomePage">Application</Link></li>}
             {!user && (
               <>
                 <li><Link href="/signIn">Sign In</Link></li>

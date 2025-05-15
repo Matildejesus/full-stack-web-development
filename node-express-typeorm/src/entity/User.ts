@@ -1,30 +1,30 @@
-import {
-    Entity,
-    PrimaryGeneratedColumn,
-    Column,
-    CreateDateColumn,
-    UpdateDateColumn,
-  } from "typeorm";
-  
-  @Entity()
-  export class User {
-    @PrimaryGeneratedColumn()
-    id: number;
-  
-    @Column()
-    firstName: string;
-  
-    @Column()
-    lastName: string;
-  
-    @Column({ unique: true })
-    email: string;
-  
-    @Column({ nullable: true})
-    avatar_url: string;
-  
-    @CreateDateColumn()
-    createdAt: Date;
-  
-  }
-  
+
+import { 
+  Column,
+  Entity,
+  PrimaryGeneratedColumn } 
+  from "typeorm";
+@Entity()
+export  class User {
+  @PrimaryGeneratedColumn()
+  user_Id: number;
+
+  @Column()
+  firstName: string;
+
+  @Column()
+  lastName: string;
+
+  @Column() //{ unique: true }
+  email: string;
+
+  @Column()
+  password: string;
+
+  @Column()
+  role: string; // 'Candidate' or 'Lecturer'
+  // @Column()
+  // jobSummary: JobSummary[];
+  //   @Column()
+  //   lecturerSelection: LecturerSelection[],
+}
