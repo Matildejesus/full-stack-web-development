@@ -1,34 +1,54 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
+import { 
+    Entity, 
+    PrimaryGeneratedColumn, 
+    Column, 
+    ManyToOne, 
+    Unique, 
+    OneToMany
+} from "typeorm";
 import { Candidate } from "./Candidate";
 import { Course } from "./Course";
+import { LecturerSelection } from "./LecturerSelection";
+
+export enum Availability {
+    FULL_TIME = 'full-time',
+    PART_TIME = 'part-time',
+    CONTRACT = 'contract',
+}
 
 @Entity()
+@Unique(["candidate", "course"])
 export class Application {
-  @PrimaryGeneratedColumn()
-  application_Id: number;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @ManyToOne(() => Candidate, (candidate) => candidate.applications)
-  candidate: Candidate;
-// candidateCandidateId,
-  @ManyToOne(() => Course, (course) => course.course_Code)
-  course: Course;
-// courseCourseName
+    @ManyToOne(() => Candidate, (candidate) => candidate.applications)
+    candidate: Candidate;
+   
+    @ManyToOne(() => Course, (course) => course.applications)
+    course: Course;
 
-  @Column()
-  email: string;
+     @Column()
+    previousRole: string;
 
-  @Column()
-  previousRole: string;
+    @Column()
+    jobRole: string;
 
-  @Column()
-  jobRole: string; // 'Tutor' or 'Lab Assistant'
+    @Column({
+        type: "enum",
+        enum: Availability,
+    })
+    availability: Availability;
 
-  @Column()
-  availability: string;
+    @Column("simple-array")
+    skills: string[];
 
-  @Column("simple-array")
-  skills: string[];
+    @Column()
+    academic: string;
 
-  @Column()
-  academic: string;
+    @Column({ default: 0 })
+    selected_count: number;
+
+    @OneToMany(() => LecturerSelection, (lecturerSelection: LecturerSelection) => lecturerSelection.application)
+    lecturerSelections: LecturerSelection[];
 }

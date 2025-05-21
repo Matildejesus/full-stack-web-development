@@ -1,21 +1,22 @@
-import { Entity, Column, ManyToOne, OneToMany, PrimaryGeneratedColumn, PrimaryColumn } from "typeorm";
+import { Entity, Column, OneToOne, PrimaryColumn, OneToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Lecturer } from "./Lecturer";
 import { Application } from "./Application";
 
 @Entity()
 export class Course {
-  @Column()
-  course_Id: number;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @Column()
-  course_Code: string;
+    @Column()
+    code: string;
 
-  @PrimaryColumn()
-  course_Name: string;
+    @Column()
+    name: string;
 
-  @ManyToOne(() => Lecturer, (lecturer) => lecturer.courses)
-  course_lecturer: Lecturer;
+    @ManyToOne(() => Lecturer, (lecturer: Lecturer) => lecturer.courses)
+    lecturer: Lecturer;
 
-  // @OneToMany(() => Application)
-  // applications: Application[];
+    @OneToMany(() => Application, (application: Application) => application.course)
+    applications: Application[];
+
 }

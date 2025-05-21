@@ -1,27 +1,20 @@
-import { Entity, Column, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, OneToOne, JoinColumn, PrimaryGeneratedColumn, OneToMany } from "typeorm";
+import { User } from "./User";
 import { Course } from "./Course";
+import { LecturerSelection } from "./LecturerSelection";
 
 @Entity()
 export class Lecturer {
-  @PrimaryGeneratedColumn()
-  lecturer_Id: number;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @Column()
-  firstName: string;
+    @OneToOne(() => User, (user: User) => user.lecturer)
+    @JoinColumn()
+    user: User;
 
-  @Column()
-  lastName: string;
+    @OneToMany(() => Course, (course: Course) => course.lecturer)
+    courses: Course[];
 
-  // @Column({ unique: true })
-  @Column()
-  email: string;
-
-  @Column()
-  password: string;
-
-  @Column()
-  role: string;
-
-  @OneToMany(() => Course, (course) => course.course_Name)
-  courses: Course[];
+    @OneToMany(() => LecturerSelection, (lecturerSelection: LecturerSelection) => lecturerSelection.lecturer)
+    lecturerSelections: LecturerSelection[];
 }

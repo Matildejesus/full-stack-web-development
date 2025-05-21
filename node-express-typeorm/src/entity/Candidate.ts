@@ -1,38 +1,22 @@
 import { 
     Entity, 
-    Column, 
-    OneToMany, 
-    CreateDateColumn, 
-    PrimaryGeneratedColumn }
-    from "typeorm";
+    OneToOne, 
+    PrimaryGeneratedColumn,
+    JoinColumn,
+    OneToMany
+} from "typeorm";
 import { Application } from "./Application";
+import { User } from "./User";
 
 @Entity()
 export class Candidate {
   @PrimaryGeneratedColumn()
-  candidate_Id: number;
+  id: number;
 
-  @Column()
-  firstName: string;
+  @OneToOne(() => User, (user: User) => user.candidate)
+  @JoinColumn()
+  user: User;
 
-  @Column()
-  lastName: string;
-
-  @Column({ unique: true })
-  email: string;
-
-  @Column()
-  password: string;
-
-  @Column()
-  role: string;
-
-  @Column({ nullable: true })
-  avatar_url: string;
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @OneToMany(() => Application, (app) => app.candidate)
+  @OneToMany(() => Application, (application: Application) => application.candidate)
   applications: Application[];
 }
