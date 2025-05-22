@@ -1,68 +1,305 @@
-import axios from "axios";
+import { User, Candidate, Role } from "../types/types";
+import { gql } from "@apollo/client";
+import { client } from "./apollo-client";
 
-export const api = axios.create({
-  baseURL: "http://localhost:3001/api", //  backend URL
-});
-export interface User {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  role:string;
-}
-export interface Candidate {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  role:string;
-}
-export interface Application{
-  email:string,
-  course_Name: string,
-  jobRole:string,
-  previousRole: string,
-  availability: string,
-  skills: string,
-  academic: string
-}
-export const userApi = {
-
-    createUser: async (user: User) => {
-      const response = await api.post("/users", user);
-      return response.data;
-    },
-
-    getUserByEmailPassword: async (email:string, password:string) => {
-      const response = await api.post("/login",{ email, password});
-      return response.data;
-    },
-
-    getUserByEmail: async (email: string) => {
-      const response = await axios.get(`/api/users/${email}`);
-      return response.data;
-    },
-
-    getAllUsers: async ()=>{
-      const response = await api.get("/users"); 
-      return response.data;
+const GET_USERS = gql`
+    query GetUsers {
+        users {
+            id
+            email
+            firstName
+            lastName
+            password
+            avatarUrl
+            role
+            lecturer {
+                id
+                courses {
+                    id
+                    code
+                    name
+                }
+                lecturerSelection {
+                    id
+                    rank
+                    comment
+                }
+            }
+            candidate {
+                id
+                applications {
+                    id
+                    course {
+                        id
+                        code
+                        name
+                    }
+                    previousRole
+                    jobRole
+                    availability
+                    skills
+                    academic
+                    selectedCount
+                    lecturerSelections {
+                        id
+                        rank
+                        comment
+                    }
+                }
+            }
+            admin {
+                id
+            }
+        }    
     }
-};
-export const applicationApi ={
+`
 
-  saveApplication:async(application: Application )=>{
-    const response = await api.post("/applications", application);
-    return response.data ;
-  },
-
-  getAllApplications: async ():Promise<Application[]> => {
-    try {
-      const response = await api.get("/applications");
-      console.log("dchbdshmcv",response.data);
-      return response.data as Application[];
-    } catch (error) {
-      console.error("Error fetching applications:", error);
-      throw error;
+const GET_USER = gql`
+    query GetUser($id: ID!) {
+        user(id: $id) {
+            id
+            email
+            firstName
+            lastName
+            password
+            avatarUrl
+            role
+            lecturer {
+                id
+                courses {
+                    id
+                    code
+                    name
+                }
+                lecturerSelection {
+                    id
+                    rank
+                    comment
+                }
+            }
+            candidate {
+                id
+                applications {
+                    id
+                    course {
+                        id
+                        code
+                        name
+                    }
+                    previousRole
+                    jobRole
+                    availability
+                    skills
+                    academic
+                    selectedCount
+                    lecturerSelections {
+                        id
+                        rank
+                        comment
+                    }
+                }
+            }
+            admin {
+                id
+            }
+        }    
     }
+`;
+
+const CREATE_USER = gql`
+    mutation CreateUser(
+        $email: String!
+        $firstName: String!
+        $lastName: String!
+        $password: String
+        $avatarUrl: String
+        $role: Role
+    ) {
+        createUser(
+            email: $email
+            firstName: $firstName
+            lastName: $lastName
+            password: $password
+            avatarUrl: $avatarUrl
+            role: $role
+        ) {
+            id
+            email
+            firstName
+            lastName
+            password
+            avatarUrl
+            role
+            lecturer {
+                id
+                courses {
+                    id
+                    code
+                    name
+                }
+                lecturerSelection {
+                    id
+                    rank
+                    comment
+                }
+            }
+            candidate {
+                id
+                applications {
+                    id
+                    course {
+                        id
+                        code
+                        name
+                    }
+                    previousRole
+                    jobRole
+                    availability
+                    skills
+                    academic
+                    selectedCount
+                    lecturerSelections {
+                        id
+                        rank
+                        comment
+                    }
+                }
+            }
+            admin {
+                id
+            }
+        }
+    }
+`;
+
+const UPDATE_USER = gql`
+    mutation UpdateUser(
+        $id: ID!
+        $email: String
+        $firstName: String
+        $lastName: String
+        $password: String
+        $avatarUrl: String
+        $role: Role
+    ) {
+        updateUser(
+            id: $id
+            email: $email
+            firstName: $firstName
+            lastName: $lastName
+            password: $password
+            avatarUrl: $avatarUrl
+            role: $role
+        ) {
+            id
+            email
+            firstName
+            lastName
+            password
+            avatarUrl
+            role
+            lecturer {
+                id
+                courses {
+                    id
+                    code
+                    name
+                }
+                lecturerSelection {
+                    id
+                    rank
+                    comment
+                }
+            }
+            candidate {
+                id
+                applications {
+                    id
+                    course {
+                        id
+                        code
+                        name
+                    }
+                    previousRole
+                    jobRole
+                    availability
+                    skills
+                    academic
+                    selectedCount
+                    lecturerSelections {
+                        id
+                        rank
+                        comment
+                    }
+                }
+            }
+            admin {
+                id
+            }
+        }
+    }
+`;
+
+const DELETE_USER = gql`
+  mutation DeleteUser($id: ID!) {
+    deleteUser(id: $id)
   }
-};
+`;
+
+
+
+export const userService = {
+    getAllUsers: async (): Promise<User[]> => {
+        const { data } = await client.query({ query: GET_USERS });
+        return data.users
+    },
+
+    createUser: async (user: {
+        firstName: string;
+        lastName: string;
+        email: string;
+        password: string;
+        avatarUrl?: string | null;
+        role: Role;
+    }): Promise<User> => {
+        const { data } = await client.mutate({
+            mutation: CREATE_USER,
+            variables: user,
+        });
+        return data.createUser;
+    },
+
+    getUser: async (id: number): Promise<User> => {
+        const { data } = await client.query({
+            query: GET_USER,
+            variables: { id },
+        });
+        return data.user;
+    },
+
+    deleteUser: async (id: number): Promise<boolean> => {
+        const { data } = await client.mutate({
+            mutation: DELETE_USER,
+            variables: { id },
+        });
+        return data.deleteUser;
+    },
+
+    updateUser: async (
+        id: number,
+        user: {
+            firstName?: string;
+            lastName?: string;
+            email?: string;
+            password?: string;
+            avatarUrl?: string;
+            role?: Role;
+        }
+    ): Promise<User> => {
+        const { data } = await client.mutate({
+            mutation: UPDATE_USER,
+            variables: { id, ...user },
+        });
+        return data.updateUser;
+    }
+}

@@ -1,59 +1,78 @@
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
-import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/router";
+import { userService } from "@/services/api";
+import { Role, User } from "@/types/types";
+
+
 const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const router = useRouter();
-  const {user, logout} = useAuth();
+  const { id } = router.query;
+  const [user, setUser] = useState<User | null>(null);
+// const handleSignOut = (e: React.MouseEvent) => {
+//   logout();
+//   router.push("/"); // Redirect to home after logout
+// }
 
-const handleSignOut = (e: React.MouseEvent) => {
-  logout();
-  router.push("/"); // Redirect to home after logout
-}
-  return (
-    <header className="bg-red-800 text-white p-8 w-full">
-      <div className="flex justify-between items-center">
-        <h1 className="font-serif">RMIT TeachingTeam</h1>
+    useEffect(() => {
+        if (id) {
+        fetchUser();
+        }
+    }, [id]);
 
-          {user?.firstName? (
-              <span>Welcome, {user.firstName}!</span>
-            ):null }
-      
-        <button
-          className="flex flex-col space-y-1"
-          onClick={() => setIsOpen(!isOpen)}
-          aria-label="Toggle menu"
-        >
-          <span className={`block w-8 h-1 bg-white transition-all ${isOpen ? "rotate-45 translate-y-2" : ""}`}></span>
-          <span className={`block w-8 h-1 bg-white transition-all ${isOpen ? "opacity-0" : ""}`}></span>
-          <span className={`block w-8 h-1 bg-white transition-all ${isOpen ? "-rotate-45 -translate-y-2" : ""}`}></span>
-        </button>
-      </div>
+    const fetchUser = async () => {
+        try {
+            const data = await userService.getUser(Number(id));
+            setUser(data);
+        } catch (error) {
+            console.error("Error fetching pet:", error);
+        }
+    };
 
-      {isOpen && (
-        <nav className="mt-2 bg- p-4 rounded">
-          {/* <ul className="flex space-x-6"> */}
-          <ul className="flex flex-col space-y-2">
-            <li><Link href="/">Home</Link></li>
-            {user?.role === "Candidate" && router.pathname != "/CandidateHomePage" && <li><Link href="/TutorApplicant">Application</Link></li>}
-            {user?.role === "Candidate" && router.pathname == "/CandidateHomePage" && <li><Link href="/Profile">Profile</Link></li>}
+    return (
+        <header className="bg-red-800 text-white p-8 w-full">
+        <div className="flex justify-between items-center">
+            <h1 className="font-serif">RMIT TeachingTeam</h1>
 
-            {user?.role === "Lecturer" && router.pathname !="/LecturerHome" && <li><Link href="/LecturerHome">Lecturer Page</Link></li>}
-            {user?.role === "Lecturer" && router.pathname !="/ApplicantStatus" && <li><Link href="/ApplicantStatus">Application Status</Link></li>}
-            {user && router.pathname === "/tutorProfile" && <li><Link href="/CandidateHomePage">Application</Link></li>}
-            {!user && (
-              <>
-                <li><Link href="/signIn">Sign In</Link></li>
-                <li><Link href="/signUp">Sign Up</Link></li>
-              </>
-            )}
-            {user && <li><Link href="/" onClick={handleSignOut}>Sign Out</Link></li>}
-          </ul>
-        </nav>
-      )}
-    </header>
-  );
+            {user?.firstName? (
+                <span>Welcome, {user.firstName}!</span>
+                ):null }
+        
+            <button
+            className="flex flex-col space-y-1"
+            onClick={() => setIsOpen(!isOpen)}
+            aria-label="Toggle menu"
+            >
+            <span className={`block w-8 h-1 bg-white transition-all ${isOpen ? "rotate-45 translate-y-2" : ""}`}></span>
+            <span className={`block w-8 h-1 bg-white transition-all ${isOpen ? "opacity-0" : ""}`}></span>
+            <span className={`block w-8 h-1 bg-white transition-all ${isOpen ? "-rotate-45 -translate-y-2" : ""}`}></span>
+            </button>
+        </div>
+
+        {isOpen && (
+            <nav className="mt-2 bg- p-4 rounded">
+            {/* <ul className="flex space-x-6"> */}
+            <ul className="flex flex-col space-y-2">
+                <li><Link href="/">Home</Link></li>
+                {user?.role === Role.CANDIDATE && router.pathname != "/CandidateHomePage" && <li><Link href="/TutorApplicant">Application</Link></li>}
+                {user?.role === Role.CANDIDATE && router.pathname == "/CandidateHomePage" && <li><Link href="/Profile">Profile</Link></li>}
+
+                {user?.role === Role.LECTURER && router.pathname !="/LecturerHome" && <li><Link href="/LecturerHome">Lecturer Page</Link></li>}
+                {user?.role === Role.LECTURER && router.pathname !="/ApplicantStatus" && <li><Link href="/ApplicantStatus">Application Status</Link></li>}
+                {user && router.pathname === "/tutorProfile" && <li><Link href="/CandidateHomePage">Application</Link></li>}
+                {!user && (
+                <>
+                    <li><Link href="/signIn">Sign In</Link></li>
+                    <li><Link href="/signUp">Sign Up</Link></li>
+                </>
+                )}
+                {/* {user && <li><Link href="/" onClick={handleSignOut}>Sign Out</Link></li>} */}
+            </ul>
+            </nav>
+        )}
+        </header>
+    );
 };
 
 export default Header;

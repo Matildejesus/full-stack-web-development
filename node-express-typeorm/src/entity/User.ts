@@ -4,6 +4,8 @@ import {
     Entity,
     PrimaryGeneratedColumn,
     OneToOne,
+    CreateDateColumn,
+    UpdateDateColumn,
 } from "typeorm";
 import { Lecturer } from "./Lecturer";
 import { Candidate } from "./Candidate";
@@ -49,4 +51,10 @@ export class User {
 
     @OneToOne(() => Admin, (admin: Admin) => admin.user)
     admin: Admin;
+
+    @CreateDateColumn()
+    createdAt: Date;
+
+    @UpdateDateColumn()
+    updatedAt: Date;
 }

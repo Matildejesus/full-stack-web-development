@@ -1,3 +1,15 @@
+export enum Role {
+    ADMIN = "admin",
+    CANDIDATE = "candidate",
+    LECTURER = "lecturer"
+}
+
+export enum Availability {
+    FULL_TIME = 'full-time',
+    PART_TIME = 'part-time',
+    CONTRACT = 'contract',
+}
+
 export interface Admin {
     id: number;
     user: User;
@@ -57,4 +69,6 @@ export interface User {
     lecturer?: Lecturer;
     candidate?: Candidate;
     admin?: Admin;
+    createdAt: Date;
+    updatedAt: Date;
 }
