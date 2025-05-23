@@ -20,7 +20,7 @@ export interface Application {
     candidate: Candidate;
     course: Course;
     previousRole: string;
-    jobRole: string;
+    role: string;
     availability: Availability;
     skills: string[];
     academic: string;

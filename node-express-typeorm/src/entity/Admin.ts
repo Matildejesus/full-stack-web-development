@@ -7,12 +7,12 @@ import {
 } from "typeorm";
 import { User } from "./User";
 
-@Entity()
+@Entity({ name: "admins"})
 export class Admin {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn({ type: "int" })
     id: number;
 
     @OneToOne(() => User, (user: User) => user.admin)
-    @JoinColumn()
+    @JoinColumn({ name: "user_id" })
     user: User;
 }

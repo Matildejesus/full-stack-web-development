@@ -8,13 +8,13 @@ import {
 import { Application } from "./Application";
 import { User } from "./User";
 
-@Entity()
+@Entity({ name: "candidates" })
 export class Candidate {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ type: "int" })
   id: number;
 
   @OneToOne(() => User, (user: User) => user.candidate)
-  @JoinColumn()
+  @JoinColumn({ name: "user_id" })
   user: User;
 
   @OneToMany(() => Application, (application: Application) => application.candidate)

@@ -18,29 +18,27 @@ export enum Role {
 }
 
 
-@Entity()
+@Entity({ name: "users" })
 export class User {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn({ type: "int" })
     id: number;
 
-    @Column()
+    @Column({ name: "first_name", type: "varchar", length: 100 })
     firstName: string;
 
-    @Column()
+    @Column({ name: "last_name", type: "varchar", length: 100 })
     lastName: string;
 
-    @Column({ unique: true })
+    @Column({ unique: true, type: "varchar", length: 255 })
     email: string;
 
-    @Column()
+    @Column({ type: "varchar", length: 255 })
     password: string;
      
-    @Column({ nullable: true})
+    @Column({ nullable: true, type: "varchar", length: 255 })
     avatarUrl: string;
     
-    @Column({ 
-        type: "enum",
-         enum: Role })
+    @Column({ type: "enum", enum: Role })
     role: Role;
 
     @OneToOne(() => Lecturer, (lecturer: Lecturer) => lecturer.user)
@@ -52,9 +50,9 @@ export class User {
     @OneToOne(() => Admin, (admin: Admin) => admin.user)
     admin: Admin;
 
-    @CreateDateColumn()
+    @CreateDateColumn({ name: "created_at", type: "timestamp" })
     createdAt: Date;
 
-    @UpdateDateColumn()
+    @UpdateDateColumn({ name: "updated_at", type: "timestamp" })
     updatedAt: Date;
 }

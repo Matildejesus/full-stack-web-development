@@ -114,6 +114,10 @@ export class UserController {
         return response.json(user);
     }
 
+    async logout(request: Request, response: Response) {
+        response.status(200).json({ user: null, message: "User logged out" });
+    };
+
 //   async getUserByEmail(req: Request, res: Response) {
 //     const { email } = req.params;
 //     try {

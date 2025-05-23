@@ -11,6 +11,7 @@ export function validatePassword(password: string): boolean {
     const hasLowerCase = /[a-z]/.test(password);
     const hasNumber = /\d/.test(password);
     const isLongEnough = password.length >= 8;
+    const isNotTooLong = password.length <= 13;
 
-    return hasUpperCase && hasLowerCase && hasNumber && isLongEnough;
+    return hasUpperCase && hasLowerCase && hasNumber && isLongEnough && isNotTooLong;
 };

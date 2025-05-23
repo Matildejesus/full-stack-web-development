@@ -4,7 +4,8 @@ import {
     Column, 
     ManyToOne, 
     Unique, 
-    OneToMany
+    OneToMany,
+    JoinColumn
 } from "typeorm";
 import { Candidate } from "./Candidate";
 import { Course } from "./Course";
@@ -16,27 +17,32 @@ export enum Availability {
     CONTRACT = 'contract',
 }
 
-@Entity()
+export enum AppRole {
+    TUTOR = "tutor",
+    LAB_ASSISTANT = "lab_assistant",
+}
+
+@Entity({ name: "applications" })
 @Unique(["candidate", "course"])
 export class Application {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn({ type: "int" })
     id: number;
 
     @ManyToOne(() => Candidate, (candidate) => candidate.applications)
+    @JoinColumn({ name: "candidate_id" })
     candidate: Candidate;
    
     @ManyToOne(() => Course, (course) => course.applications)
+    @JoinColumn({ name: "course_id" })
     course: Course;
 
      @Column()
     previousRole: string;
 
-    @Column()
-    jobRole: string;
+    @Column({ type: "enum", enum: AppRole })
+    role: string;
 
-    @Column({
-        type: "enum",
-        enum: Availability,
+    @Column({ type: "enum", enum: Availability,
     })
     availability: Availability;
 

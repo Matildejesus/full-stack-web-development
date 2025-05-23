@@ -32,7 +32,7 @@
 //    * @returns JSON response containing the created Application or error message
 //    */
 //     async save(request: Request, response: Response) {
-//         const { course, previousRole, email, jobRole,availability, skills,academic  } = request.body;
+//         const { course, previousRole, email, role, availability, skills,academic  } = request.body;
 
 //         try {
 //             const applicationRepository = AppDataSource.getRepository(Application);
@@ -40,7 +40,7 @@
 //             const courseRepository = AppDataSource.getRepository(Course);
 
 //             const application = new Application();
-//             application.jobRole = jobRole;
+//             application.role = role;
 //             application.course = course;
 //             application.availability = availability;
 //             application.skills = skills;

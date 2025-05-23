@@ -6,14 +6,20 @@ import { Role, User } from "@/types/types";
 
 
 const Header: React.FC = () => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const router = useRouter();
-  const { id } = router.query;
-  const [user, setUser] = useState<User | null>(null);
-// const handleSignOut = (e: React.MouseEvent) => {
-//   logout();
-//   router.push("/"); // Redirect to home after logout
-// }
+    const [isOpen, setIsOpen] = useState<boolean>(false);
+    const router = useRouter();
+    const { id } = router.query;
+    const [user, setUser] = useState<User | null>(null);
+    
+    const handleSignOut = async (e: React.MouseEvent) => {
+        try{
+            await userService.logout();
+            setUser(null); // optional: reset user in UI
+            router.push("/");   
+        } catch(err:any){
+            console.error("Error creating user:", err); 
+        }
+    }
 
     useEffect(() => {
         if (id) {
@@ -67,7 +73,7 @@ const Header: React.FC = () => {
                     <li><Link href="/signUp">Sign Up</Link></li>
                 </>
                 )}
-                {/* {user && <li><Link href="/" onClick={handleSignOut}>Sign Out</Link></li>} */}
+                {user && <li><Link href="/" onClick={handleSignOut}>Sign Out</Link></li>}
             </ul>
             </nav>
         )}

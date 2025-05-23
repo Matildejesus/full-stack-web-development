@@ -3,13 +3,13 @@ import { User } from "./User";
 import { Course } from "./Course";
 import { LecturerSelection } from "./LecturerSelection";
 
-@Entity()
+@Entity({ name: "lecturers" })
 export class Lecturer {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn({ type: "int" })
     id: number;
 
     @OneToOne(() => User, (user: User) => user.lecturer)
-    @JoinColumn()
+    @JoinColumn({ name: "user_id" })
     user: User;
 
     @OneToMany(() => Course, (course: Course) => course.lecturer)
