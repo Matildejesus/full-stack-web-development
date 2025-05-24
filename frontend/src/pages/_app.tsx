@@ -2,14 +2,17 @@ import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import { ChakraProvider } from "@chakra-ui/react"; 
 import { ApolloProvider } from "@apollo/client";
+import { AuthProvider } from "@/context/AuthContext";
 // import { client } from "../services/apollo-client";
 
 export default function App({ Component, pageProps }: AppProps) {
     return (
         // <ApolloProvider client={client}>
+        <AuthProvider >
             <ChakraProvider>
                 <Component {...pageProps} />
             </ChakraProvider>
+        </AuthProvider>
         // </ApolloProvider>
     )
 }

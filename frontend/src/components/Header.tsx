@@ -3,38 +3,19 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { userService } from "@/services/api";
 import { Role, User } from "@/types/types";
+import { useAuth } from "@/context/AuthContext";
 
 
 const Header: React.FC = () => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const router = useRouter();
     const { id } = router.query;
-    const [user, setUser] = useState<User | null>(null);
+    const { user, logout } = useAuth();
     
-    const handleSignOut = async (e: React.MouseEvent) => {
-        try{
-            await userService.logout();
-            setUser(null); // optional: reset user in UI
-            router.push("/");   
-        } catch(err:any){
-            console.error("Error creating user:", err); 
-        }
+    const handleSignOut = (e: React.MouseEvent) => {
+        logout();
+        router.push("/");
     }
-
-    useEffect(() => {
-        if (id) {
-        fetchUser();
-        }
-    }, [id]);
-
-    const fetchUser = async () => {
-        try {
-            const data = await userService.getUser(Number(id));
-            setUser(data);
-        } catch (error) {
-            console.error("Error fetching pet:", error);
-        }
-    };
 
     return (
         <header className="bg-red-800 text-white p-8 w-full">
@@ -69,8 +50,8 @@ const Header: React.FC = () => {
                 {user && router.pathname === "/tutorProfile" && <li><Link href="/CandidateHomePage">Application</Link></li>}
                 {!user && (
                 <>
-                    <li><Link href="/signIn">Sign In</Link></li>
-                    <li><Link href="/signUp">Sign Up</Link></li>
+                    {router.pathname !== "/signIn" && <li><Link href="/signIn">Sign In</Link></li>}
+                    {router.pathname !== "/signUp" && <li><Link href="/signUp">Sign Up</Link></li>}
                 </>
                 )}
                 {user && <li><Link href="/" onClick={handleSignOut}>Sign Out</Link></li>}

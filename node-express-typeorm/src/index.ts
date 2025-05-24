@@ -5,6 +5,7 @@ console.log("Data source module:", dataSourceModule);
 
 import { AppDataSource } from "./data-source";
 import userRoutes from "./routes/user.routes";
+import courseRoutes from "./routes/course.routes";
 // import applicationRoutes from "./routes/application.routes";
 import cors from "cors";
 const app = express();
@@ -13,6 +14,7 @@ const PORT = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 app.use("/api", userRoutes);
+app.use("/api", courseRoutes);
 
 console.log("AppDataSource:", AppDataSource);
 AppDataSource.initialize()

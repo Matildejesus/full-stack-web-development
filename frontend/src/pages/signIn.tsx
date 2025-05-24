@@ -12,9 +12,9 @@ import { useRouter } from "next/router";
 import ReCAPTCHA from "react-google-recaptcha";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { validateEmail, validatePassword } from "../utils/validation";
 import { userService } from "@/services/api";
 import { Role } from "@/types/types";
+import { useAuth } from "../context/AuthContext"
 
 export default function SignIn(){
     const toast = useToast();
@@ -27,11 +27,9 @@ export default function SignIn(){
         password: ""
     });
 
-  // const { login } = useAuth();
+
+const { login } = useAuth();
   const router = useRouter();
-
-  const [submitted, setSubmitted] = useState<boolean>(false);
-
 
   const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
@@ -41,17 +39,9 @@ export default function SignIn(){
             setError("Please complete the CAPTCHA.");
             return;
         }
-        if (!validateEmail(email)) {
-        setError("Email does not follow standards.");
-        return;
-        }
-        if (!validatePassword(password)) {
-        setError("Password should have uppercase, lowercase, numbers and more than 8 chars in length.");
-        return;
-        }
 
         try {
-        const userData = await userService.login(email, password);
+            const userData = await login(email, password); 
         if (userData) { 
             toast({
             title: "Sign In Successful.",
@@ -62,7 +52,7 @@ export default function SignIn(){
             });
         
             if (userData.role === Role.CANDIDATE) {
-                router.push("/CandidateHomePage");
+                router.push("/candidateHomePage");
             } else {
                 router.push("/lecturerHome")
             }

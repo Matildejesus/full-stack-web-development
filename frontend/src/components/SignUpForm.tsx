@@ -70,7 +70,6 @@ export default function SignUpForm({
                     }
                     placeholder="Enter your email"
                 />
-                {error && <p style={{ color: 'red' }}>{error}</p>}
                 </FormControl>
 
 

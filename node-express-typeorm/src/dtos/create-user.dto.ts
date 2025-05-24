@@ -1,5 +1,5 @@
 import { IsEmail, IsEnum, IsNotEmpty, IsString, Max, Min } from "class-validator";
-import { Role } from "src/entity/User";
+import { Role } from "../entity/User";
 
 export class CreateUserDTO {
     @IsEmail()

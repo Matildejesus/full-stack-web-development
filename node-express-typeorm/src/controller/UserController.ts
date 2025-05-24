@@ -9,11 +9,11 @@ export class UserController {
     private userRepository = AppDataSource.getRepository(User);
     
     /**
-     * Creates a new User in the database
-     * @param request - Express request object containing User details in body
-     * @param response - Express response object
-     * @returns JSON response containing the created User or error message
-     */
+    * Retrieves all users from the database
+    * @param req - Express request object
+    * @param res - Express response object
+    * @returns JSON array of all profiles
+    */
     async all(request: Request, response: Response) {
         const users = await this.userRepository.find();
         return response.json(users);

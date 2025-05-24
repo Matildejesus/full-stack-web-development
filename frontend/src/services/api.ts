@@ -1,4 +1,4 @@
-import { User, Candidate, Role } from "../types/types";
+import { User, Candidate, Role, Course } from "../types/types";
 import { gql } from "@apollo/client";
 import axios from "axios";
 
@@ -321,4 +321,12 @@ export const userService = {
         const { data } = await axios.put<User>(`${API_BASE_URL}/users/${id}`, user);
         return data;
     }
+}
+
+export const courseService = {
+    getAllCourses: async (): Promise<Course[]> => {
+        const { data } = await axios.get<Course[]>(`${API_BASE_URL}/courses`);
+        return data;
+    },
+
 }
