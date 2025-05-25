@@ -13,7 +13,7 @@ export default function applicationPage(){
     const [applications, setApplications] = useState<Application[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-
+    const [success, setSuccess] = useState<string | null>(null);
     const [newApplication, setNewApplication] = useState({
         course:"",
         role:"",
@@ -29,7 +29,6 @@ export default function applicationPage(){
             const fetchCourses = async () => {
                 const data = await courseService.getAllCourses();
                 setSubjects(data);
-                console.log(data);
             };
     
             if (subjects.length === 0) {
@@ -86,38 +85,32 @@ export default function applicationPage(){
           }
           console.log("User email is",user.email);
 
-        try{
-            const applicationWithEmail = {
-                ...newApplication,
-                email: user.email
-            };
-            const getAppl=await applicationApi.getAllApplications();
-            
-            // const allApplications = await applicationApi.getAllApplications();
-            // console.log("Checking duplicates for:", {
-            //     userEmail: user.email,
-            //     newCourseName: newApplication.course,
-            //     jobRole: newApplication.jobRole,
-            //     allApplications,
-            //   });
-            //   if (allApplications) {
-            //     setError("You have already applied for this course and role.");
-            //     return;
-            //   }
-            // const duplicate = allApplications.find(
-            //     (app: Application) =>
-            //       app.email === newApplication.email &&
-            //       app.course_Name === newApplication.course_Name &&
-            //       app.jobRole === newApplication.jobRole
-            //   );
-            //    if (duplicate) {
-            //     setError("You have already applied for this course and role.");
-            //     return;
-            //   }
+        try{          
+            const allApplications = await applicationApi.getAllApplications();
+            console.log("Checking duplicates for:");
+            console.log("newApplication.course =", newApplication.course);
+            allApplications.forEach(app => {
+            console.log("app.course?.name:", app.course?.name);
+            console.log("app.role:", app.role);
+            });
 
-    await applicationApi.saveApplication(newApplication);            
-    setNewApplication({
-                
+
+            const duplicate = allApplications.find(
+                (app: Application) =>
+                  app.course.name === newApplication.course &&
+                  app.role === newApplication.role
+                  
+              );
+            console.log("duplicate is",duplicate)
+            if (duplicate) {
+                console.log("Application submitted UNSuccessfully!!! Duplicate application")
+
+                setError("You have already applied for this course and role.");
+                setSuccess(null);
+                return;
+              }
+            await applicationApi.saveApplication(newApplication);            
+            setNewApplication({
                 course:"",
                 role:"",
                 skills:"",
@@ -125,15 +118,12 @@ export default function applicationPage(){
                 academic:"",
                 availability:"",
                 userId:user?.id
-                
-
-
             });
-            console.log("user object is ",user)
-            console.log("candidate id is ", user?.candidate?.id)
+            console.log("Application submitted Successfully!!!")
+            setError(null);
+            setSuccess("Application submitted Successfuly")
+            console.log("user details is ",user)
             fetchApplications();
-            
-
         }catch(err){
             setError("Failed to save application");
         }
@@ -143,6 +133,12 @@ export default function applicationPage(){
         <div>
             <div className=" shadow-sm -space-y-px mb-12 mx-1 bg-red-100 border-2 border-red-500">
                 <p className="p-8 text-2xl font-serif text-center mb-8">Application Form for Tutor/ Lab-Assistants Roles</p>
+                {success && <p className="text-green-600 text-center font-semibold">{success}</p>}
+                {error && (
+                    <div className="text-red-600 font-semibold text-center mb-4">
+                        {error}
+                    </div>
+                    )}
                 <form onSubmit={handleSaveApplication} className="mt-3 space-y-6">
 
 

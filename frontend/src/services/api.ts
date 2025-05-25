@@ -355,7 +355,7 @@ export const applicationApi ={
   getAllApplications: async ():Promise<Application[]> => {
     try {
       const {data }= await axios.get<Application[]>(`${API_BASE_URL}/applications`);
-      console.log("dchbdshmcv",data);
+      console.log("List of submitted Appplications",data);
       return data;
     } catch (error) {
       console.error("Error fetching applications:", error);
