@@ -1,6 +1,7 @@
-import { User, Candidate, Role, Course } from "../types/types";
+import { User, Candidate, Role, Course,Availability, Application } from "../types/types";
 import { gql } from "@apollo/client";
 import axios from "axios";
+import App from "next/app";
 
 // const GET_USERS = gql`
 //     query GetUsers {
@@ -261,9 +262,11 @@ export const userService = {
         lastName: string;
         email: string;
         password: string;
-        avatarUrl?: string | null;
+        // avatarUrl?: string | null;
         role: Role;
     }): Promise<User> => {
+        console.log("Sending user data to backend:", JSON.stringify(user, null, 2));
+
         const { data } = await axios.post<User>(`${API_BASE_URL}/users`, user);
         return data;
 
@@ -329,4 +332,34 @@ export const courseService = {
         return data;
     },
 
+}
+
+export const applicationApi ={
+
+  saveApplication:async(application:{
+
+    course: Course;
+    previousRole: string;
+    role: string;
+    availability: Availability;
+    skills: string[];
+    academic: string;
+    userId:User
+  } ):Promise<Application>=>{
+    const {data} = await axios.post<Application>(`${API_BASE_URL}/applications`, application);
+    console.log("Body is ",data)
+    console.log("Req is ", application)
+    return data ;
+  },
+
+  getAllApplications: async ():Promise<Application[]> => {
+    try {
+      const {data }= await axios.get<Application[]>(`${API_BASE_URL}/applications`);
+      console.log("dchbdshmcv",data);
+      return data;
+    } catch (error) {
+      console.error("Error fetching applications:", error);
+      throw error;
+    }
+  }
 }

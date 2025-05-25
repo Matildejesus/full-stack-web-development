@@ -23,7 +23,7 @@ export enum AppRole {
 }
 
 @Entity({ name: "applications" })
-@Unique(["candidate", "course"])
+@Unique(["candidate", "course","role"])
 export class Application {
     @PrimaryGeneratedColumn({ type: "int" })
     id: number;
@@ -40,7 +40,7 @@ export class Application {
     previousRole: string;
 
     @Column({ type: "enum", enum: AppRole })
-    role: string;
+    role: AppRole;
 
     @Column({ type: "enum", enum: Availability,
     })

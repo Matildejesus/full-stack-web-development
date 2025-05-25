@@ -55,10 +55,8 @@ export class UserController {
             role
         });
     
-        try {
+        // try {
         // const userRepository = AppDataSource.getRepository(User);
-        // const candidateRepository = AppDataSource.getRepository(Candidate);
-        // const lecturerRepository = AppDataSource.getRepository(Lecturer);
 
       // const existingUser = await userRepository.findOne({ where: { email } });
       // console.log("Existing email",email )
@@ -68,29 +66,28 @@ export class UserController {
     // }
     
             const savedUser = await this.userRepository.save(user);
-            return response.status(201).json(savedUser);
+            
 
-    //   if (role === "Candidate") {
-    //     const candidate = candidateRepository.create({
-    //       firstName,
-    //       lastName,
-    //       email,
-    //       password,
-    //       role
-    //     });
-    //     await candidateRepository.save(candidate);
-    //   } else if (role === "Lecturer") {
-    //     const lecturer = lecturerRepository.create({
-    //       firstName,
-    //       lastName,
-    //       email,
-    //       password,
-    //       role
-    //     });
-        // await lecturerRepository.save(lecturer);
-        } catch (error) {
-            return response.status(400).json({ message: "Invalid role provided" });
-      }
+                // if (role === "Candidate") {
+                //     const candidateRepository = AppDataSource.getRepository(Candidate);
+
+                //     const candidate = candidateRepository.create({ user });
+                //     await candidateRepository.save(candidate);  
+                //     }
+                //  else if (role === "Lecturer") {
+                //     const lecturerRepository = AppDataSource.getRepository(Lecturer);
+
+                //     const lecturer = lecturerRepository.create({user});
+                //     await lecturerRepository.save(lecturer);
+                //     }
+                // else  {
+                //         return response.status(400).json({ message: "Invalid role provided" });
+                // }
+             return response.status(201).json(savedUser);
+    //     catch (error) {
+    //     console.error("Error saving user:", error);
+    //     return response.status(500).json({ message: "Failed to create user" });
+    // }
     //   return response.status(201).json(savedUser);
     // } catch (error) {
     //   if (error === 'ER_DUP_ENTRY') {

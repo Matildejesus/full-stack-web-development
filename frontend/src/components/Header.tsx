@@ -43,7 +43,7 @@ const Header: React.FC = () => {
             <ul className="flex flex-col space-y-2">
                 {user && router.pathname != "/" && <li><Link href="/">Home</Link></li>}
                 {user && router.pathname != "/profile" && <li><Link href="/profile">Profile</Link></li>}
-                {user?.role === Role.CANDIDATE && router.pathname != "/CandidateHomePage" && <li><Link href="/TutorApplicant">Application</Link></li>}
+                {user?.role === Role.CANDIDATE && router.pathname != "/CandidateHomePage" && <li><Link href="/applicationPage">Application</Link></li>}
                 {user?.role === Role.CANDIDATE && router.pathname == "/CandidateHomePage" && <li><Link href="/Profile">Profile</Link></li>}
 
                 {user?.role === Role.LECTURER && router.pathname !="/LecturerHome" && <li><Link href="/LecturerHome">Lecturer Page</Link></li>}

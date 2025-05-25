@@ -80,8 +80,8 @@ export default function SignUpForm({
                     value={newUser.role}
                     onChange={(e) => setNewUser({ ...newUser, role: e.target.value as Role}) }
                     placeholder="Select role">
-                    <option value="Candidate">Candidate</option>
-                    <option value="Lecturer">Lecturer</option>
+                    <option value="candidate">candidate</option>
+                    <option value="lecturer">lecturer</option>
                     </Select>
                 
                 </FormControl>
