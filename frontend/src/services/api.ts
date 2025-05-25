@@ -305,12 +305,12 @@ export const userService = {
     updateUser: async (
         id: number,
         user: {
-            firstName?: string;
-            lastName?: string;
-            email?: string;
-            password?: string;
+            // firstName?: string;
+            // lastName?: string;
+            // email?: string;
+            // password?: string;
             avatarUrl?: string;
-            role?: Role;
+            // role?: Role;
         }
     ): Promise<User> => {
         // const { data } = await client.mutate({

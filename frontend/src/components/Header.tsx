@@ -41,7 +41,8 @@ const Header: React.FC = () => {
             <nav className="mt-2 bg- p-4 rounded">
             {/* <ul className="flex space-x-6"> */}
             <ul className="flex flex-col space-y-2">
-                <li><Link href="/">Home</Link></li>
+                {user && router.pathname != "/" && <li><Link href="/">Home</Link></li>}
+                {user && router.pathname != "/profile" && <li><Link href="/profile">Profile</Link></li>}
                 {user?.role === Role.CANDIDATE && router.pathname != "/CandidateHomePage" && <li><Link href="/TutorApplicant">Application</Link></li>}
                 {user?.role === Role.CANDIDATE && router.pathname == "/CandidateHomePage" && <li><Link href="/Profile">Profile</Link></li>}
 
@@ -50,8 +51,8 @@ const Header: React.FC = () => {
                 {user && router.pathname === "/tutorProfile" && <li><Link href="/CandidateHomePage">Application</Link></li>}
                 {!user && (
                 <>
-                    {router.pathname !== "/signIn" && <li><Link href="/signIn">Sign In</Link></li>}
-                    {router.pathname !== "/signUp" && <li><Link href="/signUp">Sign Up</Link></li>}
+                    {router.pathname != "/signIn" && <li><Link href="/signIn">Sign In</Link></li>}
+                    {router.pathname != "/signUp" && <li><Link href="/signUp">Sign Up</Link></li>}
                 </>
                 )}
                 {user && <li><Link href="/" onClick={handleSignOut}>Sign Out</Link></li>}

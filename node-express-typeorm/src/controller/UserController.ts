@@ -115,6 +115,7 @@ export class UserController {
     }
 
     async logout(request: Request, response: Response) {
+        console.log("Logout request received");
         response.status(200).json({ user: null, message: "User logged out" });
     };
 
@@ -174,10 +175,11 @@ export class UserController {
      * @param response - Express response object
      * @returns JSON response containing the updated user or error message
      */
+    
     async update(request: Request, response: Response) {
         const id = parseInt(request.params.id);
-        const { firstName, lastName, email, password, role } = request.body;
-
+        // const { firstName, lastName, email, password, role } = request.body;
+        const { avatarUrl } = request.body;
         let userToUpdate = await this.userRepository.findOne({
             where: { id },
         });
@@ -187,11 +189,12 @@ export class UserController {
         }
 
         userToUpdate = Object.assign(userToUpdate, {
-            firstName,
-            lastName,
-            email,
-            password,
-            role
+            // firstName,
+            // lastName,
+            // email,
+            // password,
+            // role
+            avatarUrl
         });
 
         try {

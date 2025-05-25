@@ -3,10 +3,11 @@ import { User } from "@/types/types";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface AuthContextType {
-  user: User | null;
+    user: User | null;
 //   users: User[];
-  login: (email: string, password: string) => Promise<User | null>;
-  logout: () => void;
+    login: (email: string, password: string) => Promise<User | null>;
+    logout: () => void;
+    updateUserProfile: (user: User) => Promise<User | null>;
 //   saveJobApplication: (application:JobSummary)=>boolean;
 //   updateJobApplications: (selectedCandidates: LecturerSelection) => boolean;
 //   getJobApplications: (userId: string) => JobSummary[];
@@ -61,6 +62,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             console.log("logout failed");
         }
     };
+
+    const updateUserProfile = async (user: User): Promise<User | null> => {
+        try {
+            let updatedUser = null;
+            if (user.avatarUrl != null){
+                updatedUser = await userService.updateUser(user.id, {avatarUrl: user.avatarUrl});
+                setUser(updatedUser);
+                localStorage.setItem("currentUser", JSON.stringify(updatedUser));
+            }
+            return updatedUser;
+        } catch (err) {
+            console.log('Could not update user avatar.');
+            return null;
+        }
+    }
 
     // const saveJobApplication = (application: JobSummary): boolean => {
     //     if (!user) return false;
@@ -152,7 +168,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         <AuthContext.Provider value={{ 
         user, 
         login, 
-        logout
+        logout,
+        updateUserProfile,
         }}>
             {children}
         </AuthContext.Provider>

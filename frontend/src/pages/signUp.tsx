@@ -1,4 +1,4 @@
-import React, { useState, FormEvent } from "react";
+import React, { useState } from "react";
 import {
   Button,
   FormLabel,
@@ -44,44 +44,44 @@ export default function SignUp(){
     });
 
     const handleCreateUser = async(e:React.FormEvent)=>{
-    e.preventDefault();
+        e.preventDefault();
 
-    if (!validateEmail(newUser.email)) {
-        setError("Email does not follow standards.");
-        return;
-    }
-    if (!validatePassword(newUser.password)) {
-        setError("Password should have uppercase, lowercase, numbers and more than 8 chars in length.");
-        return;
-    }
-            
-    try{
-        await userService.createUser(newUser);
-
-        setSubmitted(true);
-        setNewUser({
-        firstName: "",
-        lastName:"",
-        email: "",
-        role:Role.CANDIDATE,
-        password: ""
-        });
-        toast({
-        title: "User created.",
-        description: "Account registered successfully.",
-        status: "success",
-        duration: 3000,
-        isClosable: true,
-        });
-        
-    }catch(err:any){
-        if (err.response?.status === 409) {
-        setError("This email is already registered."); // display under email field
-        } else {
-        setError("Failed to create user. Please try again.");
+        if (!validateEmail(newUser.email)) {
+            setError("Email does not follow standards.");
+            return;
         }
-        console.error("Error creating user:", err); 
-    }
+        if (!validatePassword(newUser.password)) {
+            setError("Password should have uppercase, lowercase, numbers and more than 8 chars in length.");
+            return;
+        }
+                
+        try{
+            await userService.createUser(newUser);
+
+            setSubmitted(true);
+            setNewUser({
+            firstName: "",
+            lastName:"",
+            email: "",
+            role:Role.CANDIDATE,
+            password: ""
+            });
+            toast({
+            title: "User created.",
+            description: "Account registered successfully.",
+            status: "success",
+            duration: 3000,
+            isClosable: true,
+            });
+            
+        }catch(err:any){
+            if (err.response?.status === 409) {
+            setError("This email is already registered."); // display under email field
+            } else {
+            setError("Failed to create user. Please try again.");
+            }
+            console.error("Error creating user:", err); 
+        }
     }
 
     return (
