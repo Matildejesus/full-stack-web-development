@@ -339,13 +339,13 @@ export const applicationApi ={
 
   saveApplication:async(application:{
 
-    course: Course;
+    course: string;
     previousRole: string;
     role: string;
-    availability: Availability;
-    skills: string[];
+    availability: string;
+    skills: string;
     academic: string;
-    userId:User
+    userId:number
   } ):Promise<Application>=>{
     const {data} = await axios.post<Application>(`${API_BASE_URL}/applications`, application);
     console.log("Body is ",data)
