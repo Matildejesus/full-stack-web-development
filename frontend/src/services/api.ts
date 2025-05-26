@@ -358,7 +358,7 @@ export const applicationApi ={
     availability: string;
     skills: string;
     academic: string;
-    userId:number
+    candidateId:number
   } ):Promise<Application>=>{
     console.log("Req is ", application)
     const {data} = await axios.post<Application>(`${API_BASE_URL}/applications`, application);
