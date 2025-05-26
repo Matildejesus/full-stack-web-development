@@ -1,15 +1,29 @@
 import { useAuth } from "@/context/AuthContext";
-import { applicationApi } from "@/services/api";
+import { applicationApi, candidateApi } from "@/services/api";
 import { useState, useEffect } from "react";
-import { Application, Availability, Role } from "@/types/types";
+import { Application, Availability, Candidate, Role } from "@/types/types";
 import { courseService } from "@/services/api";
 import { Course } from "@/types/types";
 import ApplicationForm from "@/components/ApplicationForm";
+import DisplayApplications from "./DisplayApplications";
 
 
 
 export default function ApplicationPage(){
     const { user  } = useAuth(); 
+    console.log("User object", user);
+    const [candidates, setCandidates] = useState<Candidate[]>([]);
+        useEffect(() => {
+            const fetchCandidates = async () => {
+                const data = await candidateApi.getAllCandidates();
+                setCandidates(data);
+            };
+                fetchCandidates();
+            
+        }, []);
+      const matchedCandidate = candidates.find(candidate => candidate.user.id === user?.id);
+      const candidateId = matchedCandidate?.id;
+
     const [subjects, setSubjects] = useState<Course[]>([]);
         
         useEffect(() => {
@@ -21,7 +35,6 @@ export default function ApplicationPage(){
             
         }, []);
 
-    const candidateId = user?.candidate?.id
     
     const [applications, setApplications] = useState<Application[]>([]);
     const [loading, setLoading] = useState(true);
@@ -97,32 +110,26 @@ export default function ApplicationPage(){
 
         try{          
             const allApplications = await applicationApi.getAllApplications();
-            console.log("Checking duplicates for:");
-            console.log("newApplication.course =", newApplication.course);
             allApplications.forEach(app => {
             console.log("app.course?.name:", app.course?.name);
             console.log("app.role:", app.role);
+            console.log("app.candId:", app.candidate);
             });
-
-
+            // duplicate check
             const duplicate = allApplications.find(
                 (app: Application) =>
-                  app.course.name === newApplication.course &&
-                  app.role === newApplication.role
-                  
+                    app.candidate.id===newApplication.userId&&
+                    app.course.name === newApplication.course &&
+                    app.role === newApplication.role
               );
             console.log("duplicate is",duplicate)
             if (duplicate) {
                 console.log("Application submitted UNSuccessfully!!! Duplicate application")
-
                 setError("You have already applied for this course and role.");
                 setSuccess(null);
                 return;
               }
-              
-
             await applicationApi.saveApplication(newApplication);
-
             setNewApplication({
                 course:"",
                 role:"",
@@ -143,7 +150,8 @@ export default function ApplicationPage(){
     };
 
     return (
-        (<ApplicationForm
+        (<div>
+        <ApplicationForm
         onSubmit={handleSaveApplication}
         newApplication={{
             course: newApplication.course,
@@ -160,6 +168,13 @@ export default function ApplicationPage(){
         errors={errors}
         success={success}
         error={error}
-        />)   );
+        />
+        <DisplayApplications userId={user?.id}
+        applications={applications}
+        candidates={candidates}
+        />
+        </div>
+    ) 
+      );
 
 }

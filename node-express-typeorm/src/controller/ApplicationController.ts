@@ -15,7 +15,7 @@ export class ApplicationController {
      * @returns JSON response containing an array of all applications
      */
     async all(request: Request, response: Response) {
-        const applications = await this.applicationRepository.find({relations:["course"]});
+        const applications = await this.applicationRepository.find({relations:["course","candidate"]});
         const flattenedApplications = applications.map((app) => ({
         ...app,
         // courseName: app.course
@@ -42,8 +42,14 @@ export class ApplicationController {
                 return response.status(404).json({ message: "Course not found" });
             }
             const candidateRepository = AppDataSource.getRepository(Candidate);
-            const candidateEntity=await candidateRepository.findOneBy({id :userId})
-
+            const candidateEntity=await candidateRepository.findOne({
+               where:{user: {id :userId}} , relations:["user"],
+            }
+                );
+            console.log("Candidate Enity is ",candidateEntity)
+            if (!candidateEntity) {
+                return response.status(404).json({ message: "Candidate not found" });
+            }
             
             const application = new Application();
             application.role = role;
