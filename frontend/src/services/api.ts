@@ -268,6 +268,7 @@ export const userService = {
         console.log("Sending user data to backend:", JSON.stringify(user, null, 2));
 
         const { data } = await axios.post<User>(`${API_BASE_URL}/users`, user);
+        console.log("create user data",data)
         return data;
 
         // const { data } = await client.mutate({

@@ -45,15 +45,25 @@ export class UserController {
     */
     async save(request: Request, response: Response) {
         const { firstName, lastName, email, password, role } = request.body;
+        try{
+            const user = Object.assign(new User(), {
+                firstName,
+                lastName,
+                email,
+                password,
+                role
+        });
+        const savedUser = await this.userRepository.save(user);
+        return response.status(201).json(savedUser);
+        } catch (error) {
+            console.error("Error saving user:", error);
+            return response.status(500).json({ message: "Failed to create user" });
+        }
+
+
         // const hashedPassword = await bcrypt.hash(password, 10);
         
-        const user = Object.assign(new User(), {
-            firstName,
-            lastName,
-            email,
-            password,
-            role
-        });
+        
     
         // try {
         // const userRepository = AppDataSource.getRepository(User);
@@ -65,7 +75,6 @@ export class UserController {
     //   return response.status(409).json({ message: "Email already exists" });
     // }
     
-            const savedUser = await this.userRepository.save(user);
             
 
                 // if (role === "Candidate") {
@@ -83,7 +92,7 @@ export class UserController {
                 // else  {
                 //         return response.status(400).json({ message: "Invalid role provided" });
                 // }
-             return response.status(201).json(savedUser);
+             
     //     catch (error) {
     //     console.error("Error saving user:", error);
     //     return response.status(500).json({ message: "Failed to create user" });
@@ -96,7 +105,7 @@ export class UserController {
     //   console.log("'Something went wrong'") 
     //   return response.status(500).json();  
     // }
-  }
+   }
 
     // login
     async login(request: Request, response: Response) {

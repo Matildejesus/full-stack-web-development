@@ -76,10 +76,12 @@ export default function SignUp(){
             
         }catch(err:any){
             if (err.response?.status === 409) {
+                
             setError("This email is already registered."); // display under email field
             } else {
             setError("Failed to create user. Please try again.");
             }
+            console.error("Error creating user:", err.response.data || err.message);
             console.error("Error creating user:", err); 
         }
     }
