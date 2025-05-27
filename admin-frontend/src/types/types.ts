@@ -38,7 +38,7 @@ export interface Course {
     id: number;
     code: string;
     name: string;
-    lecturers: Lecturer[];
+    lecturer: Lecturer;
     applications: Application[];
 }
 

@@ -1,5 +1,5 @@
 import { useAuth } from "@/context/AuthContext";
-import { applicationApi } from "@/services/api";
+import { applicationService } from "@/services/api";
 import { useState, useEffect } from "react";
 import { Application, Availability, Role } from "@/types/types";
 import { courseService } from "@/services/api";
@@ -61,7 +61,7 @@ export default function ApplicationPage(){
     },[]);
         const fetchApplications=async ()=>{
             try{
-                const data=await applicationApi.getAllApplications();
+                const data=await applicationService.getAllApplications();
                 setApplications(data);
                 setError(null);
             }catch(err){
@@ -96,7 +96,7 @@ export default function ApplicationPage(){
           console.log("User email is",user.email);
 
         try{          
-            const allApplications = await applicationApi.getAllApplications();
+            const allApplications = await applicationService.getAllApplications();
             console.log("Checking duplicates for:");
             console.log("newApplication.course =", newApplication.course);
             allApplications.forEach(app => {
@@ -121,7 +121,7 @@ export default function ApplicationPage(){
               }
               
 
-            await applicationApi.saveApplication(newApplication);
+            await applicationService.saveApplication(newApplication);
 
             setNewApplication({
                 course:"",

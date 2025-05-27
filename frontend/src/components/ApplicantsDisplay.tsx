@@ -1,8 +1,7 @@
-import { LecturerSelection } from "../types/lecturerSelection";
-import { User } from "../types/user";
 import { Button, FormControl, FormLabel, Input } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import ApplicationDisplay from "./ApplicationDisplay";
+import { LecturerSelection, User } from "@/types/types";
 
 interface ApplicantsDisplayProps {
     selectedSubject: string | null;

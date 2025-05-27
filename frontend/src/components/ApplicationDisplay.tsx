@@ -1,5 +1,4 @@
-import { JobSummary } from "../types/JobSummary";
-import { User } from "../types/user";
+import { Application, User } from "@/types/types";
 import React, { useEffect, useState } from "react";
 
 
@@ -11,9 +10,8 @@ interface ApplicationDisplayProps {
 
 const ApplicationDisplay: React.FC<ApplicationDisplayProps> = ({user, isLoggedInUser, sort}) => {
     console.log("User prop:", user);
-    console.log("User Job Application Summary:", user?.jobSummary);
 
-    const [sortedList, setSortedList] = useState<JobSummary[]>([]);
+    const [sortedList, setSortedList] = useState<Application[]>([]);
 
     useEffect(() => {
         if (user?.jobSummary && !sort) {
@@ -59,6 +57,8 @@ const ApplicationDisplay: React.FC<ApplicationDisplayProps> = ({user, isLoggedIn
         <ul className="space-y-4">
         {sortedList.map((u, index) => (
             <li key={index} className="border p-4 rounded bg-white">
+                 <p className="text-gray-800">Applicant Name: {u.userApplicant?.firstName}{" "}{u.userApplicant?.lastName}</p>
+                        <p className="text-gray-800">ApplicantEmail: {u.email}</p>
                 <p><strong>Course Name: </strong>{u.course}</p>
                 <p><strong>Previous Role:</strong> {u.previousRole}</p>
                 <p><strong>Availability:</strong> {u.availability}</p>
@@ -67,6 +67,20 @@ const ApplicationDisplay: React.FC<ApplicationDisplayProps> = ({user, isLoggedIn
             </li>
             ))}
         </ul>
+         {sortedList.map((u,index) => (
+                        <div key={index} className="p-4 border rounded">
+                          <p className="text-gray-800">Applicant Name: {u.userApplicant?.firstName}{" "}{u.userApplicant?.lastName}</p>
+                          <p className="text-gray-800">ApplicantEmail: {u.email}</p>
+                          <p className="text-gray-800">JobRole: {u.jobRole}</p>
+                          <p className="text-gray-800">Skills: {u.skills}</p>
+                          <p className="text-gray-800">Availability: {u.availability}</p>
+                          <p className="text-gray-800 mt-2">Highest Academic Qualification:{u.academic}</p>
+                          <p className="text-gray-800">Course Name: {u.course_Name}</p>
+                          <p className="text-gray-800">Previous Role: {u.previousRole}</p>
+                          
+                        </div>
+                      ))}
+        
     )
 }
 

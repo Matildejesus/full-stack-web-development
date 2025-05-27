@@ -1,5 +1,5 @@
 import { userService } from "@/services/api";
-import { User } from "@/types/types";
+import { LecturerSelection, User } from "@/types/types";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface AuthContextType {
@@ -131,24 +131,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     //     return foundUser?.jobSummary || [];
     // };
 
-    // const saveSelection = (selection: LecturerSelection[]): boolean => {
-    //     if (!user) return false;
+    const saveSelection = (selection: LecturerSelection[]): boolean => {
+        if (!user) return false;
     
-    //     const updatedUsers = users.map((u) =>
-    //     u.email === user.email
-    //         ? { ...u, lecturerSelection: [...(u.lecturerSelection || []), ...selection] }
-    //         : u
-    //     );
+        const updatedUsers = users.map((u) =>
+        u.email === user.email
+            ? { ...u, lecturerSelection: [...(u.lecturerSelection || []), ...selection] }
+            : u
+        );
     
-    //     setUsers(updatedUsers);
-    //     localStorage.setItem("users", JSON.stringify(updatedUsers));
+        setUsers(updatedUsers);
+        localStorage.setItem("users", JSON.stringify(updatedUsers));
     
-    //     const updatedUser = updatedUsers.find((u) => u.email === user.email);
-    //     if (updatedUser) {
-    //     setUser(updatedUser);
-    //     localStorage.setItem("currentUser", JSON.stringify(updatedUser));
-    //     }
-    //     return true;
+        const updatedUser = updatedUsers.find((u) => u.email === user.email);
+        if (updatedUser) {
+        setUser(updatedUser);
+        localStorage.setItem("currentUser", JSON.stringify(updatedUser));
+        }
+        return true;
+    }
     // }
 
     // const getSelection = (userId: string, course: string): LecturerSelection[] => {
