@@ -4,11 +4,11 @@ import { useAuth } from "../context/AuthContext";
 import { useToast } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { applicationApi, Application,userApi, User } from "@/services/api";
+import { applicationService } from "@/services/api";
 import ApplicantsDisplay from "@/components/ApplicantsDisplay";
 import SelectionBar from "@/components/SelectionBar";
 import Sidebar from "@/components/SideBar";
-import { LecturerSelection } from "@/types/types";
+import { LecturerSelection, User } from "@/types/types";
 
 
 export default function LecturerHome(){
@@ -39,7 +39,7 @@ export default function LecturerHome(){
 // NEW
     const fetchSavedApplications=async()=>{
         try{
-            const data=await applicationApi.getAllApplications();
+            const data=await applicationService.getAllApplications();
             setApplications(data);
         }catch(error){
             console.error("Error fetching applications",error);
@@ -241,8 +241,8 @@ useEffect(() => {
                         </div>
                       ))}
 
-
-                        {/* {users.map((u) => 
+{/* 
+                        {users.map((u) => 
                             u.role === "Tutor" && (
                                 <div key={u.id} className="pt-8 pl-4 pr-4">
                                     {u.applicationSummary.length > 0 && <h3 className="font-bold text-lg">{u.firstname}</h3> }

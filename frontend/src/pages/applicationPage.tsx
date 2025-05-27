@@ -1,4 +1,5 @@
 import { useAuth } from "@/context/AuthContext";
+
 import { applicationApi, candidateApi } from "@/services/api";
 import { useState, useEffect } from "react";
 import { Application, Availability, Candidate, Role } from "@/types/types";
