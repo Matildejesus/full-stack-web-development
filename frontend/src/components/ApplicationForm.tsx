@@ -1,3 +1,5 @@
+import { applicationApi } from "@/services/api";
+
 interface ApplicationFormData {
   course: string;
   role: string;
@@ -179,10 +181,10 @@ export default function ApplicationForm({
 
 
 
-            {/* Displaying submitted form data */}
+            {/* Displaying submitted applications from db */}
             {/* <div className="shadow-sm p-8 bg-gray-100 border-2 border-gray-400">
                 <p className="text-2xl font-serif text-center ">Submitted Applications</p>
-                {applications.filter(app => app.candidate.id === user?.id).length === 0 ? (
+                {applicationApi.getAllApplications.filter(app => app.candidate.id === user?.id).length === 0 ? (
                     <p className="text-center text-gray-500">No applications submitted yet.</p>
                 ) : (
                     applications.

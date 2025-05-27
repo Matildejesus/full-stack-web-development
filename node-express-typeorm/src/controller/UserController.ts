@@ -54,20 +54,23 @@ export class UserController {
                 role
         });
         const savedUser = await this.userRepository.save(user);
-        if (role === "Candidate") {
+        console.log("Saved user : ",savedUser)
+                if (role === "candidate") {
                     const candidateRepository = AppDataSource.getRepository(Candidate);
 
-                    const candidate = candidateRepository.create({ user });
-                    await candidateRepository.save(candidate);  
+                    const candidate = candidateRepository.create({ user: savedUser });
+                    const savedCandidate=await candidateRepository.save(candidate);  
+                    console.log(savedCandidate)
                     }
-                 else if (role === "Lecturer") {
+                 else if (role === "lecturer") {
                     const lecturerRepository = AppDataSource.getRepository(Lecturer);
 
-                    const lecturer = lecturerRepository.create({user});
-                    await lecturerRepository.save(lecturer);
+                    const lecturer = lecturerRepository.create({user:savedUser});
+                    const savedLecturer=await lecturerRepository.save(lecturer);
+                    console.log("saved lecturer is ",savedLecturer)
                     }
-                else  {
-                        return response.status(400).json({ message: "Invalid role provided" });
+                else {
+                     return response.status(400).json({ message: "Invalid role provided" });
                 }
 
         

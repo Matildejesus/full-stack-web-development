@@ -27,14 +27,14 @@ export default function CandidateHomePage() {
 
         <button className="font-semibold w-full rounded-md shadow-sm bg-blue-600 text-white p-3 mt-6 hover:bg-blue-700"
 
-        onClick={() => router.push("/ApplicationPage")}
+        onClick={() => router.push("/applicationPage")}
           >
           Apply 
         </button>
 
         <button
           type="button"
-          onClick={() => router.push("/ApplicationPage")}
+          onClick={() => router.push("/applicationPage")}
           className="font-semibold w-full rounded-md shadow-sm bg-blue-600 text-white p-3 mt-6 hover:bg-blue-700"
         >
           Apply

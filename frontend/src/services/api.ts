@@ -88,23 +88,37 @@ export const courseService = {
     },
 
 }
-
-export const applicationService ={
-
-    saveApplication: async(application: {
-        course: string;
-        previousRole: string;
-        role: string;
-        availability: string;
-        skills: string;
-        academic: string;
-        userId:number
-    } ):Promise<Application>=>{
-        const {data} = await axios.post<Application>(`${API_BASE_URL}/applications`, application);
-        console.log("Body is ",data)
-        console.log("Req is ", application)
-        return data ;
+export const candidateApi={
+    getCandidateByUserId: async (userId: number):Promise<Candidate | null > =>{
+        const {data}=await axios.get<Candidate>(`${API_BASE_URL}/candidates`,
+            {params:{userId}
+        });
+        return data;
     },
+    getAllCandidates: async (): Promise<Candidate[]> => {
+        const { data } = await axios.get<Candidate[]>(`${API_BASE_URL}/candidates`);
+        return data;
+    },
+}
+
+export const applicationApi ={
+
+  saveApplication:async(application:{
+
+    course: string;
+    previousRole: string;
+    role: string;
+    availability: string;
+    skills: string;
+    academic: string;
+    candidateId:number
+  } ):Promise<Application>=>{
+    console.log("Req is ", application)
+    const {data} = await axios.post<Application>(`${API_BASE_URL}/applications`, application);
+    console.log("Body is ",data)
+    
+    return data ;
+  },
 
     getAllApplications: async ():Promise<Application[]> => {
         try {
