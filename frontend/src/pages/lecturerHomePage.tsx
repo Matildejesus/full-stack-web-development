@@ -189,14 +189,14 @@ export default function LecturerHome() {
         if (selectedSearch === "availability") {
             sorting = [...sorting].map(u => ({
                 ...u,
-                applicationSummary: u.applicationSummary.filter(summary => summary.availability.toLowerCase() === inputText.toLowerCase())
+                applicationSummary: u.applications.filter(summary => summary.availability.toLowerCase() === inputText.toLowerCase())
             })).filter(user => user.applicationSummary.length > 0);
         } else if (selectedSearch === "tutor") {
-            sorting = [...sorting].filter(selection => selection.firstname.toLowerCase() === inputText.toLowerCase());
+            sorting = [...sorting].filter(selection => selection.user.firstName.toLowerCase() === inputText.toLowerCase());
         } else if (selectedSearch === "skillset") {
             sorting = [...sorting].map(u => ({
                 ...u,
-                applicationSummary: u.applicationSummary.filter(summary => summary.skills.some(
+                applicationSummary: u.applications.filter(summary => summary.skills.some(
                     skill => skill.split(", ").some((skillItem) => {
                         return skillItem.toLowerCase().includes(inputText.toLowerCase())
                     }))
