@@ -4,19 +4,21 @@ import { useAuth } from "../context/AuthContext";
 import { useToast } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { applicationService } from "@/services/api";
+import { applicationApi, candidateApi, userService } from "@/services/api";
 import ApplicantsDisplay from "@/components/ApplicantsDisplay";
 import SelectionBar from "@/components/SelectionBar";
 import Sidebar from "@/components/SideBar";
-import { LecturerSelection, User } from "@/types/types";
+import { LecturerSelection, User, Candidate, Application } from "@/types/types";
 
 
 export default function LecturerHome(){
     const [selectedSubject, setSelectedSubject] = useState<string>("all");
     const [users, setUsers] = useState<User[]>([]);
+    const [candidates, setCandidates] = useState<Candidate[]>([]);
     const [selectedCandidates, setSelectedCandidates] = useState<LecturerSelection[]>([]);
     const {saveSelection} = useAuth();
     const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+    const [filteredCandidates,setFilteredCandidates]=useState<Candidate[]>([]);
     const [selectedSort, setSelectedSort] = useState<string>("");
     const [selectedSearch, setSelectedSearch] = useState<string>("");
     const [inputText, setInputText] = useState<string>("");
@@ -25,30 +27,25 @@ export default function LecturerHome(){
     const router = useRouter();
     const[applications, setApplications]= useState<Application[]>([]);
 
-    useEffect(() => {
-        // NEW code
-        fetchSavedApplications();
-        // const storedUsers = localStorage.getItem("users");
-        // if (!storedUsers) {
-        //     localStorage.setItem("users", JSON.stringify(DEFAULT_USERS));
-        //     setUsers(DEFAULT_USERS);
-        // } else {
-        //     setUsers(JSON.parse(storedUsers));
-        // } 
-    },[]);
+    
 // NEW
     const fetchSavedApplications=async()=>{
         try{
-            const data=await applicationService.getAllApplications();
+            const data=await applicationApi.getAllApplications();
             setApplications(data);
         }catch(error){
             console.error("Error fetching applications",error);
         }
     }
     useEffect(() => {
+        // NEW code
+        fetchSavedApplications();
+
+    },[]);
+    useEffect(() => {
     const fetchUsers = async () => {
         try {
-            const data = await userApi.getAllUsers(); 
+            const data = await userService.getAllUsers(); 
             console.log("Fetched users data:", data);
             setUsers(data);
         } catch (error) {
@@ -58,7 +55,19 @@ export default function LecturerHome(){
 
     fetchUsers();
 }, []);
+    useEffect(() => {
+    const fetchCandidates = async () => {
+        try {
+            const data = await candidateApi.getAllCandidates(); 
+            console.log("Fetched Candidates data:", data);
+            setCandidates(data);
+        } catch (error) {
+            console.error("Error fetching candidates", error);
+        }
+    };
 
+    fetchCandidates();
+}, []);
 // old
     // useEffect(() => {
     //     setInputText("");
@@ -74,39 +83,39 @@ useEffect(() => {
     setInputText("");
     setSelectedCandidates([]);
 
-    const usersWithSelectedSubject = users.map(user => {
+    const candidatesWithSelectedSubject = candidates.map(can => {
         // Filter applications for this user and selected course
-        const userApplications = applications.filter(app => 
-            app.email === user.email && app.course_Name === selectedSubject
+        const candApplications = applications.filter(app => 
+            app.candidate.id === can.id && app.course.name === selectedSubject
         );
 
         // Returns user + applications only if there's a match
-        if (userApplications.length > 0) {
+        if (candApplications.length > 0) {
             return {
-                ...user,
-                applications: userApplications // override applications to include only matching ones
+                ...can,
+                applications: candApplications // override applications to include only matching ones
             };
         }
         return null;
-    }).filter(user => user !== null); // Remove users with no matching apps
+    }).filter(can => can !== null); // Remove users with no matching apps
 
     // Step 2: Save to state
-    console.log("User with selected subjects",usersWithSelectedSubject)
-    setFilteredUsers(usersWithSelectedSubject);
+    console.log("Candidates with selected subjects",candidatesWithSelectedSubject)
+    setFilteredCandidates(candidatesWithSelectedSubject);
 
 
-}, [users, applications, selectedSubject]);
+}, [candidates, applications, selectedSubject]);
 
 
-    const filteredUsersLength = filteredUsers.length;
+    const filteredUsersLength = filteredCandidates.length;
 // Ranking
 
-    const handleRankingChange = (rank: number, applicantId: string) => {
-        const currSelection = selectedCandidates.find((u) => u.userId === applicantId);
+    const handleRankingChange = (rank: number, applicantId: number) => {
+        const currSelection = selectedCandidates.find((u) => u.id === applicantId);
         
         if (currSelection) {
             const updatedSelection = selectedCandidates.map((candidate) => 
-                candidate.userId === applicantId ? {...currSelection, rank} : candidate);
+                candidate.id === applicantId ? {...currSelection, rank} : candidate);
             setSelectedCandidates(updatedSelection);
         } else {
             setSelectedCandidates((prevState) => [
@@ -122,8 +131,8 @@ useEffect(() => {
     }
 
     // validation: comments must be shorter than 500 characters
-    const handleAddComment = (comment: string, applicantId: string) => {
-        const currSelection = selectedCandidates.find((u) => u.userId === applicantId);
+    const handleAddComment = (comment: string, applicantId: number) => {
+        const currSelection = selectedCandidates.find((u) => u.id === applicantId);
         if (comment.length > 500 ) {
             toast({
                 title: "Message is too long",
@@ -137,7 +146,7 @@ useEffect(() => {
         
         if (currSelection) {
             const updatedComment = selectedCandidates.map((candidate) => 
-                candidate.userId === applicantId ? {...currSelection, comment} : candidate);
+                candidate.id === applicantId ? {...currSelection, comment} : candidate);
             setSelectedCandidates(updatedComment);
         } 
     }
@@ -173,7 +182,7 @@ useEffect(() => {
                 isClosable: true,
               });
         }
-        let sorting = [...filteredUsers];
+        let sorting = [...filteredCandidates];
         if (selectedSearch === "availability") {
             sorting = [...sorting].map(u => ({
                 ...u,
@@ -192,18 +201,18 @@ useEffect(() => {
             )
             })).filter(user => user.applicationSummary.length > 0);  
         }
-        setFilteredUsers(sorting);
+        setFilteredCandidates(sorting);
     }
 
     console.log('Users: ', users);
     console.log("Applications:", applications);
 
-    const applicationWithUserDetails = applications.map((application, index) => {
-    const userApplicant = users.find(u => u.email === application.email);
-    if (!userApplicant) {
-    console.log(`No user found for application with email: ${application.email}`);
-  }
-    return { ...application, userApplicant };
+    const applicationWithUserDetails = applications.map((app) => {
+        const candidateDetails= candidates.find(c=>c.id==app.candidate.id);
+        if (!candidateDetails) {
+            console.log(`No user found for application with email: ${app.candidate.id}`);
+        }
+        return { ...app, candidateDetails };
     });
 
 
@@ -229,28 +238,18 @@ useEffect(() => {
                             
                     {applicationWithUserDetails.map((application,index) => (
                         <div key={index} className="p-4 border rounded">
-                          <p className="text-gray-800">Applicant Name: {application.userApplicant?.firstName}{" "}{application.userApplicant?.lastName}</p>
-                          <p className="text-gray-800">ApplicantEmail: {application.email}</p>
-                          <p className="text-gray-800">JobRole: {application.jobRole}</p>
+                          <p className="text-gray-800">Applicant Name: {application.candidateDetails?.user.firstName}{" "}{application.candidateDetails?.user.lastName}</p>
+                          <p className="text-gray-800">ApplicantEmail: {application.candidateDetails?.user.email}</p>
+                          <p className="text-gray-800">JobRole: {application.role}</p>
                           <p className="text-gray-800">Skills: {application.skills}</p>
                           <p className="text-gray-800">Availability: {application.availability}</p>
                           <p className="text-gray-800 mt-2">Highest Academic Qualification:{application.academic}</p>
-                          <p className="text-gray-800">Course Name: {application.course_Name}</p>
+                          <p className="text-gray-800">Course Name: {application.course.name}</p>
                           <p className="text-gray-800">Previous Role: {application.previousRole}</p>
                           
                         </div>
                       ))}
 
-{/* 
-                        {users.map((u) => 
-                            u.role === "Tutor" && (
-                                <div key={u.id} className="pt-8 pl-4 pr-4">
-                                    {u.applicationSummary.length > 0 && <h3 className="font-bold text-lg">{u.firstname}</h3> }
-                                    <ApplicationDisplay user={u} isLoggedInUser={false} sort={selectedSort}/> 
-                                </div>
-                            )
-                            
-                        )} */}
                         </div>
                         ) : (
                             <ApplicantsDisplay 
@@ -258,9 +257,9 @@ useEffect(() => {
                                 handleAddComment={handleAddComment} 
                                 handleSubmit={handleSubmit}
                                 handleRankingChange={handleRankingChange}
-                                filteredUsers={filteredUsers}
+                                filteredCandidates={filteredCandidates}
                                 selectedCandidates={selectedCandidates}
-                                filteredUsersLength={filteredUsersLength}
+                                filteredCandidatesLength={filteredUsersLength}
                                 sort={selectedSort}
                             />
                         )

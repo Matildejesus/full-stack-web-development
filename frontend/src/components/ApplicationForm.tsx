@@ -1,22 +1,22 @@
 import { applicationApi } from "@/services/api";
 
 interface ApplicationFormData {
-  course: string;
-  role: string;
-  availability: string;
-  skills: string;
-  academic: string;
-  previousRole: string;
-//   userId?: number;
+    course: string;
+    role: string;
+    availability: string;
+    skills: string;
+    academic: string;
+    previousRole: string;
+    //   userId?: number;
 }
-interface ApplicationFormProps{
-    onSubmit:(e: React.FormEvent) => Promise<void>;
-    newApplication:ApplicationFormData;
-    setNewApplication:React.Dispatch<React.SetStateAction< ApplicationFormData>>;
+interface ApplicationFormProps {
+    onSubmit: (e: React.FormEvent) => Promise<void>;
+    newApplication: ApplicationFormData;
+    setNewApplication: React.Dispatch<React.SetStateAction<ApplicationFormData>>;
     errors: { [key: string]: string };
-    success:string | null;
-    error:string | null;
-    subjects: { id: number; code: string; name: string}[];
+    success: string | null;
+    error: string | null;
+    subjects: { id: number; code: string; name: string }[];
 
 }
 
@@ -29,7 +29,7 @@ export default function ApplicationForm({
     error,
     subjects
 
-}:ApplicationFormProps){
+}: ApplicationFormProps) {
     return (
         <div>
             <div className=" shadow-sm -space-y-px mb-12 mx-1 bg-red-100 border-2 border-red-500">
@@ -39,7 +39,7 @@ export default function ApplicationForm({
                     <div className="text-red-600 font-semibold text-center mb-4">
                         {error}
                     </div>
-                    )}
+                )}
                 <form onSubmit={onSubmit} className="mt-3 space-y-6">
 
 
@@ -60,13 +60,13 @@ export default function ApplicationForm({
                             tabIndex={1}
                         >
                             <option value="">-- Select a course --</option>
-                           {subjects.map((u) => (
+                            {subjects.map((u) => (
                                 <option key={u.id} value={u.name}>
                                     {u.name}
                                 </option>
                             ))}
                         </select>
-                        
+
                         {errors.course && <p className="text-red-500">{errors.course}</p>}
                     </div>
 
@@ -78,7 +78,7 @@ export default function ApplicationForm({
                         <select id="role" name="role"
                             value={newApplication.role}
                             onChange={(e) =>
-                                setNewApplication({...newApplication,role:e.target.value})
+                                setNewApplication({ ...newApplication, role: e.target.value })
                             }
                             tabIndex={2}
                             className="border p-2 rounded"
@@ -89,7 +89,7 @@ export default function ApplicationForm({
                         </select>
                         {errors.role && <p className="text-red-500">{errors.role}</p>}
 
-                        </div>
+                    </div>
                     <div className="rounded-md shadow-sm -space-y-px mx-8">
                         <label htmlFor="availability" className="p-7 text-l font-serif text-center">
                             Select Availability (part-time or full-time)
@@ -98,7 +98,7 @@ export default function ApplicationForm({
                         <select id="availability" name="availability"
                             value={newApplication.availability}
                             onChange={(e) =>
-                                setNewApplication({...newApplication,availability:e.target.value})
+                                setNewApplication({ ...newApplication, availability: e.target.value })
                             }
                             tabIndex={3}
                             className="border p-2 rounded"
@@ -121,14 +121,14 @@ export default function ApplicationForm({
                             placeholder="Enter your skills with comma(,) separation."
                             value={newApplication.skills}
                             onChange={(e) =>
-                                setNewApplication({...newApplication,skills:e.target.value})
+                                setNewApplication({ ...newApplication, skills: e.target.value })
                             }
                             rows={10}
                             tabIndex={4}
                         />
                         {errors.skills && <p className="text-red-500">{errors.skills}</p>}
                     </div>
-                
+
 
                     <div className="rounded-md shadow-sm -space-y-px mx-8">
                         <label htmlFor="academic" className="p-7 text-l font-serif text-center">
@@ -142,7 +142,7 @@ export default function ApplicationForm({
                             placeholder="Enter your academic qualification."
                             value={newApplication.academic}
                             onChange={(e) =>
-                                setNewApplication({...newApplication,academic:e.target.value})
+                                setNewApplication({ ...newApplication, academic: e.target.value })
                             }
                             tabIndex={5}
                         />
@@ -159,8 +159,8 @@ export default function ApplicationForm({
                             className="border p-5 rounded w-[70%] h-30"
                             placeholder="Enter your Previous Role details."
                             value={newApplication.previousRole}
-                            onChange={(e)=>
-                                setNewApplication({...newApplication,previousRole:e.target.value})
+                            onChange={(e) =>
+                                setNewApplication({ ...newApplication, previousRole: e.target.value })
                             }
                             tabIndex={6}
                         />

@@ -54,7 +54,7 @@ const { login } = useAuth();
             if (userData.role === Role.CANDIDATE) {
                 router.push("/candidateHomePage");
             } else {
-                router.push("/lecturerHome")
+                router.push("/lecturerHomePage")
             }
             
         } else {

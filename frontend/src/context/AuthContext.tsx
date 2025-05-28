@@ -1,5 +1,5 @@
 import { userService } from "@/services/api";
-import { LecturerSelection, User } from "@/types/types";
+import { Candidate, LecturerSelection, User } from "@/types/types";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface AuthContextType {
@@ -19,6 +19,7 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
+    const[candiate,setCandidate]=useState<Candidate|null>(null);
     const [users, setUsers] = useState<User[]>([]);
 
     useEffect(() => {
@@ -132,11 +133,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // };
 
     const saveSelection = (selection: LecturerSelection[]): boolean => {
-        if (!user) return false;
+        if (!candiate) return false;
     
         const updatedUsers = users.map((u) =>
-        u.email === user.email
-            ? { ...u, lecturerSelection: [...(u.lecturerSelection || []), ...selection] }
+        u.email === candiate.user.email
+            ? { ...u, lecturerSelection: [...(u.lecturer?.lecturerSelections || []), ...selection] }
             : u
         );
     

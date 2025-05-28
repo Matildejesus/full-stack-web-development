@@ -1,48 +1,58 @@
 import { Button, FormControl, FormLabel, Input } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import ApplicationDisplay from "./ApplicationDisplay";
-import { LecturerSelection, User } from "@/types/types";
+import { LecturerSelection, User, Candidate } from "@/types/types";
 
 interface ApplicantsDisplayProps {
     selectedSubject: string | null;
-    handleRankingChange: (rank: number, applicantId: string) => void;
-    handleAddComment: (comment: string, applicantId: string) => void;
-    filteredUsers: User[];
+    handleRankingChange: (rank: number, applicantId: number) => void;
+    handleAddComment: (comment: string, applicantId: number) => void;
+    filteredCandidates: Candidate[];
     selectedCandidates: LecturerSelection[];
     handleSubmit: () => void;
     filteredUsersLength: number;  
     sort?: string | null;
 }
 
-const ApplicantsDisplay: React.FC<ApplicantsDisplayProps> = ({ selectedSubject, handleAddComment, handleRankingChange, filteredUsers, selectedCandidates, handleSubmit, filteredUsersLength, sort }) => {
-    const [sortedList, setSortedList] = useState<User[]>([]);
+const ApplicantsDisplay: React.FC<ApplicantsDisplayProps> = ({ 
+    selectedSubject, handleAddComment, handleRankingChange, 
+    filteredCandidates, selectedCandidates, handleSubmit, 
+    filteredUsersLength, sort }) => {
+
+    const [sortedList, setSortedList] = useState<Candidate[]>([]);
 
     useEffect(() => {
-        let sorting = [...filteredUsers];
+        console.log("Fil cand is ",filteredCandidates)
+        let sorting = [...filteredCandidates];
+        
         if (sort === "availability") {
-            sorting = [...sorting].sort((a, b) => a.jobSummary[0].availability.localeCompare(b.jobSummary[0].availability));
+            sorting.sort((a, b) => {
+                const aAvail = a.applications[0]?.availability || "";
+                const bAvail = b.applications[0]?.availability || "";
+                return aAvail.localeCompare(bAvail);
+            });
         }
         setSortedList(sorting);
-    }, [filteredUsers, sort]);
+    }, [filteredCandidates, sort]);
 
     return (
         <>
         <div className="grid grid-cols-2 gap-4">
         {sortedList?.length === 0 ? (
-            <h3 className="mb-6 p-8">No Applications Right Now...</h3>
-            ):( sortedList.map(user => (
-                <div key={user.id} className="mb-6 p-4">
+            <h3 className="mb-6 p-8">No Applications Right Now !...</h3>
+            ):( sortedList.map(candidate => (
+                <div key={candidate.id} className="mb-6 p-4">
                     <div className="flex gap-7 row ">
-                        <h3 className="font-bold text-lg">{user.firstname}</h3>
+                        <h3 className="font-bold text-lg">{candidate.user.firstName}</h3>
                         <select
-                            value={selectedCandidates.find((u) => u.userId === user.id)?.rank || ""}
-                            onChange={(e) => handleRankingChange(Number(e.target.value), user.id)}
+                            value={selectedCandidates.find((c) => c.id === candidate.id)?.rank || ""}
+                            onChange={(e) => handleRankingChange(Number(e.target.value), candidate.id)}
 
                             className="border p-2 rounded"
                         >
                             <option key={0} value={""}>...</option>
                             {Array.from({length: filteredUsersLength}, (_, index) => {
-                                if (selectedCandidates.find((u) => u.rank === index + 1 && u.userId != user.id)) return null;
+                                if (selectedCandidates.find((c) => c.rank === index + 1 && c.id != candidate.id)) return null;
                                     
                                 return (
                                     <option key={index} value={index + 1}>
@@ -53,15 +63,15 @@ const ApplicantsDisplay: React.FC<ApplicantsDisplayProps> = ({ selectedSubject, 
                             )}
                         </select>
                     </div>
-                    <ApplicationDisplay user={user} isLoggedInUser={false} sort={sort}/>  
-                    {selectedCandidates.find((u) => u.userId == user.id) && (
+                    <ApplicationDisplay candidate={candidate} isLoggedInUser={false} sort={sort}/>  
+                    {selectedCandidates.find((c) => c.id == candidate.id) && (
                         <FormControl isRequired>
                             <FormLabel>Comment</FormLabel>
                             <Input
                             name="comment"
                             type="text"
-                            value={selectedCandidates.find((u) => u.userId === user.id)?.comment || ""}
-                            onChange={(e) => handleAddComment(e.target.value, user.id)}
+                            value={selectedCandidates.find((c) => c.id === candidate.id)?.comment || ""}
+                            onChange={(e) => handleAddComment(e.target.value, candidate.id)}
                             placeholder="Enter remarks for applicant..."
                             />
                         </FormControl>
@@ -71,7 +81,7 @@ const ApplicantsDisplay: React.FC<ApplicantsDisplayProps> = ({ selectedSubject, 
             )
         }
         </div>
-        {selectedSubject && filteredUsers && (
+        {selectedSubject && filteredCandidates && (
             <Button
                 type="button"
                 className="z-50 px-6 py-4"
