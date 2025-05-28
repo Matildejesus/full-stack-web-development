@@ -10,14 +10,14 @@ interface ApplicantsDisplayProps {
     filteredCandidates: Candidate[];
     selectedCandidates: LecturerSelection[];
     handleSubmit: () => void;
-    filteredUsersLength: number;  
+    filteredCandidatesLength: number;  
     sort?: string | null;
 }
 
 const ApplicantsDisplay: React.FC<ApplicantsDisplayProps> = ({ 
     selectedSubject, handleAddComment, handleRankingChange, 
     filteredCandidates, selectedCandidates, handleSubmit, 
-    filteredUsersLength, sort }) => {
+    filteredCandidatesLength, sort }) => {
 
     const [sortedList, setSortedList] = useState<Candidate[]>([]);
 
@@ -51,7 +51,7 @@ const ApplicantsDisplay: React.FC<ApplicantsDisplayProps> = ({
                             className="border p-2 rounded"
                         >
                             <option key={0} value={""}>...</option>
-                            {Array.from({length: filteredUsersLength}, (_, index) => {
+                            {Array.from({length: filteredCandidatesLength}, (_, index) => {
                                 if (selectedCandidates.find((c) => c.rank === index + 1 && c.id != candidate.id)) return null;
                                     
                                 return (
