@@ -1,7 +1,11 @@
-import { User, Candidate, Role, Course,Availability, Application } from "../types/types";
+import { User, Candidate, Role, Course,Availability, Application, Lecturer } from "../types/types";
 import axios from "axios";
 
 const API_BASE_URL = "http://localhost:3001/api";
+
+interface LecturerCoursesResponse {
+  courses: Course[];
+}
 
 export const userService = {
     getAllUsers: async (): Promise<User[]> => {
@@ -88,6 +92,15 @@ export const courseService = {
     },
 
 }
+
+export const lecturerService = {
+    getLecturerCourses: async (id: number): Promise<Course[]> => {
+        const { data } = await axios.get<LecturerCoursesResponse>(`${API_BASE_URL}/lecturers/${id}`);
+        // console.log(data.courses);
+        return data.courses;
+    }
+}
+
 export const candidateApi={
     getCandidateByUserId: async (userId: number):Promise<Candidate | null > =>{
         const {data}=await axios.get<Candidate>(`${API_BASE_URL}/candidates`,

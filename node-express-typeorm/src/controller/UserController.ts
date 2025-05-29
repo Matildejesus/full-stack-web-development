@@ -55,23 +55,23 @@ export class UserController {
         });
         const savedUser = await this.userRepository.save(user);
         console.log("Saved user : ",savedUser)
-                if (role === "candidate") {
-                    const candidateRepository = AppDataSource.getRepository(Candidate);
+            if (role === "candidate") {
+                const candidateRepository = AppDataSource.getRepository(Candidate);
 
-                    const candidate = candidateRepository.create({ user: savedUser });
-                    const savedCandidate=await candidateRepository.save(candidate);  
-                    console.log(savedCandidate)
-                    }
-                 else if (role === "lecturer") {
-                    const lecturerRepository = AppDataSource.getRepository(Lecturer);
-
-                    const lecturer = lecturerRepository.create({user:savedUser});
-                    const savedLecturer=await lecturerRepository.save(lecturer);
-                    console.log("saved lecturer is ",savedLecturer)
-                    }
-                else {
-                     return response.status(400).json({ message: "Invalid role provided" });
+                const candidate = candidateRepository.create({ user: savedUser });
+                const savedCandidate=await candidateRepository.save(candidate);  
+                console.log(savedCandidate)
                 }
+                else if (role === "lecturer") {
+                const lecturerRepository = AppDataSource.getRepository(Lecturer);
+
+                const lecturer = lecturerRepository.create({user:savedUser});
+                const savedLecturer=await lecturerRepository.save(lecturer);
+                console.log("saved lecturer is ",savedLecturer)
+                }
+            else {
+                    return response.status(400).json({ message: "Invalid role provided" });
+            }
 
         
         return response.status(201).json(savedUser);

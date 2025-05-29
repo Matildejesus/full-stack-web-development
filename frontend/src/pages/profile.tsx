@@ -4,19 +4,36 @@ import Footer from "../components/Footer";
 import Header from "../components/Header";
 import { useAuth } from "../context/AuthContext";
 import { Button, Input } from "@chakra-ui/react";
-import { userService } from "@/services/api";
-import { User } from "@/types/types";
+import { lecturerService, userService } from "@/services/api";
+import { Course, Role, User } from "@/types/types";
 
 export default function Profile(){
     const {updateUserProfile} = useAuth();
     const [user, setUser] = useState<User | null>();
+    const [courses, setCourses] = useState<Course[]>();
 
     useEffect(() => {
         const storedUser = localStorage.getItem("currentUser");
         if (storedUser) {
-            setUser(JSON.parse(storedUser)); // Set user state
+            const parsedUser = JSON.parse(storedUser)
+            setUser(parsedUser); // Set user state
+            if (parsedUser?.role === Role.LECTURER) {
+                lecturerService.getLecturerCourses(parsedUser.id)
+                    .then(response => {
+                        setCourses(response);
+                        console.log(response);
+                    })
+                    .catch(err => console.error("Error fetching lecturer courses:", err));
+            }
         }
+       
     }, []);
+
+    // useEffect(() => {
+    //     if (courses) {
+    //         console.log(courses);
+    //     }
+    // }, []);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -68,6 +85,22 @@ export default function Profile(){
                 <p><strong>Email:</strong> {user?.email}</p>
                 <p><strong>Role: </strong> {user?.role}</p>
                <p><strong>Date of Joining:</strong> {user?.createdAt && new Date(user.createdAt).toLocaleDateString()}</p>
+               {user?.role === Role.LECTURER && courses && (
+                <>
+                    <h2 className="text-xl font-semibold mt-6">My Courses</h2>
+                    <ul className="list-disc pl-6">
+                        {courses.length > 0 ? (
+                            courses.map((course) => (
+                                <li key={course.id}>
+                                    {course.name} ({course.code})
+                                </li>
+                            ))
+                        ) : (
+                            <li>No courses found</li>
+                        )}
+                    </ul>
+                </>
+            )}
             </div>
         </div>
         <Footer />

@@ -22,7 +22,7 @@ export default function LecturerHome() {
     const [selectedSort, setSelectedSort] = useState<string>("");
     const [selectedSearch, setSelectedSearch] = useState<string>("");
     const [inputText, setInputText] = useState<string>("");
-    const { updateJobApplications } = useAuth();
+    // const { updateJobApplications } = useAuth();
     const toast = useToast();
     const router = useRouter();
     const [applications, setApplications] = useState<Application[]>([]);
@@ -157,7 +157,7 @@ export default function LecturerHome() {
     const handleSubmit = () => {
         const success = saveSelection(selectedCandidates);
 
-        selectedCandidates.map(candidate => updateJobApplications(candidate));
+        // selectedCandidates.map(candidate => updateJobApplications(candidate));
 
         if (success) {
             router.push('/lecturerSelection');

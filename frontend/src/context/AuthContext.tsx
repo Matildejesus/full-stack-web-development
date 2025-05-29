@@ -4,14 +4,14 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface AuthContextType {
     user: User | null;
-//   users: User[];
+    // users: User[];
     login: (email: string, password: string) => Promise<User | null>;
     logout: () => void;
     updateUserProfile: (user: User) => Promise<User | null>;
 //   saveJobApplication: (application:JobSummary)=>boolean;
 //   updateJobApplications: (selectedCandidates: LecturerSelection) => boolean;
 //   getJobApplications: (userId: string) => JobSummary[];
-//   saveSelection: (selection:LecturerSelection[]) => boolean;
+   saveSelection: (selection:LecturerSelection[]) => boolean;
 //   getSelection: (userId: string, course: string) => LecturerSelection[];
 }
 
@@ -19,18 +19,15 @@ export const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
-    const[candiate,setCandidate]=useState<Candidate|null>(null);
+    const [ candiate, setCandidate ] = useState<Candidate|null>(null);
     const [users, setUsers] = useState<User[]>([]);
 
     useEffect(() => {
         // const storedUsers = localStorage.getItem("users");
-        // if (!storedUsers) {
-        //     localStorage.setItem("users", JSON.stringify(DEFAULT_USERS));
-        //     setUsers(DEFAULT_USERS);
-        // } else {
+        // if (storedUsers) {
+        //     localStorage.setItem("users", JSON.stringify(storedUsers));
         //     setUsers(JSON.parse(storedUsers));
         // }
-
         // Check for existing login
         const storedUser = localStorage.getItem("currentUser");
         if (storedUser) {
@@ -144,6 +141,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUsers(updatedUsers);
         localStorage.setItem("users", JSON.stringify(updatedUsers));
     
+        if (!user) return false;
         const updatedUser = updatedUsers.find((u) => u.email === user.email);
         if (updatedUser) {
         setUser(updatedUser);
@@ -151,7 +149,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
         return true;
     }
-    // }
 
     // const getSelection = (userId: string, course: string): LecturerSelection[] => {
     //     const foundUser = users.find((u) => u.email === userId);
@@ -169,9 +166,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // }}>
         <AuthContext.Provider value={{ 
         user, 
+        // users,
         login, 
         logout,
         updateUserProfile,
+        saveSelection
         }}>
             {children}
         </AuthContext.Provider>

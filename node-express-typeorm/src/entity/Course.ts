@@ -1,4 +1,4 @@
-import { Entity, Column, OneToOne, PrimaryColumn, OneToMany, ManyToOne, PrimaryGeneratedColumn, ManyToMany } from "typeorm";
+import { Entity, Column, OneToOne, PrimaryColumn, OneToMany, ManyToOne, PrimaryGeneratedColumn, ManyToMany, JoinTable } from "typeorm";
 import { Lecturer } from "./Lecturer";
 import { Application } from "./Application";
 
@@ -14,7 +14,18 @@ export class Course {
     name: string;
 
     @ManyToMany(() => Lecturer, (lecturer: Lecturer) => lecturer.courses)
-    lecturer: Lecturer;
+    @JoinTable({
+        name: "lecturer_courses", 
+        joinColumn: {
+            name: "course_id", 
+            referencedColumnName: "id",
+        },
+        inverseJoinColumn: {
+            name: "lecturer_id",
+            referencedColumnName: "id",
+        },
+    })
+    lecturers: Lecturer[];
 
     @OneToMany(() => Application, (application: Application) => application.course)
     applications: Application[];
