@@ -8,6 +8,7 @@ interface SelectionBarProps {
     selectedSearch: string;
     setSelectedSearch: (value: string) => void;
     handleSearchSubmit: () => void;
+    placeholder: string;
     inputText: string;
     setInputText: (value: string) => void;
 }
@@ -19,23 +20,10 @@ const SelectionBar: React.FC<SelectionBarProps>  = ({
         selectedSearch, 
         setSelectedSearch, 
         handleSearchSubmit, 
+        placeholder,
         inputText,
         setInputText
     }) => {
-    
-    const [placeholder, setPlaceholder] = useState<string>("");
-
-    useEffect(() => {
-        if (selectedSearch === "tutor") {
-            setPlaceholder("Please enter tutor's name...");
-        } else if (selectedSearch === "availability") {
-            setPlaceholder("Please enter Fulltime or Parttime...");
-        } else if (selectedSearch === "skillset") {
-            setPlaceholder("Please enter a skill...");
-        } else {
-            setPlaceholder("Please select a search option...");
-        }
-    },[selectedSearch]);
 
     return(
         <div className="flex justify-between">

@@ -1,10 +1,13 @@
 import React from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import { User } from "@/types/types";
 
-const MainContent: React.FC = () => {
-    const { user } = useAuth();
-    console.log(user);
+interface MainContentProps {
+    user: User | null;
+}
+
+const MainContent: React.FC<MainContentProps> = ({ user }) => {
     return (
         <main className="p-8 pb-16" >
 

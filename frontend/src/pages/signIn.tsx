@@ -15,6 +15,19 @@ import Footer from "../components/Footer";
 import { userService } from "@/services/api";
 import { Role } from "@/types/types";
 import { useAuth } from "../context/AuthContext"
+import SignInForm from "@/components/SignInForm";
+
+/**
+ * Container Component:
+ * Handles business logic related to:
+ *    - Login authentication service 
+ *    - Managing form states
+ *    - ReCAPTCHA validation 
+ *    - Rerouting to home pages 
+ * 
+ * Passes props to SignInForm (presenter)
+ */
+
 
 export default function SignIn(){
     const toast = useToast();
@@ -27,11 +40,10 @@ export default function SignIn(){
         password: ""
     });
 
+    const { login } = useAuth();
+    const router = useRouter();
 
-const { login } = useAuth();
-  const router = useRouter();
-
-  const handleSubmit = async (e: FormEvent) => {
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         setError("");
         const captchaToken = recaptchaRef.current?.getValue();
@@ -70,42 +82,15 @@ const { login } = useAuth();
     return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
         <Header />
-        <main className="flex-grow pt-20 ">
-            <form onSubmit={handleSubmit} className="bg-white p-8 rounded-lg shadow-md w-96">
-                <VStack spacing={4}>
-                    <FormControl isRequired>
-                    <FormLabel>Email</FormLabel>
-                    <Input
-                        name="email"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Enter your email"
-                    />
-                    </FormControl>
-                    <FormControl isRequired>
-                    <FormLabel>Password</FormLabel>
-                    <Input
-                        name="password"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Enter your password"
-                        />
-                    </FormControl>
-                <Text color="red.500">{error}</Text>
-                <Button
-                    type="submit"
-                >
-                    Sign In
-                </Button>
-
-                <ReCAPTCHA sitekey={"6LfnzAIrAAAAALqDEjHRvxep33ytIfxDF66vvV5G"}
-                    ref={recaptchaRef}
-                />
-                </VStack>
-            </form>
-        </main>
+        <SignInForm 
+            handleSubmit={handleSubmit}
+            email={email}
+            setEmail={setEmail}
+            password={password}
+            setPassword={setPassword}
+            error={error}
+            recaptchaRef={recaptchaRef}/>
+            
         <Footer />
     </div>
     )

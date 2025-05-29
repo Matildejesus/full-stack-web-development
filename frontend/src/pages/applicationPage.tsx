@@ -8,8 +8,6 @@ import { Course } from "@/types/types";
 import ApplicationForm from "@/components/ApplicationForm";
 import DisplayApplications from "./DisplayApplications";
 
-
-
 export default function ApplicationPage() {
     const { user } = useAuth();
     const [candidates, setCandidates] = useState<Candidate[]>([]);

@@ -22,6 +22,7 @@ export default function LecturerHome() {
     const [selectedSort, setSelectedSort] = useState<string>("");
     const [selectedSearch, setSelectedSearch] = useState<string>("");
     const [inputText, setInputText] = useState<string>("");
+        const [placeholder, setPlaceholder] = useState<string>("");
     // const { updateJobApplications } = useAuth();
     const toast = useToast();
     const router = useRouter();
@@ -154,6 +155,18 @@ export default function LecturerHome() {
         }
     }
 
+    useEffect(() => {
+            if (selectedSearch === "tutor") {
+                setPlaceholder("Please enter tutor's name...");
+            } else if (selectedSearch === "availability") {
+                setPlaceholder("Please enter Fulltime or Parttime...");
+            } else if (selectedSearch === "skillset") {
+                setPlaceholder("Please enter a skill...");
+            } else {
+                setPlaceholder("Please select a search option...");
+            }
+        },[selectedSearch]);
+    
     const handleSubmit = () => {
         const success = saveSelection(selectedCandidates);
 
@@ -232,6 +245,7 @@ export default function LecturerHome() {
                         selectedSearch={selectedSearch}
                         setSelectedSearch={setSelectedSearch}
                         handleSearchSubmit={handleSearchSubmit}
+                        placeholder={placeholder}
                         inputText={inputText}
                         setInputText={setInputText}
                     />
