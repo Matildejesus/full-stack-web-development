@@ -3,7 +3,7 @@ import { AppDataSource } from "../data-source";
 import { User } from "../entity/User";
 import { Candidate } from "../entity/Candidate";
 import { Lecturer } from "../entity/Lecturer";
-// import bcrypt from "bcrypt";
+import bcrypt from "bcrypt";
 
 export class UserController {
     private userRepository = AppDataSource.getRepository(User);
@@ -45,12 +45,13 @@ export class UserController {
     */
     async save(request: Request, response: Response) {
         const { firstName, lastName, email, password, role } = request.body;
+        const hashedPassword = await bcrypt.hash(password, 10);
         try{
             const user = Object.assign(new User(), {
                 firstName,
                 lastName,
                 email,
-                password,
+                password: hashedPassword,
                 role
         });
         const savedUser = await this.userRepository.save(user);
@@ -79,64 +80,25 @@ export class UserController {
             console.error("Error saving user:", error);
             return response.status(500).json({ message: "Failed to create user" });
         }
-
-
-        // const hashedPassword = await bcrypt.hash(password, 10);
-        
-        
-    
-        // try {
-        // const userRepository = AppDataSource.getRepository(User);
-
-      // const existingUser = await userRepository.findOne({ where: { email } });
-      // console.log("Existing email",email )
-      // console.log("Existing user",existingUser )
-    // if (existingUser) {
-    //   return response.status(409).json({ message: "Email already exists" });
-    // }
-    
-            
-
-                // if (role === "Candidate") {
-                //     const candidateRepository = AppDataSource.getRepository(Candidate);
-
-                //     const candidate = candidateRepository.create({ user });
-                //     await candidateRepository.save(candidate);  
-                //     }
-                //  else if (role === "Lecturer") {
-                //     const lecturerRepository = AppDataSource.getRepository(Lecturer);
-
-                //     const lecturer = lecturerRepository.create({user});
-                //     await lecturerRepository.save(lecturer);
-                //     }
-                // else  {
-                //         return response.status(400).json({ message: "Invalid role provided" });
-                // }
-             
-    //     catch (error) {
-    //     console.error("Error saving user:", error);
-    //     return response.status(500).json({ message: "Failed to create user" });
-    // }
-    //   return response.status(201).json(savedUser);
-    // } catch (error) {
-    //   if (error === 'ER_DUP_ENTRY') {
-    //     return response.status(409).json({ message: 'Email already exists' });
-    //   }
-    //   console.log("'Something went wrong'") 
-    //   return response.status(500).json();  
-    // }
    }
 
     // login
     async login(request: Request, response: Response) {
         const { email, password } = request.body;
         const user = await this.userRepository.findOne({
-            where: { email, password },
+            where: { email },
         });
    
         if (!user) {
             return response.status(404).json({ message: "Credentials are wrong" });
         }
+        console.log("USER: ", user);
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+         
+        if (!isPasswordValid) {
+            return response.status(401).json({ message: "Credentials are wrong" });
+        }
+
         return response.json(user);
     }
 
