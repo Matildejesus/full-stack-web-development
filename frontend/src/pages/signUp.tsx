@@ -88,31 +88,13 @@ export default function SignUp(){
     return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
         <Header />
-        <main className="flex-grow pt-20">
-            {
-            submitted? 
-            (
-            <>
-                <p>Thanks for registering!</p>
-                <Button>
-                <Link
-                        href="/signIn"
-                    >
-                        Login
-                </Link>
-                </Button>
-            </>
-            ):
-            (
-            <SignUpForm
+        <SignUpForm
             onSubmit={handleCreateUser}
             newUser={newUser}
             setNewUser={setNewUser}
             error={error}
-            />
-            )}
-        
-        </main>
+            submitted={submitted}
+        />
         <Footer />
     </div>
     )

@@ -1,22 +1,11 @@
-import { courseService } from "@/services/api";
 import { Course } from "@/types/types";
-import React, { useEffect, useState } from "react";
+import React from "react";
 
-const SubjectList: React.FC = () => {
-    const [subjects, setSubjects] = useState<Course[]>([]);
-    
-    useEffect(() => {
-        const fetchCourses = async () => {
-            const data = await courseService.getAllCourses();
-            setSubjects(data);
-            console.log(data);
-        };
+interface SubjectListProps {
+    courses: Course[];
+}
 
-        if (subjects.length === 0) {
-            fetchCourses();
-        }
-    }, []);
-
+const SubjectList: React.FC<SubjectListProps> = ({ courses }) => {
     return (
         <table className="w-[70%] mb-8 border-collapse border border-gray-300">
         <thead>
@@ -26,7 +15,7 @@ const SubjectList: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-            {subjects.map((u) => (
+            {courses.map((u) => (
                 <tr  key={u.id}>
                     <td className="border border-gray-300 p-6 font-serif text-left">{u.code}</td>
                     <td className="border border-gray-300 p-1 font-serif text-left">{u.name}</td>

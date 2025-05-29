@@ -4,11 +4,11 @@ import { useAuth } from "../context/AuthContext";
 import { useToast } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { applicationApi, candidateApi, userService } from "@/services/api";
+import { applicationApi, candidateApi, courseService, userService } from "@/services/api";
 import ApplicantsDisplay from "@/components/ApplicantsDisplay";
 import SelectionBar from "@/components/SelectionBar";
 import Sidebar from "@/components/SideBar";
-import { LecturerSelection, User, Candidate, Application ,Lecturer} from "@/types/types";
+import { LecturerSelection, User, Candidate, Application ,Lecturer, Course} from "@/types/types";
 
 
 export default function LecturerHome() {
@@ -29,6 +29,20 @@ export default function LecturerHome() {
     const [applications, setApplications] = useState<Application[]>([]);
 
 
+    const [courses, setCourses] = useState<Course[]>([]);
+    
+      useEffect(() => {
+           const fetchCourses = async () => {
+                const data = await courseService.getAllCourses();
+                setCourses(data);
+                console.log(data);
+            };
+    
+            if (courses.length === 0) {
+                fetchCourses();
+            }
+          
+      }, []);
     // NEW
     const fetchSavedApplications = async () => {
         try {
@@ -236,7 +250,7 @@ export default function LecturerHome() {
         <div className="flex flex-col min-h-screen">
             <Header />
             <div className="flex">
-                <Sidebar onClick={setSelectedSubject} />
+                <Sidebar onClick={setSelectedSubject} courses={courses} />
                 <div className="flex-row flex-grow pr-20 pt-8 pl-5">
                     <SelectionBar
                         selectedSort={selectedSort}
