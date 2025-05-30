@@ -9,9 +9,10 @@ import courseRoutes from "./routes/course.routes";
 import applicationRoutes from "./routes/application.routes";
 import candidateRoutes from "./routes/candidate.routes";
 import lecturerRoutes from "./routes/lecturer.routes";
+import lecturerCourseRoutes from "./routes/lecturerCourse.routes";
 import cors from "cors";
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 4000;
 
 app.use(cors());
 app.use(express.json());
@@ -20,6 +21,7 @@ app.use("/api", courseRoutes);
 app.use("/api", applicationRoutes);
 app.use("/api", candidateRoutes);
 app.use("/api", lecturerRoutes);
+app.use("/api", lecturerCourseRoutes);
 
 console.log("AppDataSource:", AppDataSource);
 AppDataSource.initialize()

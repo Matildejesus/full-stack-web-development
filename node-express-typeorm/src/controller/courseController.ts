@@ -16,4 +16,16 @@ export class CourseController {
         return response.json(courses);
     }
 
+    async one(request: Request, response: Response) {
+        const id = parseInt(request.params.id);
+        const course = await this.courseRepository.findOne({
+            where: { id },
+        });
+
+        if (!course) {
+            return response.status(404).json({ message: "User not found" });
+        }
+        return response.json(course);
+    }
+
 }

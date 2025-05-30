@@ -3,38 +3,36 @@ import Link from "next/link";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import { useAuth } from "../context/AuthContext";
-import { Button, Input } from "@chakra-ui/react";
-import { lecturerService, userService } from "@/services/api";
-import { Course, Role, User } from "@/types/types";
+import { lecturerCourseService, LecturerCoursesResponse, lecturerService, userService } from "@/services/api";
+import { LecturerCourse, Role, Semester, User } from "@/types/types";
 import ProfileContent from "@/components/ProfileContent";
 
 export default function Profile(){
     const {updateUserProfile} = useAuth();
     const [user, setUser] = useState<User | null>();
-    const [courses, setCourses] = useState<Course[]>();
+    const [lecturerCourses, setLecturerCourses] = useState<LecturerCoursesResponse[]>();
 
     useEffect(() => {
         const storedUser = localStorage.getItem("currentUser");
         if (storedUser) {
             const parsedUser = JSON.parse(storedUser)
-            setUser(parsedUser); // Set user state
+            setUser(parsedUser);
             if (parsedUser?.role === Role.LECTURER) {
-                lecturerService.getLecturerCourses(parsedUser.id)
-                    .then(response => {
-                        setCourses(response);
-                        console.log(response);
+                console.log(" user is a lecturer: ", parsedUser.id);
+
+                lecturerService.getLecturer(parsedUser.id)
+                    .then((lecturer) => {
+                        console.log("lecturer: ", lecturer);
+                        return lecturerCourseService.getLecturerCourses(lecturer.id);
+                    })
+                    .then((lecturerCourses) => {
+                        setLecturerCourses(lecturerCourses);
                     })
                     .catch(err => console.error("Error fetching lecturer courses:", err));
             }
         }
        
     }, []);
-
-    // useEffect(() => {
-    //     if (courses) {
-    //         console.log(courses);
-    //     }
-    // }, []);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -68,7 +66,7 @@ export default function Profile(){
                     user={user}
                     onSubmit={handleUpdateUser}
                     onChange={handleFileChange}
-                    courses={courses}
+                    lecturerCourses={lecturerCourses}
                 />
             )}
         </div>

@@ -1,10 +1,16 @@
-import { User, Candidate, Role, Course,Availability, Application, Lecturer } from "../types/types";
+import { User, Candidate, Role, Course, Application, LecturerCourse, Lecturer, Semester } from "../types/types";
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:3001/api";
+const API_BASE_URL = "http://localhost:4000/api";
 
-interface LecturerCoursesResponse {
-  courses: Course[];
+export interface LecturerCoursesResponse {
+    id: number;
+    semester: Semester; // or use your enum if needed
+    course: {
+        id: number;
+        name: string;
+        code: string;
+    };
 }
 
 export const userService = {
@@ -90,14 +96,25 @@ export const courseService = {
         const { data } = await axios.get<Course[]>(`${API_BASE_URL}/courses`);
         return data;
     },
+    getCourse: async (): Promise<Course> => {
+        const { data } = await axios.get<Course>(`${API_BASE_URL}/courses`);
+        return data;
+    }
 
 }
 
-export const lecturerService = {
-    getLecturerCourses: async (id: number): Promise<Course[]> => {
-        const { data } = await axios.get<LecturerCoursesResponse>(`${API_BASE_URL}/lecturers/${id}`);
-        // console.log(data.courses);
-        return data.courses;
+export const lecturerService = { // this was alr not working 
+    getLecturer: async (id: number): Promise<Lecturer> => {
+        const { data } = await axios.get<Lecturer>(`${API_BASE_URL}/lecturers/${id}`);
+        console.log("This is shown in profile: ", data);
+        return data;
+    }
+}
+
+export const lecturerCourseService = {
+    getLecturerCourses: async (id: number): Promise<LecturerCoursesResponse[]> => {
+        const { data } = await axios.get<LecturerCoursesResponse[]>(`${API_BASE_URL}/lecturerCourses/${id}`);
+        return data;
     }
 }
 

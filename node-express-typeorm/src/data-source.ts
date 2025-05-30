@@ -7,6 +7,7 @@ import { Lecturer } from "./entity/Lecturer";
 import { Course } from "./entity/Course";
 import { LecturerSelection } from "./entity/LecturerSelection";
 import { Admin } from "./entity/Admin";
+import { LecturerCourse } from "./entity/LecturerCourse";
 
 export const AppDataSource = new DataSource({
     type: "mysql",
@@ -17,7 +18,7 @@ export const AppDataSource = new DataSource({
     database: "S4085733",
     synchronize: true,
     logging: true,
-    entities: [User, Candidate, Application, Lecturer, Course, LecturerSelection, Admin ],
+    entities: [User, Candidate, Application, Lecturer, Course, LecturerSelection, Admin, LecturerCourse ],
     subscribers: [],
     migrations: [],
 })

@@ -1,6 +1,7 @@
-import { Entity, Column, OneToOne, PrimaryColumn, OneToMany, ManyToOne, PrimaryGeneratedColumn, ManyToMany } from "typeorm";
-import { Lecturer } from "./Lecturer";
+import { Entity, Column, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Application } from "./Application";
+import { LecturerCourse } from "./LecturerCourse";
+import { Semester } from "./Semester";
 
 @Entity({ name: "courses" })
 export class Course {
@@ -13,10 +14,13 @@ export class Course {
     @Column({ type: "varchar", length: 255 })
     name: string;
 
-    @ManyToMany(() => Lecturer, (lecturer: Lecturer) => lecturer.courses)
-    lecturer: Lecturer;
+    @Column({ type: "enum", enum: Semester })
+    semester: Semester;
 
     @OneToMany(() => Application, (application: Application) => application.course)
     applications: Application[];
+
+    @OneToMany(() => LecturerCourse, (lecturerCourse) => lecturerCourse.course)
+    lecturerCourses: LecturerCourse[];
 
 }

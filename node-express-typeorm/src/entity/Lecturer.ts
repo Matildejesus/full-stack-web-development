@@ -1,7 +1,8 @@
-import { Entity, OneToOne, JoinColumn, PrimaryGeneratedColumn, OneToMany, ManyToMany } from "typeorm";
+import { Entity, OneToOne, JoinColumn, PrimaryGeneratedColumn, OneToMany } from "typeorm";
 import { User } from "./User";
 import { Course } from "./Course";
 import { LecturerSelection } from "./LecturerSelection";
+import { LecturerCourse } from "./LecturerCourse";
 
 @Entity({ name: "lecturers" })
 export class Lecturer {
@@ -12,8 +13,8 @@ export class Lecturer {
     @JoinColumn({ name: "user_id" })
     user: User;
 
-    @ManyToMany(() => Course, (course: Course) => course.lecturers)
-    courses: Course[];
+    @OneToMany(() => LecturerCourse, (lecturerCourse: LecturerCourse) => lecturerCourse.lecturer)
+    lecturerCourses: LecturerCourse[];
 
     @OneToMany(() => LecturerSelection, (lecturerSelection: LecturerSelection) => lecturerSelection.lecturer)
     lecturerSelections: LecturerSelection[];
