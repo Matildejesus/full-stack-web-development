@@ -10,6 +10,17 @@ export enum Availability {
     CONTRACT = 'contract',
 }
 
+export enum Semester {
+    ONE = 'one',
+    TWO = 'two',
+    BOTH = 'both'
+}
+
+export enum AppRole {
+    TUTOR = "tutor",
+    LAB_ASSISTANT = "lab_assistant",
+}
+
 export interface Admin {
     id: number;
     user: User;
@@ -20,7 +31,7 @@ export interface Application {
     candidate: Candidate;
     course: Course;
     previousRole: string;
-    role: string;
+    role: AppRole;
     availability: Availability;
     skills: string[];
     academic: string;
@@ -38,14 +49,15 @@ export interface Course {
     id: number;
     code: string;
     name: string;
-    lecturer: Lecturer;
+    lecturerCourses: LecturerCourse[];
     applications: Application[];
+    semester: Semester;
 }
 
 export interface Lecturer {
     id: number;
     user: User;
-    courses: Course[];
+    lectuereCourses: LecturerCourse[];
     lecturerSelections: LecturerSelection[];
 }
 
@@ -71,4 +83,12 @@ export interface User {
     admin?: Admin;
     createdAt: Date;
     updatedAt: Date;
+    blocked: boolean;
+}
+
+export interface LecturerCourse {
+  lecturerId: number;
+  courseId: number;
+  course: Course;
+  semester: Semester;
 }

@@ -11,9 +11,14 @@ export enum Availability {
 }
 
 export enum Semester {
-    ONE = '1',
-    TWO = '2',
+    ONE = 'one',
+    TWO = 'two',
     BOTH = 'both'
+}
+
+export enum AppRole {
+    TUTOR = "tutor",
+    LAB_ASSISTANT = "lab_assistant",
 }
 
 export interface Admin {
@@ -26,7 +31,7 @@ export interface Application {
     candidate: Candidate;
     course: Course;
     previousRole: string;
-    role: string;
+    role: AppRole;
     availability: Availability;
     skills: string[];
     academic: string;
@@ -78,6 +83,7 @@ export interface User {
     admin?: Admin;
     createdAt: Date;
     updatedAt: Date;
+    blocked: boolean;
 }
 
 export interface LecturerCourse {

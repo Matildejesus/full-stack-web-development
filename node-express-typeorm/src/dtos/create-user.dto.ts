@@ -23,4 +23,6 @@ export class CreateUserDTO {
 
     @IsEnum(Role)
     role: Role;
+
+    
 }

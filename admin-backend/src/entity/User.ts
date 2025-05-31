@@ -17,7 +17,6 @@ export enum Role {
     LECTURER = 'lecturer',
 }
 
-
 @Entity({ name: "users" })
 export class User {
     @PrimaryGeneratedColumn({ type: "int" })

@@ -1,11 +1,11 @@
-import { User, Candidate, Role, Course, Application, LecturerCourse, Lecturer, Semester } from "../types/types";
+import { User, Candidate, Role, Course, Application, LecturerCourse, Lecturer, Semester, AppRole } from "../types/types";
 import axios from "axios";
 
 const API_BASE_URL = "http://localhost:4000/api";
 
 export interface LecturerCoursesResponse {
     id: number;
-    semester: Semester; // or use your enum if needed
+    semester: Semester;
     course: {
         id: number;
         name: string;
@@ -15,8 +15,6 @@ export interface LecturerCoursesResponse {
 
 export const userService = {
     getAllUsers: async (): Promise<User[]> => {
-        // const { data } = await client.query({ query: GET_USERS });
-        // return data.users;
         const { data } = await axios.get<User[]>(`${API_BASE_URL}/users`);
         return data;
     },
@@ -26,7 +24,6 @@ export const userService = {
         lastName: string;
         email: string;
         password: string;
-        // avatarUrl?: string | null;
         role: Role;
     }): Promise<User> => {
         console.log("Sending user data to backend:", JSON.stringify(user, null, 2));
@@ -34,30 +31,14 @@ export const userService = {
         const { data } = await axios.post<User>(`${API_BASE_URL}/users`, user);
         console.log("create user data",data)
         return data;
-
-        // const { data } = await client.mutate({
-        //     mutation: CREATE_USER,
-        //     variables: user,
-        // });
-        // return data.createUser;
     },
 
     getUser: async (id: number): Promise<User> => {
-        // const { data } = await client.query({
-        //     query: GET_USER,
-        //     variables: { id },
-        // });
-        // return data.user;
         const { data } = await axios.get<User>(`${API_BASE_URL}/users/${id}`);
         return data;
     },
 
     deleteUser: async (id: number): Promise<void> => {
-        // const { data } = await client.mutate({
-        //     mutation: DELETE_USER,
-        //     variables: { id },
-        // });
-        // return data.deleteUser;
         await axios.delete(`${API_BASE_URL}/users/${id}`);
     },
 
@@ -81,11 +62,6 @@ export const userService = {
             // role?: Role;
         }
     ): Promise<User> => {
-        // const { data } = await client.mutate({
-        //     mutation: UPDATE_USER,
-        //     variables: { id, ...user },
-        // });
-        // return data.updateUser;
         const { data } = await axios.put<User>(`${API_BASE_URL}/users/${id}`, user);
         return data;
     }
@@ -103,7 +79,7 @@ export const courseService = {
 
 }
 
-export const lecturerService = { // this was alr not working 
+export const lecturerService = { 
     getLecturer: async (id: number): Promise<Lecturer> => {
         const { data } = await axios.get<Lecturer>(`${API_BASE_URL}/lecturers/${id}`);
         console.log("This is shown in profile: ", data);
@@ -134,10 +110,9 @@ export const candidateApi={
 export const applicationApi ={
 
   saveApplication:async(application:{
-
     course: string;
     previousRole: string;
-    role: string;
+    role: AppRole;
     availability: string;
     skills: string;
     academic: string;

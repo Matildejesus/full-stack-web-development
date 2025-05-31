@@ -1,42 +1,46 @@
-import { useState, useEffect } from "react";
-import { Geist } from "next/font/google";
-// import { useRouter } from "next/router";
-import { Course } from "../types/types";
-import { courseService } from "../services/api";
-import CourseList from "@/components/CourseList";
-
-const geist = Geist({
-    subsets: ["latin"],
-});
+import { useState, FormEvent } from "react";
+import { userService } from "../services/api";
+import SignInForm from "@/components/SignInForm";
+import { useRouter } from "next/router";
 
 export default function Home() {
-    // const router = useRouter();
-    const [courses, setCourses] = useState<Course[]>([]);
+    const [error, setError] = useState("");
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [user, setUser] = useState({
+        username: "",
+        password: ""
+    });
 
-    // Fetch profiles on component mount
-    useEffect(() => {
-        fetchCourses();
-    }, []);
+    const router = useRouter();
 
-    const fetchCourses = async () => {
-        try {
-        const data = await courseService.getAllCourses();
-        setCourses(data);
-        } catch (error) {
-        console.error("Error fetching profiles:", error);
+    const handleSubmit = async (e: FormEvent) => {
+        e.preventDefault();
+        setError("");
+     
+
+    try {
+        const userData = await userService.login(username, password); 
+        if (userData) {
+            router.push("/courses");
         }
-    };
+     
+    }catch (err) {
+        console.error("Login error:", err);
+        setError("Login failed. Please try again.");
+        }
+    }
 
     return (
-        <div
-        className={`${geist.className} min-h-screen p-8 bg-gray-50 text-black`}
-        >
-        <div className="max-w-4xl mx-auto">
-            <h1 className="text-3xl font-bold mb-8 text-black">
-            Course Management System
-            </h1>
-            <CourseList courses={courses} />
-        </div>
+        <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
+            <SignInForm 
+                handleSubmit={handleSubmit}
+                username={username}
+                setUsername={setUsername}
+                password={password}
+                setPassword={setPassword}
+                error={error}
+            />    
         </div>
     );
 }
