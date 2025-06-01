@@ -96,7 +96,7 @@ export const resolvers = {
                 where: { id: parseInt(id) },
             });
         },
-        deleteCourse: async (_: any, { id }: { id: string }) => {
+        deleteCourse: async (_: any, { id }: { id: number }) => {
             const result = await courseRepository.delete(id);
             return result.affected !== 0;
         },

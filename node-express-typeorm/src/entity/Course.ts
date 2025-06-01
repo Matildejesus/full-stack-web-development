@@ -1,9 +1,12 @@
-import { Entity, Column, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, Column, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
 import { Application } from "./Application";
 import { LecturerCourse } from "./LecturerCourse";
 import { Semester } from "./Semester";
 
 @Entity({ name: "courses" })
+@Unique(["name"])
+@Unique(["code"])
+@Unique(["code", "name"])
 export class Course {
     @PrimaryGeneratedColumn({ type: "int" })
     id: number;

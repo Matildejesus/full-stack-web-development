@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { Course, Semester } from "../../types/types";
 import { courseService } from "../../services/api";
-
+import CourseList from "@/components/CourseList";
+import CreateCourse from "@/components/CreateCourse";
 
 export default function Courses() {
     const router = useRouter();
@@ -10,6 +11,9 @@ export default function Courses() {
     const [name, setName] = useState("");
     const [code, setCode] = useState("");
     const [semester, setSemester] = useState<Semester>(Semester.ONE);
+    const [error, setError] = useState("");
+    const [createError, setCreateError] = useState("");
+    const [isAdding, setIsAdding] = useState(false);
 
     useEffect(() => {
         fetchCourses();
@@ -18,6 +22,7 @@ export default function Courses() {
     const fetchCourses = async () => {
         try {
             const data = await courseService.getAllCourses();
+            console.log("Data: ", data);
             setCourses(data);
         } catch (error) {
             console.error("Error fetching courses:", error);
@@ -27,37 +32,72 @@ export default function Courses() {
     const handleCreateCourse = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
+            const codePattern = /^[A-Z]{4}\d{4}$/;
+            if (!codePattern.test(code.toUpperCase())) {
+                setCreateError("Code is in wrong format. Ex. COSC1030");
+                return;
+            }
             await courseService.createCourse({
                 name,
-                code,
+                code: code.toUpperCase(),
                 semester, 
-            });
+            }); 
+            await fetchCourses();
             setName("");
             setCode("");
             setSemester(Semester.ONE);
-            fetchCourses();
+           
+            console.log("data is refetched: ", courses);
+
+            setIsAdding(false);
+            setCreateError("");
         } catch (error) {
-            console.error("Error creating course:", error);
+            setCreateError("Error creating course.");
         }
     };
 
-    const handleCourseClick = (id: string) => {
+    const handleCourseClick = (id: number) => {
         router.push(`/course/${id}`);
     };
+
+    const handleDelete = async (id: number) => {
+        setError("");
+
+        try {
+            await courseService.deleteCourse(id);
+            await fetchCourses();
+            router.push("/courses");
+        } catch (error) {
+            setError("Failed to delete course. Please try again.");
+        }
+    };
+
+    const createCourseClick = async () => {
+        setIsAdding(true);
+    }
 
   return (
     <div className={"min-h-screen p-8 bg-gray-50 text-black"}>
         <div className="max-w-4xl mx-auto">
-            <h1 className="text-3xl font-bold mb-8 text-black">Courses</h1>
-            
-            {/* <div className="space-y-6">
-            <CreatePetForm
-                onSubmit={handleCreatePet}
-                petName={newPetName}
-                onPetNameChange={setNewPetName}
+            {/* <h1 className="text-3xl font-bold mb-8 text-black">Course</h1> */}
+            <CourseList 
+                courses={courses} 
+                onCourseClick={handleCourseClick} 
+                handleDelete={handleDelete}
+                error={error}
             />
-
-            <PetsList pets={pets} onPetClick={handlePetClick} /> */}
+            <CreateCourse
+                handleCreateCourse={handleCreateCourse}
+                isAdding={isAdding}
+                name={name}
+                setName={setName}
+                code={code}
+                setCode={setCode}
+                semester={semester}
+                setSemester={setSemester}
+                createCourseClick={createCourseClick}
+                createError={createError}
+            />
         </div>
     </div>
   );

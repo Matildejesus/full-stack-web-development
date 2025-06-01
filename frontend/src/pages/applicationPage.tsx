@@ -2,7 +2,7 @@ import { useAuth } from "@/context/AuthContext";
 
 import { applicationApi, candidateApi } from "@/services/api";
 import { useState, useEffect } from "react";
-import { Application, Availability, Candidate, Role } from "@/types/types";
+import { Application, AppRole, Availability, Candidate, Role } from "@/types/types";
 import { courseService } from "@/services/api";
 import { Course } from "@/types/types";
 import ApplicationForm from "@/components/ApplicationForm";
@@ -19,7 +19,7 @@ export default function ApplicationPage() {
 
     const [newApplication, setNewApplication] = useState({
         course: "",
-        role: "",
+        role: AppRole.TUTOR,
         skills: "",
         previousRole: "",
         academic: "",
@@ -122,7 +122,7 @@ export default function ApplicationPage() {
             setNewApplication((prev) => ({
                 ...prev,
                 course: "",
-                role: "",
+                role: AppRole.TUTOR,
                 skills: "",
                 previousRole: "",
                 academic: "",

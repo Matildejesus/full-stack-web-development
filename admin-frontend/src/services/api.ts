@@ -5,7 +5,10 @@ import { CREATE_COURSE, DELETE_COURSE, GET_COURSE, GET_COURSES, LOGIN, LOGOUT, U
 
 export const courseService = {
     getAllCourses: async (): Promise<Course[]> => {
-        const { data } = await client.query({ query: GET_COURSES });
+        const { data } = await client.query({ 
+            query: GET_COURSES,
+            fetchPolicy: "no-cache",
+        });
         return data.courses;
     },
     getCourse: async (id: string): Promise<Course> => {
@@ -23,6 +26,7 @@ export const courseService = {
         const { data } = await client.mutate({
             mutation: CREATE_COURSE,
             variables: course,
+            refetchQueries: [{ query: GET_COURSES }],
         });
         return data.createCourse;
     },
@@ -40,10 +44,11 @@ export const courseService = {
         });
         return data.updateCourse;
     },
-    deleteProfile: async (id: string): Promise<boolean> => {
+    deleteCourse: async (id: number): Promise<boolean> => {
         const { data } = await client.mutate({
         mutation: DELETE_COURSE,
         variables: { id },
+        refetchQueries: [{ query: GET_COURSES }],
         });
         return data.deleteCourse;
     },
