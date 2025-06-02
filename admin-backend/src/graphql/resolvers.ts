@@ -27,8 +27,11 @@ export const resolvers = {
                 where: { id: parseInt(id) },
             });
         },
-        lecturerCourses: async () => {
-            return await lecturerCourseRepository.find();
+        lecturerCoursesByCourseId: async (_: any, { courseId }: {courseId: string}) => {
+            return await lecturerCourseRepository.find({
+                where: { courseId: parseInt(courseId) },
+                relations: ['lecturer', 'lecturer.user'],
+            });
         },
         lecturerCourse: async (_: any, { id }: { id: string }) => {
             return await lecturerCourseRepository.find({
@@ -53,7 +56,9 @@ export const resolvers = {
             });
         },
         lecturers: async () => {
-            return await lecturerRepository.find();
+            return await lecturerRepository.find({
+                relations: ['user', 'lecturerCourses']
+            });
         },
         lecturer: async (_: any, { id }: { id: string }) => {
             return await lecturerRepository.findOne({
@@ -96,7 +101,7 @@ export const resolvers = {
                 where: { id: parseInt(id) },
             });
         },
-        deleteCourse: async (_: any, { id }: { id: number }) => {
+        deleteCourse: async (_: any, { id }: { id: string }) => {
             const result = await courseRepository.delete(id);
             return result.affected !== 0;
         },
@@ -118,12 +123,23 @@ export const resolvers = {
             if (!isPasswordValid) {
                 throw new Error("Incorrect password");
             }
-            console.log("User from DB:", user?.admin);
-            console.log("ADMIN ROLE: ", Role.ADMIN);
             return user;
         },
         logout: async () => {
             return true; 
+        },
+        createLecturerCourse: async (
+            _: any,
+            { lecturerId, courseId, semester }: { lecturerId: string; courseId: string; semester: Semester }
+        ) => {
+            const lecturerCourse = lecturerCourseRepository.create({
+                lecturer: { id: parseInt(lecturerId) }, 
+                course: { id: parseInt(courseId) },  
+                semester
+            });
+            console.log("it is saved: ", lecturerCourse);
+            const savedLecturerCourse = await lecturerCourseRepository.save(lecturerCourse);
+            return savedLecturerCourse;
         },
     }
 };

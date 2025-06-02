@@ -3,14 +3,15 @@ import { Button, FormControl, FormLabel, Input, Select, Text, VStack } from "@ch
 
 interface CreateCourseProps {
     handleCreateCourse: (e: React.FormEvent) => void;
-    isAdding: boolean;
+    isAdding?: boolean;
+    currentEvent: string;
     name: string;
     setName: (value: string) => void;
     code: string;
     setCode: (value: string) => void;
     semester: Semester;
     setSemester: (value: Semester) => void;
-    createCourseClick: () => void;
+    createCourseClick?: () => void;
     createError: string;
 }
 
@@ -24,11 +25,12 @@ export default function CreateCourse({
     semester,
     setSemester,
     createCourseClick,
-    createError
+    createError,
+    currentEvent
 }: CreateCourseProps) {
     return (
         <div className="p-3 border rounded hover:bg-gray-50 cursor-pointer text-black">
-            {!isAdding && 
+            {!isAdding && currentEvent === "create" &&
                 <Button
                     type="button"className="z-50 px-6 py-4"
                     onClick={createCourseClick}
@@ -72,11 +74,19 @@ export default function CreateCourse({
                             </Select>
                         </FormControl>
                         <Text color="red.500">{createError}</Text>
-                        <Button
-                            type="submit"
-                        >
-                            Add Course
-                        </Button>
+                        {currentEvent === "create" ? (
+                            <Button
+                                type="submit"
+                            >
+                                Add Course
+                            </Button>
+                        ) : (
+                            <Button
+                                type="submit"
+                            >
+                                Update
+                            </Button>
+                        )}
                     </VStack>
                 </form>
             )}

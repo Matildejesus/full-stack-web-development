@@ -7,10 +7,12 @@ import CreateCourse from "@/components/CreateCourse";
 
 export default function Courses() {
     const router = useRouter();
-    const [courses, setCourses] = useState<Course[]>([]);
     const [name, setName] = useState("");
     const [code, setCode] = useState("");
     const [semester, setSemester] = useState<Semester>(Semester.ONE);
+    const [semOneCourses, setSemOneCourses] = useState<Course[]>([]);
+    const [semTwoCourses, setSemTwoCourses] = useState<Course[]>([]);
+    const [semBothCourses, setSemBothCourses] = useState<Course[]>([]);
     const [error, setError] = useState("");
     const [createError, setCreateError] = useState("");
     const [isAdding, setIsAdding] = useState(false);
@@ -22,8 +24,9 @@ export default function Courses() {
     const fetchCourses = async () => {
         try {
             const data = await courseService.getAllCourses();
-            console.log("Data: ", data);
-            setCourses(data);
+            setSemOneCourses(data.filter(data => data.semester === Semester.ONE));
+            setSemTwoCourses(data.filter(data => data.semester === Semester.TWO));
+            setSemBothCourses(data.filter(data => data.semester === Semester.BOTH));
         } catch (error) {
             console.error("Error fetching courses:", error);
         }
@@ -46,8 +49,6 @@ export default function Courses() {
             setName("");
             setCode("");
             setSemester(Semester.ONE);
-           
-            console.log("data is refetched: ", courses);
 
             setIsAdding(false);
             setCreateError("");
@@ -79,9 +80,23 @@ export default function Courses() {
   return (
     <div className={"min-h-screen p-8 bg-gray-50 text-black"}>
         <div className="max-w-4xl mx-auto">
-            {/* <h1 className="text-3xl font-bold mb-8 text-black">Course</h1> */}
             <CourseList 
-                courses={courses} 
+                courses={semOneCourses} 
+                title="Semester One Courses"
+                onCourseClick={handleCourseClick} 
+                handleDelete={handleDelete}
+                error={error}
+            />
+            <CourseList 
+                courses={semTwoCourses}
+                title="Semester Two Courses" 
+                onCourseClick={handleCourseClick} 
+                handleDelete={handleDelete}
+                error={error}
+            />
+            <CourseList 
+                courses={semBothCourses}
+                title="Available All Year Courses" 
                 onCourseClick={handleCourseClick} 
                 handleDelete={handleDelete}
                 error={error}
@@ -89,6 +104,7 @@ export default function Courses() {
             <CreateCourse
                 handleCreateCourse={handleCreateCourse}
                 isAdding={isAdding}
+                currentEvent="create"
                 name={name}
                 setName={setName}
                 code={code}

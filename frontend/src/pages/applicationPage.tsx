@@ -53,7 +53,6 @@ export default function ApplicationPage() {
 
     const matchedCandidate = candidates.find(candidate => candidate.user.id === user?.id);
     const candidateId = matchedCandidate?.id;
-    console.log("CCCCCCCCCID ", candidateId)
 
     useEffect(() => {
         if (candidateId) {

@@ -22,7 +22,6 @@ const ApplicantsDisplay: React.FC<ApplicantsDisplayProps> = ({
     const [sortedList, setSortedList] = useState<Candidate[]>([]);
 
     useEffect(() => {
-        console.log("Fil cand is ",filteredCandidates)
         let sorting = [...filteredCandidates];
         
         if (sort === "availability") {

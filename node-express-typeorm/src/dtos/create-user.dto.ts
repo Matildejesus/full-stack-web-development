@@ -17,12 +17,10 @@ export class CreateUserDTO {
     @Length(8,13,{
         message: 'Password must be between 8 and 13 characters long',
     })
-    // @Min(8)
-    // @Max(13)
     password: string;
 
     @IsEnum(Role)
     role: Role;
 
-    
+
 }

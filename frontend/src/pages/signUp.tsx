@@ -34,7 +34,7 @@ export default function SignUp(){
         [name]: value,
         }));
     }
-    // create or save new user signup data---NEW
+    
     const [newUser,setNewUser] = useState({
     firstName: "",
     lastName:"",

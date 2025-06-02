@@ -57,7 +57,7 @@ export interface Course {
 export interface Lecturer {
     id: number;
     user: User;
-    lectuereCourses: LecturerCourse[];
+    lecturerCourses: LecturerCourse[];
     lecturerSelections: LecturerSelection[];
 }
 
@@ -87,8 +87,9 @@ export interface User {
 }
 
 export interface LecturerCourse {
-  lecturerId: number;
-  courseId: number;
-  course: Course;
-  semester: Semester;
+    lecturerId: number;
+    courseId: number;
+    course: Course;
+    lecturer: Lecturer;
+    semester: Semester;
 }

@@ -3,15 +3,16 @@ import { Course } from "../types/types";
 
 interface CourseListProps {
     courses: Course[];
+    title: string;
     onCourseClick: (courseId: number) => void;
     handleDelete: (id: number) => void;
     error: string;
 }
 
-export default function CourseList({ courses, onCourseClick, handleDelete, error }: CourseListProps) {
+export default function CourseList({ courses, title, onCourseClick, handleDelete, error }: CourseListProps) {
     return (
         <div className="bg-white p-6 rounded-lg shadow">
-        <h2 className="text-xl font-semibold mb-4 text-black">Courses</h2>
+        <h2 className="text-xl font-semibold mb-4 text-black">{title}</h2>
         <div className="space-y-2">
             {courses.map((u) => (
             <div
@@ -27,7 +28,7 @@ export default function CourseList({ courses, onCourseClick, handleDelete, error
                         type="button" className="z-50 px-6 py-4"
                         onClick={() => onCourseClick(u.id)}
                     >
-                        Update
+                        Details
                     </Button>
                     <Button
                         type="button" className="z-50 px-6 py-4"

@@ -45,6 +45,7 @@ export const typeDefs = gql`
     type Lecturer {
         id: ID!
         courses: [Course!]!
+        user: User!
         lecturerCourses: [LecturerCourse!]!
         lecturerSelection: [LecturerSelection!]!
     }
@@ -62,6 +63,7 @@ export const typeDefs = gql`
         admin: Admin
         createdAt: String!
         updatedAt: String!
+        blocked: Boolean!
     }
 
     type LecturerCourse {
@@ -96,7 +98,7 @@ export const typeDefs = gql`
     type Query {
         courses: [Course!]!
         course(id: ID!): Course
-        lecturerCourses: [LecturerCourse!]!
+        lecturerCoursesByCourseId(courseId: ID!): [LecturerCourse!]!
         lecturerCourse(id: ID!): [LecturerCourse] 
         candidates: [Candidate!]!
         candidate(id: ID!): Candidate

@@ -1,6 +1,6 @@
-import { Course, Semester } from "@/types/types";
+import { Course, Lecturer, LecturerCourse, Semester } from "@/types/types";
 import { client } from "./apollo-client";
-import { CREATE_COURSE, DELETE_COURSE, GET_COURSE, GET_COURSES, LOGIN, LOGOUT, UPDATE_COURSE } from "./graphql";
+import { CREATE_COURSE, CREATE_LECTURER_COURSE, DELETE_COURSE, GET_COURSE, GET_COURSES, GET_LECTURERCOURSES_BY_COURSEID, GET_LECTURERS, LOGIN, LOGOUT, UPDATE_COURSE } from "./graphql";
 
 
 export const courseService = {
@@ -15,6 +15,7 @@ export const courseService = {
         const { data } = await client.query({
             query: GET_COURSE,
             variables: { id },
+            fetchPolicy: "no-cache",
         });
         return data.course;
     },
@@ -41,6 +42,7 @@ export const courseService = {
         const { data } = await client.mutate({
             mutation: UPDATE_COURSE,
             variables: { id, ...course },
+            refetchQueries: [{ query: GET_COURSE }],
         });
         return data.updateCourse;
     },
@@ -70,4 +72,36 @@ export const userService = {
     }
 };
 
+export const lecturerCoursesService = {
+    getLecturerCoursesByCourseId: async (courseId: string): Promise<LecturerCourse[]> => {
+        const { data } = await client.query({ 
+            query: GET_LECTURERCOURSES_BY_COURSEID,
+            variables: { courseId },
+            fetchPolicy: "no-cache",
+        });
+        return data.lecturerCoursesByCourseId;
+    },
+    createLecturerCourse: async (
+        lecturerId: string,
+        courseId: string,
+        semester: Semester,
+    ): Promise<LecturerCourse> => {
+        const { data } = await client.mutate({
+            mutation: CREATE_LECTURER_COURSE,
+            variables: { lecturerId, courseId, semester },
+            refetchQueries: [{ query: GET_LECTURERCOURSES_BY_COURSEID }],
+        });
+        console.log("the creation: ", data);
+        return data.createLecturerCourse;
+    },
+};
 
+export const lecturerService = {
+    getAllLecturers: async (): Promise<Lecturer[]> => {
+        const { data } = await client.query({ 
+            query: GET_LECTURERS,
+            fetchPolicy: "no-cache",
+        });
+        return data.lecturers;
+    },
+}

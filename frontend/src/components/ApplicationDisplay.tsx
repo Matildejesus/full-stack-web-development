@@ -9,7 +9,6 @@ interface ApplicationDisplayProps {
 }
 
 const ApplicationDisplay: React.FC<ApplicationDisplayProps> = ({ candidate, isLoggedInUser, sort }) => {
-    console.log("User prop:", candidate);
 
     const [sortedList, setSortedList] = useState<Application[]>([]);
 
