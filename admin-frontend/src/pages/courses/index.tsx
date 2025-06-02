@@ -4,6 +4,7 @@ import { Course, Semester } from "../../types/types";
 import { courseService } from "../../services/api";
 import CourseList from "@/components/CourseList";
 import CreateCourse from "@/components/CreateCourse";
+import ButtonComp from "@/components/ButtonComp";
 
 export default function Courses() {
     const router = useRouter();
@@ -100,20 +101,28 @@ export default function Courses() {
                 onCourseClick={handleCourseClick} 
                 handleDelete={handleDelete}
                 error={error}
-            />
-            <CreateCourse
-                handleCreateCourse={handleCreateCourse}
-                isAdding={isAdding}
-                currentEvent="create"
-                name={name}
-                setName={setName}
-                code={code}
-                setCode={setCode}
-                semester={semester}
-                setSemester={setSemester}
-                createCourseClick={createCourseClick}
-                createError={createError}
-            />
+            />            
+            <div className="flex-row flex">
+                <CreateCourse
+                    handleCreateCourse={handleCreateCourse}
+                    isAdding={isAdding}
+                    currentEvent="create"
+                    name={name}
+                    setName={setName}
+                    code={code}
+                    setCode={setCode}
+                    semester={semester}
+                    setSemester={setSemester}
+                    createCourseClick={createCourseClick}
+                    createError={createError}
+                />
+                <div className="ml-auto mt-3">
+                    <ButtonComp
+                        handleRouter={() => router.push("/candidates")}
+                        text="See Candidates" 
+                    />
+                </div>
+            </div>
         </div>
     </div>
   );

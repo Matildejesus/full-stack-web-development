@@ -42,6 +42,7 @@ export interface Application {
 export interface Candidate {
     id: number;
     user: User;
+    blocked: boolean;
     applications: Application[];
 }
 
@@ -83,7 +84,6 @@ export interface User {
     admin?: Admin;
     createdAt: Date;
     updatedAt: Date;
-    blocked: boolean;
 }
 
 export interface LecturerCourse {

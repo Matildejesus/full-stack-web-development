@@ -29,7 +29,7 @@ export default function CreateCourse({
     currentEvent
 }: CreateCourseProps) {
     return (
-        <div className="p-3 border rounded hover:bg-gray-50 cursor-pointer text-black">
+        <div className="p-3 border rounded hover:bg-gray-50 cursor-pointer text-black w-[70%]">
             {!isAdding && currentEvent === "create" &&
                 <Button
                     type="button"className="z-50 px-6 py-4"

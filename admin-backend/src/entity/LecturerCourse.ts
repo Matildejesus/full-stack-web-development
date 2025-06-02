@@ -23,7 +23,9 @@ export class LecturerCourse {
     @JoinColumn({ name: "lecturer_id" })
     lecturer: Lecturer;
 
-    @ManyToOne(() => Course, (course) => course.lecturerCourses)
+    @ManyToOne(() => Course, (course) => course.lecturerCourses, {
+        onDelete: 'CASCADE',
+    })
     @JoinColumn({ name: "course_id" })
     course: Course;
 

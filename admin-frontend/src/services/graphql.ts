@@ -123,6 +123,40 @@ export const GET_LECTURERS = gql`
     }
 `;
 
+export const GET_CANDIDATES = gql`
+    query GetCandidates {
+        candidates {
+            id
+            blocked
+            user {
+                id
+                firstName
+                lastName
+                email
+                avatarUrl
+            }
+        }
+    }
+`;
+
+export const GET_CANDIDATE = gql`
+    query GetCandidate($id: ID!) {
+        candidate(id: $id) {
+            id
+            blocked
+            user {
+                id
+                firstName
+                lastName
+                email
+                avatarUrl
+            }
+        }
+    }
+`;
+
+// get candidates is missing applications implement later
+
 // MUTATION
 export const CREATE_COURSE = gql`
     mutation CreateCourse(
@@ -177,6 +211,28 @@ export const UPDATE_COURSE = gql`
             name
             code
             semester
+        }
+    }
+`;
+
+export const UPDATE_CANDIDATE_BLOCKED = gql`
+    mutation UpdateCandidateBlocked(
+        $id: ID!
+        $blocked: Boolean!
+    ) {
+        updateCandidateBlocked(
+            id: $id
+            blocked: $blocked
+        ) {
+            id
+            blocked
+            user {
+                id
+                firstName
+                lastName
+                email
+                avatarUrl
+            }
         }
     }
 `;

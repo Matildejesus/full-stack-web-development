@@ -40,11 +40,14 @@ export const resolvers = {
             });
         },
         candidates: async () => {
-            return await candidateRepository.find();
+            return await candidateRepository.find({
+                relations: ['user']
+            });
         },
         candidate: async (_: any, { id }: { id: string }) => {
             return await candidateRepository.findOne({
                 where: { id: parseInt(id) },
+                relations: ['user']
             });
         },
         users: async () => {
@@ -137,9 +140,18 @@ export const resolvers = {
                 course: { id: parseInt(courseId) },  
                 semester
             });
-            console.log("it is saved: ", lecturerCourse);
             const savedLecturerCourse = await lecturerCourseRepository.save(lecturerCourse);
             return savedLecturerCourse;
+        },
+        updateCandidateBlocked: async (
+            _: any,
+            { id, blocked }: { id: string, blocked: boolean }
+        ) => {
+            await candidateRepository.update({ id: parseInt(id) }, { blocked });
+            return await candidateRepository.findOne({
+                where: { id: parseInt(id) },
+                relations: ['user']
+            });
         },
     }
 };

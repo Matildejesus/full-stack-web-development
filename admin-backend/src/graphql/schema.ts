@@ -39,6 +39,7 @@ export const typeDefs = gql`
     type Candidate {
         id: ID!
         user: User!
+        blocked: Boolean
         applications: [Application!]!
     }
 
@@ -119,7 +120,7 @@ export const typeDefs = gql`
         login(username: String!, password: String!): User
         logout: Boolean
         createLecturerCourse(lecturerId: ID!, courseId: ID!, semester: Semester!): LecturerCourse!
-        blockCandidate(userId: ID!): Boolean!
-        unblockCandidate(userId: ID!): Boolean!
+        updateCandidateBlocked(id: ID!, blocked: Boolean!): Candidate
+
     }
 `;

@@ -5,6 +5,7 @@ import { courseService, lecturerCoursesService, lecturerService } from "../../se
 import { Button } from "@chakra-ui/react";
 import CreateCourse from "@/components/CreateCourse";
 import LecturerList from "@/components/LecturerList";
+import ButtonComp from "@/components/ButtonComp";
 
 export default function CoursePage() {
     const router = useRouter();
@@ -24,7 +25,6 @@ export default function CoursePage() {
     useEffect(() => {
         if (id) {
             fetchCourse();
-            console.log("the id: ", id);
             fetchLecturerCourses();
             fetchAllLecturers();
             
@@ -53,11 +53,8 @@ export default function CoursePage() {
     const fetchLecturerCourses = async () => {
         try {
             setRetrievingLecturers(true);
-            console.log("fetching lecturers from id: ", id);
             const courseId = id;
             const data = await lecturerCoursesService.getLecturerCoursesByCourseId(courseId as string);
-            console.log("the lecturers have been fetched: ", data);
-            
             setLecturers(data);
             setLecturerIds(data.map(data => data.lecturerId));
         } catch (error) {
@@ -70,9 +67,6 @@ export default function CoursePage() {
     const fetchAllLecturers = async () => {
         try {
             const data = await lecturerService.getAllLecturers();
-            console.log("list of lecturers: ", data);
-            console.log("list of lecturers in course: ", lecturers); // why is this 0 it should be one, we know it exists because it is displayed when displaying the list of lectureres 
-            console.log("list of ids: ", lecturerIds);
             setAllLecturers(data.filter(data => !lecturerIds.includes(data.id)));
         } catch (error) {
             console.error("Error fetching all lecturers: ", error);
@@ -124,14 +118,11 @@ export default function CoursePage() {
     return (
         <div className={"min-h-screen p-8 bg-gray-50 text-black"}>
             <div className="max-w-4xl mx-auto">
-                <div className="flex items-center">
-                    <Button
-                        type="button"
-                        className="z-50 px-6 py-4"
-                        onClick={() => router.back()}
-                    >
-                        Back
-                    </Button>  
+                <div className="flex items-center"> 
+                    <ButtonComp
+                        handleRouter={() => router.back()}
+                        text="Back" 
+                    />
                 </div>
                 <CreateCourse 
                     handleCreateCourse={handleUpdateCourse}
