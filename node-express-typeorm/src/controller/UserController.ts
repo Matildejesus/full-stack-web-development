@@ -15,7 +15,7 @@ export class UserController {
     * @returns JSON array of all profiles
     */
     async all(request: Request, response: Response) {
-        const users = await this.userRepository.find();
+        const users = await this.userRepository.find({relations:["lecturer"]});
         return response.json(users);
     }
 

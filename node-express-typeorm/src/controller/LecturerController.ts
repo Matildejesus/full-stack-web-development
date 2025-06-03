@@ -16,6 +16,10 @@ export class LecturerController {
         }
         return response.json(lecturer);
     }
+    async all(request: Request, response: Response) {
+        const lecturers = await this.lecturerRepository.find({relations:["user"]});
+        return response.json(lecturers);
+    }
 }
 //     async getLecturerCourses(request: Request, response: Response) {
 //         const id = parseInt(request.params.id);

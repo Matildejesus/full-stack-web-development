@@ -1,66 +1,47 @@
-import { Application, User, Candidate } from "@/types/types";
+import { Application, Candidate } from "@/types/types";
 import React, { useEffect, useState } from "react";
-
 
 interface ApplicationDisplayProps {
     candidate?: Candidate | null;
     isLoggedInUser?: boolean;
     sort?: string | null;
+    lecturerCourseIds: number[];
 }
 
-const ApplicationDisplay: React.FC<ApplicationDisplayProps> = ({ candidate, isLoggedInUser, sort }) => {
-
+const ApplicationDisplay: React.FC<ApplicationDisplayProps> = ({ candidate, sort, lecturerCourseIds }) => {
     const [sortedList, setSortedList] = useState<Application[]>([]);
 
     useEffect(() => {
-        if (candidate?.applications && !sort) {
+        if (!candidate?.applications) {
             setSortedList([]);
-            setSortedList(prev => [...prev, ...candidate.applications]);
+            return;
         }
+
+        let applications = candidate.applications.filter(app => 
+            lecturerCourseIds.includes(app.course.id)
+        );
+
         if (sort === "course") {
-            const sorting = [...sortedList].sort((a, b) => a.course.name.localeCompare(b.course.name));
-            setSortedList(sorting);
+            applications.sort((a, b) => a.course.name.localeCompare(b.course.name));
         } else if (sort === "availability") {
-            const sorting = [...sortedList].sort((a, b) => a.availability.localeCompare(b.availability));
-            setSortedList(sorting);
+            applications.sort((a, b) => a.availability.localeCompare(b.availability));
         }
 
-    }, [candidate, sort]);
-
-    // useEffect(() => {
-    //     if (user?.jobSummary) {
-    //         // Ensure the jobSummary is set initially
-    //         setSortedList(user.jobSummary);
-    //     }
-    // }, [user]);
-
-    useEffect(() => {
-        if (sort) {
-            const sorted = [...sortedList];
-
-            if (sort === "course") {
-                sorted.sort((a, b) => a.course.name.localeCompare(b.course.name));
-            } else if (sort === "availability") {
-                sorted.sort((a, b) => a.availability.localeCompare(b.availability));
-            }
-
-            setSortedList(sorted); // Update the sorted list
-        }
-    }, [sort, sortedList]); // Re-sort whenever `sort` or `sortedList` changes
-
+        setSortedList(applications);
+    }, [candidate, sort, lecturerCourseIds]);
 
     if (!candidate) {
         return <p>No candidate data available.</p>;
     }
+
     return (
         <ul className="space-y-4">
             {sortedList.map((u, index) => (
                 <li key={index} className="border p-4 rounded bg-white">
                     <p><strong>Application Id: </strong>{u.id}</p>
-                    <p> <strong>Candidate Id: </strong>{u.candidate.id}</p>
-                    {/* <p><strong>Applicant Name: </strong>{u.candidate.user.firstName}</p> */}
+                    <p><strong>Candidate Id: </strong>{u.candidate.id}</p>
                     <p><strong>Course Name: </strong>{u.course.name}</p>
-                    <p><strong>Job Role:</strong>{u.role}</p>
+                    <p><strong>Job Role:</strong> {u.role}</p>
                     <p><strong>Previous Role:</strong> {u.previousRole}</p>
                     <p><strong>Availability:</strong> {u.availability}</p>
                     <p><strong>Skills:</strong> {u.skills.join(", ")}</p>
@@ -68,7 +49,7 @@ const ApplicationDisplay: React.FC<ApplicationDisplayProps> = ({ candidate, isLo
                 </li>
             ))}
         </ul>
-    )
-}
+    );
+};
 
 export default ApplicationDisplay;

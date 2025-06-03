@@ -12,12 +12,13 @@ interface ApplicantsDisplayProps {
     handleSubmit: () => void;
     filteredCandidatesLength: number;  
     sort?: string | null;
+    lecturerCourseIds: number[];
 }
 
 const ApplicantsDisplay: React.FC<ApplicantsDisplayProps> = ({ 
     selectedSubject, handleAddComment, handleRankingChange, 
     filteredCandidates, selectedCandidates, handleSubmit, 
-    filteredCandidatesLength, sort }) => {
+    filteredCandidatesLength, sort,lecturerCourseIds }) => {
 
     const [sortedList, setSortedList] = useState<Candidate[]>([]);
 
@@ -34,12 +35,18 @@ const ApplicantsDisplay: React.FC<ApplicantsDisplayProps> = ({
         setSortedList(sorting);
     }, [filteredCandidates, sort]);
 
+    const filteredByLecturerCourses = sortedList.filter(candidate =>
+    candidate.applications.some(app => lecturerCourseIds.includes(app.course.id))
+    );
+
+
     return (
         <>
         <div className="grid grid-cols-2 gap-4">
-        {sortedList?.length === 0 ? (
+        {filteredByLecturerCourses?.length === 0 ? (
             <h3 className="mb-6 p-8">No Applications Right Now !...</h3>
-            ):( sortedList.map(candidate => (
+            ):
+            ( filteredByLecturerCourses.map(candidate => (
                 <div key={candidate.id} className="mb-6 p-4">
                     <div className="flex gap-7 row ">
                         <h3 className="font-bold text-lg">{candidate.user.firstName}</h3>
@@ -62,7 +69,8 @@ const ApplicantsDisplay: React.FC<ApplicantsDisplayProps> = ({
                             )}
                         </select>
                     </div>
-                    <ApplicationDisplay candidate={candidate} isLoggedInUser={false} sort={sort}/>  
+                    <ApplicationDisplay candidate={candidate} isLoggedInUser={false} sort={sort}
+                    lecturerCourseIds={lecturerCourseIds}/>  
                     {selectedCandidates.find((c) => c.id == candidate.id) && (
                         <FormControl isRequired>
                             <FormLabel>Comment</FormLabel>

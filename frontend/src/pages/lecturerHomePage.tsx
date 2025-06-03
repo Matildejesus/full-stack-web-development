@@ -4,20 +4,21 @@ import { useAuth } from "../context/AuthContext";
 import { useToast } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { applicationApi, candidateApi, courseService, userService } from "@/services/api";
+import { applicationApi, candidateApi, courseService, userService,lecturerCourseService, lecturerService } from "@/services/api";
 import ApplicantsDisplay from "@/components/ApplicantsDisplay";
 import SelectionBar from "@/components/SelectionBar";
 import Sidebar from "@/components/SideBar";
-import { LecturerSelection, User, Candidate, Application ,Lecturer, Course} from "@/types/types";
+import { LecturerSelection, User, Candidate, Application ,Lecturer, Course, LecturerCourse} from "@/types/types";
 
 
 export default function LecturerHome() {
     const [selectedSubject, setSelectedSubject] = useState<string>("all");
     const [users, setUsers] = useState<User[]>([]);
     const [candidates, setCandidates] = useState<Candidate[]>([]);
+    const[lecturer,setLecturer]=useState<Lecturer[]>([]);
     const [selectedCandidates, setSelectedCandidates] = useState<LecturerSelection[]>([]);
     const { saveSelection } = useAuth();
-    const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+    const [subjectFilteredCandidates, setSubjectFilteredCandidates] = useState<Candidate[]>([]);
     const [filteredCandidates, setFilteredCandidates] = useState<Candidate[]>([]);
     const [selectedSort, setSelectedSort] = useState<string>("");
     const [selectedSearch, setSelectedSearch] = useState<string>("");
@@ -27,7 +28,8 @@ export default function LecturerHome() {
     const toast = useToast();
     const router = useRouter();
     const [applications, setApplications] = useState<Application[]>([]);
-
+    const { user } = useAuth();
+    const[lecturerCourses,setLecturerCourses]=useState<LecturerCourse[]>([]);
 
     const [courses, setCourses] = useState<Course[]>([]);
     
@@ -83,6 +85,32 @@ export default function LecturerHome() {
 
         fetchCandidates();
     }, []);
+    useEffect(() => {
+        const fetchLecturer = async () => {
+            try {
+                const data = await lecturerService.getAllLecturers() ;
+                console.log("Fetched Candidates data:", data);
+                setLecturer(data);
+            } catch (error) {
+                console.error("Error fetching candidates", error);
+            }
+        };
+
+        fetchLecturer();
+    }, []);
+        useEffect(() => {
+        const fetchlectCourses = async () => {
+            try {
+                const data = await lecturerCourseService.getAllLecturerCourses();
+                console.log("@@@@@@@@@@@@@@@Fetched lecturer course data:", data);
+                setLecturerCourses(data);
+            } catch (error) {
+                console.error("@@@@@@@@@@@@@@@Error fetching lecturer assigned course details", error);
+            }
+        };
+
+        fetchlectCourses();
+    }, []);
     // old
     // useEffect(() => {
     //     setInputText("");
@@ -116,10 +144,14 @@ export default function LecturerHome() {
 
         // Step 2: Save to state
         console.log("Candidates with selected subjects", candidatesWithSelectedSubject)
+        setSubjectFilteredCandidates(candidatesWithSelectedSubject);
         setFilteredCandidates(candidatesWithSelectedSubject);
-
-
     }, [candidates, applications, selectedSubject]);
+   useEffect(() => {
+        if (selectedSort) {
+            handleSorting();
+        }
+        }, [selectedSort]);
 
 
     const filteredCandidatesLength = filteredCandidates.length;
@@ -173,9 +205,11 @@ export default function LecturerHome() {
             if (selectedSearch === "tutor") {
                 setPlaceholder("Please enter tutor's name...");
             } else if (selectedSearch === "availability") {
-                setPlaceholder("Please enter Fulltime or Parttime...");
+                setPlaceholder("Please enter full-time or part-time...");
             } else if (selectedSearch === "skillset") {
                 setPlaceholder("Please enter a skill...");
+            } else if (selectedSearch === "jobRole") {
+                setPlaceholder("Please enter Tutor or LabAssistant...");
             } else {
                 setPlaceholder("Please select a search option...");
             }
@@ -212,38 +246,78 @@ export default function LecturerHome() {
                 isClosable: true,
             });
         }
-        let sorting = [...filteredCandidates];
+        // let sorting = [...candidates];
+        let sorting = [...subjectFilteredCandidates];
         if (selectedSearch === "availability") {
-            sorting = [...sorting].map(u => ({
+            sorting = sorting.map(u => ({
                 ...u,
-                applicationSummary: u.applications.filter(summary => summary.availability.toLowerCase() === inputText.toLowerCase())
+                applicationSummary: u.applications?.filter(summary => summary.availability.toLowerCase() === inputText.toLowerCase())||[]
             })).filter(user => user.applicationSummary.length > 0);
         } else if (selectedSearch === "tutor") {
-            sorting = [...sorting].filter(selection => selection.user.firstName.toLowerCase() === inputText.toLowerCase());
-        } else if (selectedSearch === "skillset") {
-            sorting = [...sorting].map(u => ({
+            sorting = sorting.filter(selection => selection.user.firstName.toLowerCase() === inputText.toLowerCase());
+        } else if (selectedSearch === "jobRole") {
+            sorting = sorting.map(u => ({
                 ...u,
-                applicationSummary: u.applications.filter(summary => summary.skills.some(
-                    skill => skill.split(", ").some((skillItem) => {
-                        return skillItem.toLowerCase().includes(inputText.toLowerCase())
-                    }))
+                applicationSummary: u.applications?.filter(summary =>
+                    summary.role.toLowerCase() === inputText.toLowerCase()
+                ) || []
+            })).filter(user => user.applicationSummary.length > 0);
+        } else if (selectedSearch === "skillset") {
+            sorting = sorting.map(u => ({
+                ...u,
+                applicationSummary: u.applications?.filter(summary => summary.skills.some(
+                    skill => skill.split(", ").some((skillItem) => 
+                         skillItem.toLowerCase().includes(inputText.toLowerCase())
+                    ))
 
-                )
+                ) || []
             })).filter(user => user.applicationSummary.length > 0);
         }
         setFilteredCandidates(sorting);
     }
+    const handleSorting = () => {
+        let sorted = [...filteredCandidates];
+
+        if (selectedSort === "course") {
+            sorted.sort((a, b) => {
+            const courseA = a.applications?.[0]?.course.name.toLowerCase() || "";
+            const courseB = b.applications?.[0]?.course.name.toLowerCase() || "";
+            return courseA.localeCompare(courseB);
+            });
+        } else if (selectedSort === "availability") {
+            sorted.sort((a, b) => {
+            const availA = a.applications?.[0]?.availability.toLowerCase() || "";
+            const availB = b.applications?.[0]?.availability.toLowerCase() || "";
+            return availA.localeCompare(availB);
+            });
+        }
+
+        setFilteredCandidates(sorted);
+        };
 
     console.log('Users: ', users);
-    console.log("Applications:", applications);
+    console.log("Applications:", applications); //displays all applications
+    console.log("Current user - lecturer details: ", users.find(currentUser=>currentUser.id===user?.id))
+    const lecturerDetails=users.find(currentUser=>currentUser.id===user?.id)
+    const lecturerId=lecturerDetails?.lecturer?.id;
 
-    const applicationWithUserDetails = applications.map((app) => {
-        const candidateDetails = candidates.find(c => c.id == app.candidate.id);
-        if (!candidateDetails) {
-            console.log(`No user found for application with email: ${app.candidate.id}`);
-        }
-        return { ...app, candidateDetails };
-    });
+    // Get all course IDs assigned to the current lecturer
+    const lecturerCourseIds = lecturerCourses
+        .filter(lc => lc.lecturerId === lecturerId)
+        .map(lc => lc.courseId);
+
+    console.log("Courses assigned to current lecturer:", lecturerCourseIds);
+
+    // Filter applications where the course is taught by this lecturer
+    const applicationWithUserDetails = applications
+        .filter(app => lecturerCourseIds.includes(app.course?.id))
+        .map(app => {
+            const candidateDetails = candidates.find(c => c.id === app.candidate.id);
+            if (!candidateDetails) {
+                console.log(`No user found for application with id: ${app.candidate.id}`);
+            }
+            return { ...app, candidateDetails };
+        });
 
 
     return (
@@ -270,11 +344,11 @@ export default function LecturerHome() {
                             {applicationWithUserDetails.map((application, index) => (
                                 <div key={index} className="p-4 border rounded">
                                     <p className="text-gray-800">Applicant Name: {application.candidateDetails?.user.firstName}{" "}{application.candidateDetails?.user.lastName}</p>
-                                    <p className="text-gray-800">ApplicantEmail: {application.candidateDetails?.user.email}</p>
+                                    <p className="text-gray-800">Applicant Email: {application.candidateDetails?.user.email}</p>
                                     <p className="text-gray-800">JobRole: {application.role}</p>
                                     <p className="text-gray-800">Skills: {application.skills}</p>
                                     <p className="text-gray-800">Availability: {application.availability}</p>
-                                    <p className="text-gray-800 mt-2">Highest Academic Qualification:{application.academic}</p>
+                                    <p className="text-gray-800 mt-2">Qualification:{application.academic}</p>
                                     <p className="text-gray-800">Course Name: {application.course.name}</p>
                                     <p className="text-gray-800">Previous Role: {application.previousRole}</p>
 
@@ -292,6 +366,7 @@ export default function LecturerHome() {
                                 selectedCandidates={selectedCandidates}
                                 filteredCandidatesLength={filteredCandidatesLength}
                                 sort={selectedSort}
+                                lecturerCourseIds={lecturerCourseIds}
                             />
                         )
                     }

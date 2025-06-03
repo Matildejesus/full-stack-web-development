@@ -17,4 +17,8 @@ export class LecturerCourseController {
         }
         return response.json(lecturerCourse);
     }
+    async all(request: Request, response: Response) {
+        const courses = await this.lecturerCourseRepository.find({relations:["lecturer","course"]});
+        return response.json(courses);
+    }
 }

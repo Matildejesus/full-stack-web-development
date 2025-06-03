@@ -92,12 +92,20 @@ export const lecturerService = {
         const { data } = await axios.get<Lecturer>(`${API_BASE_URL}/lecturers/${id}`);
         console.log("This is shown in profile: ", data);
         return data;
-    }
+    },
+    getAllLecturers: async ():Promise<Lecturer[]> => {
+        const { data } = await axios.get<Lecturer[]>(`${API_BASE_URL}/lecturers`);
+        return data;
+    },
 }
 
 export const lecturerCourseService = {
     getLecturerCourses: async (id: number): Promise<LecturerCoursesResponse[]> => {
         const { data } = await axios.get<LecturerCoursesResponse[]>(`${API_BASE_URL}/lecturerCourses/${id}`);
+        return data;
+    },
+    getAllLecturerCourses: async (): Promise<LecturerCourse[]> => {
+        const { data } = await axios.get<LecturerCourse[]>(`${API_BASE_URL}/lecturerCourses`);
         return data;
     }
 }

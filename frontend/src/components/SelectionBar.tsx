@@ -38,6 +38,7 @@ const SelectionBar: React.FC<SelectionBarProps>  = ({
                     <option value="tutor">Tutor Name</option>
                     <option value="availability">Availability</option>
                     <option value="skillset">Skill Set</option>
+                    <option value="jobRole">Job Role</option>
                 </select>
                 <div className="pr-10 flex flex-row w-100">
                     <FormControl isRequired>
@@ -67,7 +68,7 @@ const SelectionBar: React.FC<SelectionBarProps>  = ({
                 className="border p-2 rounded w-48 shadow"
             >
                 <option value={""}>Sort By</option>
-                {selectedSubject === "all" && <option value="course">Course</option>}
+                {selectedSubject === "all" && <option value="course">Courses</option>}
                 <option value="availability">Availability</option>
             </select>
         </div>
