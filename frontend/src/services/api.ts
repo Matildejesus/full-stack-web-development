@@ -48,6 +48,14 @@ export const userService = {
 
     login: async (email: string, password: string): Promise<User | null> => {
         const { data } = await axios.post<User>(`${API_BASE_URL}/login`, { email, password });
+        if (data.role === Role.CANDIDATE) {
+            const { data: candData } = await axios.get<Candidate>(`${API_BASE_URL}/candidates`,
+                {params:{userId: data.id}
+            });
+            if (candData.blocked) {
+                return null;
+            }
+        }
         return data;
     },
 

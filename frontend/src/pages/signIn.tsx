@@ -54,30 +54,32 @@ export default function SignIn(){
 
         try {
             const userData = await login(email, password); 
-        if (userData) { 
-            toast({
-            title: "Sign In Successful.",
-            description: "You have successfully signed in.",
-            status: "success",
-            duration: 3000,
-            isClosable: true,
-            });
-        
+            if (userData) { 
+                toast({
+                    title: "Sign In Successful.",
+                    description: "You have successfully signed in.",
+                    status: "success",
+                    duration: 3000,
+                    isClosable: true,
+                });
+            }
+            if (userData === null) {
+                setError("User is currently blocked.");
+                recaptchaRef.current?.reset();
+                return;
+            }
             if (userData.role === Role.CANDIDATE) {
                 router.push("/candidateHomePage");
             } else {
                 router.push("/lecturerHomePage")
             }
             
-        } else {
-            setError("Invalid username or password");
+        } catch (err) {
+            console.error("Login error:", err);
+            setError("Login failed. Please try again.");
+            }
+            recaptchaRef.current?.reset();
         }
-    }catch (err) {
-        console.error("Login error:", err);
-        setError("Login failed. Please try again.");
-        }
-        recaptchaRef.current?.reset();
-    }
 
     return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
