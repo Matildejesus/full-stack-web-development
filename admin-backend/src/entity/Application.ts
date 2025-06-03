@@ -10,6 +10,7 @@ import {
 import { Candidate } from "./Candidate";
 import { Course } from "./Course";
 import { LecturerSelection } from "./LecturerSelection";
+import { Semester } from "./Semester";
 
 export enum Availability {
     FULL_TIME = 'full-time',
@@ -48,6 +49,9 @@ export class Application {
 
     @Column("simple-array")
     skills: string[];
+
+    @Column({ type: "enum", enum: Semester })
+    semester: Semester;
 
     @Column()
     academic: string;

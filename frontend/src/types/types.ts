@@ -43,6 +43,7 @@ export interface Candidate {
     id: number;
     user: User;
     blocked: boolean;
+    available: boolean;
     applications: Application[];
 }
 

@@ -48,6 +48,10 @@ export default function Candidates() {
                 handleBlocked={handleBlocked}  
                 blockedText={blockedText}
                 />
+            <ButtonComp
+                handleRouter={() => router.push('/candidates/candidatesData')}
+                text="Candidates Data"
+            />
         </div>
     );
 }

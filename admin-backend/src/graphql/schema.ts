@@ -29,6 +29,7 @@ export const typeDefs = gql`
         name: String!
         code: String!
         semester: Semester!
+        applications: [Application!]!
     }
 
     type Admin {
@@ -88,6 +89,7 @@ export const typeDefs = gql`
         candidate: Candidate!
         course: Course!
         previousRole: String!
+        semester: Semester!
         role: AppRole!
         availability: Availability!
         skills: [String!]!

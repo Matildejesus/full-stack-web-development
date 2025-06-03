@@ -16,7 +16,10 @@ export class Candidate {
 
     @Column({ type: "boolean", default: false})
     blocked: Boolean;
-        
+
+    @Column({ type: "boolean", default: true })
+    available: boolean;
+
     @OneToOne(() => User, (user: User) => user.candidate)
     @JoinColumn({ name: "user_id" })
     user: User;

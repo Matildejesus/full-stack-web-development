@@ -8,6 +8,19 @@ export const GET_COURSES = gql`
             name
             code
             semester
+            applications {
+                id
+                selected_count
+                candidate {
+                    id
+                    user {
+                        id 
+                        firstName
+                        lastName
+                        avatarUrl
+                    }
+                }
+            }
         }
     }
 `;

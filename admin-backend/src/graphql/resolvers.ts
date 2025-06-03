@@ -20,7 +20,10 @@ const lecturerSelectionRepository = AppDataSource.getRepository(LecturerSelectio
 export const resolvers = {
     Query: {
         courses: async () => {
-            return await courseRepository.find();
+            return await courseRepository.find({
+                // relations: ['applications', 'applications.candidate', 'applications.candidate.user']
+                relations: ['applications', 'applications.candidate', 'applications.candidate.user']
+            });
         },
         course: async (_: any, { id }: { id: string }) => {
             return await courseRepository.findOne({

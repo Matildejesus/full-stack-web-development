@@ -32,6 +32,7 @@ export interface Application {
     course: Course;
     previousRole: string;
     role: AppRole;
+    semester: Semester;
     availability: Availability;
     skills: string[];
     academic: string;
@@ -43,6 +44,7 @@ export interface Candidate {
     id: number;
     user: User;
     blocked: boolean;
+    available: boolean;
     applications: Application[];
 }
 
