@@ -62,12 +62,7 @@ export const userService = {
     updateUser: async (
         id: number,
         user: {
-            // firstName?: string;
-            // lastName?: string;
-            // email?: string;
-            // password?: string;
             avatarUrl?: string;
-            // role?: Role;
         }
     ): Promise<User> => {
         const { data } = await axios.put<User>(`${API_BASE_URL}/users/${id}`, user);

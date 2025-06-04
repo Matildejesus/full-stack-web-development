@@ -44,7 +44,7 @@ export const resolvers = {
         },
         candidates: async () => {
             return await candidateRepository.find({
-                relations: ['user']
+                relations: ['user', 'applications', 'applications.course']
             });
         },
         candidate: async (_: any, { id }: { id: string }) => {
@@ -156,5 +156,10 @@ export const resolvers = {
                 relations: ['user']
             });
         },
-    }
+    },
+    // Subscription: {
+    //     candidateUnavailable: {
+    //         subscribe: () => pubsub.asyncIterator(["CANDIDATE_UNAVAILABLE"]),
+    //     },
+    // },
 };

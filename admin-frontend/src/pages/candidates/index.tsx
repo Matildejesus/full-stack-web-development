@@ -5,6 +5,15 @@ import { Candidate } from "@/types/types";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
+/**
+ * Container Component:
+ * Handles business logic related to:
+ *    - Fetching candidates data 
+ *    - Managing the access state of candidates
+ * 
+ * Passes props to CandidateList, ButtonComp (presenter)
+ */
+
 export default function Candidates() {
     const router = useRouter();
     const [candidates, setCandidates] = useState<Candidate[]>([]);

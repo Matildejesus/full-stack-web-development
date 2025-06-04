@@ -3,6 +3,16 @@ import { userService } from "../services/api";
 import SignInForm from "@/components/SignInForm";
 import { useRouter } from "next/router";
 
+/**
+ * Container Component:
+ * Handles business logic related to:
+ *    - Login authentication service 
+ *    - Managing form states
+ *    - Rerouting to course page
+ * 
+ * Passes props to SignInForm (presenter)
+ */
+
 export default function Home() {
     const [error, setError] = useState("");
     const [username, setUsername] = useState("");

@@ -1,6 +1,14 @@
 import { Semester } from "@/types/types";
 import { Button, FormControl, FormLabel, Input, Select, Text, VStack } from "@chakra-ui/react"
 
+/**
+ * Presenter Component:
+ * Handles UI rendering related to:
+ *   - displaying form to add or update course
+ * 
+ * Receives props from courses/index.tsx and course/[id].tsx (container)
+ */
+
 interface CreateCourseProps {
     handleCreateCourse: (e: React.FormEvent) => void;
     isAdding?: boolean;

@@ -1,6 +1,16 @@
 import { Button, Text } from "@chakra-ui/react";
 import { Course } from "../types/types";
 
+/**
+ * Presenter Component:
+ * Handles UI rendering related to:
+ *   - displaying courses
+ *   - displaying 2 buttons allow for navigation
+ *     or deleting of course
+ * 
+ * Receives props from courses/index.tsx (container)
+ */
+
 interface CourseListProps {
     courses: Course[];
     title: string;

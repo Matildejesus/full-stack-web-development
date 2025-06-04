@@ -1,5 +1,14 @@
 import { Button, FormControl, FormLabel, Input, Text, VStack } from "@chakra-ui/react";
 
+/**
+ * Presenter Component:
+ * Handles UI rendering related to:
+ *   - Displaying Sign-in form
+ *   - Displaying error messages
+ * 
+ * Receives props from index (container)
+ */
+
 interface SignInFormProps {
     handleSubmit: (e: React.FormEvent) => Promise<void>;
     username: string;

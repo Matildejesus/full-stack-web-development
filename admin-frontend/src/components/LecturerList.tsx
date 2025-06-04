@@ -1,6 +1,15 @@
 import { Lecturer, LecturerCourse, Semester } from "@/types/types"
 import { Button, Select } from "@chakra-ui/react";
 
+/**
+ * Presenter Component:
+ * Handles UI rendering related to:
+ *   - displaying list of lecturers teaching a specific course
+ *   - displaying a drop down with lecturers not teaching course
+ * 
+ * Receives props from course/[id].tsx (container)
+ */
+
 interface LecturerListProps {
     lecturers: LecturerCourse[];
     allLecturers: Lecturer[];
@@ -46,7 +55,7 @@ export default function LecturerList({ lecturers, allLecturers, chosenLecturer, 
             )} 
             <Button
                 type="button" className="z-50 px-6 py-4"
-                onClick={() => addLecturerToCourse(chosenLecturer, courseSemester === Semester.BOTH ? lecturerSemester : undefined )}
+                onClick={() => addLecturerToCourse(chosenLecturer, lecturerSemester )}
             >
                 Add Lecturer
             </Button>

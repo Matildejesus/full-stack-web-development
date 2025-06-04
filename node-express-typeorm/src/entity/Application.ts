@@ -53,7 +53,7 @@ export class Application {
     academic: string;
 
     @Column({ default: 0 })
-    selected_count: number;
+    selectedCount: number;
 
     @OneToMany(() => LecturerSelection, (lecturerSelection: LecturerSelection) => lecturerSelection.application)
     lecturerSelections: LecturerSelection[];

@@ -6,6 +6,17 @@ import CourseList from "@/components/CourseList";
 import CreateCourse from "@/components/CreateCourse";
 import ButtonComp from "@/components/ButtonComp";
 
+/**
+ * Container Component:
+ * Handles business logic related to:
+ *    - Fetching courses data 
+ *    - Managing form states
+ *    - Handling adding/editing/deleting of courses 
+ *    - Rerouting to course profile and candidate list
+ * 
+ * Passes props to CourseList, CreateCourse, ButtonComp (presenter)
+ */
+
 export default function Courses() {
     const router = useRouter();
     const [name, setName] = useState("");

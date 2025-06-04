@@ -1,10 +1,18 @@
 import { Candidate } from "@/types/types"
-import { Button, Select } from "@chakra-ui/react";
 import ButtonComp from "./ButtonComp";
+
+/**
+ * Presenter Component:
+ * Handles UI rendering related to:
+ *   - displaying candidates
+ *   - toggle button to change access state
+ * 
+ * Receives props from candidates/index.tsx (container)
+ */
 
 interface CandidateListProps {
     candidates: Candidate[];
-    handleBlocked: (id: number) => Promise<void>;
+    handleBlocked: (id: number) => void;
     blockedText: string;
 }
 

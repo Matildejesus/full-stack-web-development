@@ -10,7 +10,7 @@ export const GET_COURSES = gql`
             semester
             applications {
                 id
-                selected_count
+                selectedCount
                 candidate {
                     id
                     user {
@@ -147,6 +147,13 @@ export const GET_CANDIDATES = gql`
                 lastName
                 email
                 avatarUrl
+            }
+            applications { 
+                selectedCount   
+                role
+                course {
+                    id
+                }
             }
         }
     }

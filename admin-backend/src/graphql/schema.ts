@@ -94,7 +94,7 @@ export const typeDefs = gql`
         availability: Availability!
         skills: [String!]!
         academic: String!
-        selected_count: Int!
+        selectedCount: Int!
         lecturerSelections: [LecturerSelection!]!
     }
 
@@ -123,6 +123,9 @@ export const typeDefs = gql`
         logout: Boolean
         createLecturerCourse(lecturerId: ID!, courseId: ID!, semester: Semester!): LecturerCourse!
         updateCandidateBlocked(id: ID!, blocked: Boolean!): Candidate
-
+    }
+    
+    type Subscription {
+        candidateUnavailable: User!
     }
 `;

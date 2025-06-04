@@ -2,10 +2,20 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { Course, Lecturer, LecturerCourse, Semester } from "../../types/types";
 import { courseService, lecturerCoursesService, lecturerService } from "../../services/api";
-import { Button } from "@chakra-ui/react";
 import CreateCourse from "@/components/CreateCourse";
 import LecturerList from "@/components/LecturerList";
 import ButtonComp from "@/components/ButtonComp";
+
+/**
+ * Container Component:
+ * Handles business logic related to:
+ *    - Retrieval of courses and the related lecturers
+ *    - Managing form states
+ *    - The update of course details
+ *    - The assigning of lecturers
+ * 
+ * Passes props to CreateCourse, LecturerList, ButtonComp (presenter)
+ */
 
 export default function CoursePage() {
     const router = useRouter();
@@ -41,7 +51,6 @@ export default function CoursePage() {
         try {
             const data = await courseService.getCourse(id as string);
             setCourse(data);
-            // Set local state from fetched data
             setName(data.name);
             setCode(data.code);
             setSemester(data.semester);
@@ -76,7 +85,7 @@ export default function CoursePage() {
     const addLecturerToCourse = async () => {
         try {
             let sem;
-            if (lecturerSemester) {
+            if (semester == Semester.BOTH && lecturerSemester) {
                 sem = lecturerSemester;
             } else {
                 sem = semester;

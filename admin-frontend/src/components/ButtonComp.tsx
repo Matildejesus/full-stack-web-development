@@ -1,5 +1,14 @@
 import { Button } from "@chakra-ui/react";
 
+/**
+ * Presenter Component:
+ * Handles UI rendering related to:
+ *   - Displaying a button
+ * 
+ * Receives props from many pages (container)
+ */
+
+
 interface CandidateButtonProps {
     handleRouter: () => void;
     text: string;
