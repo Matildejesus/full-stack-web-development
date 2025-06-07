@@ -8,6 +8,7 @@ import { Lecturer } from "../entity/Lecturer";
 import { Application } from "../entity/Application";
 import { LecturerSelection } from "../entity/LecturerSelection";
 import bcrypt from "bcrypt";
+import { PubSub } from "graphql-subscriptions";
 
 const courseRepository = AppDataSource.getRepository(Course);
 const lecturerCourseRepository = AppDataSource.getRepository(LecturerCourse);
@@ -16,6 +17,7 @@ const userRepository = AppDataSource.getRepository(User);
 const lecturerRepository = AppDataSource.getRepository(Lecturer);
 const applicationRepository = AppDataSource.getRepository(Application);
 const lecturerSelectionRepository = AppDataSource.getRepository(LecturerSelection);
+export const pubsub = new PubSub();
 
 export const resolvers = {
     Query: {
@@ -150,16 +152,20 @@ export const resolvers = {
             _: any,
             { id, blocked }: { id: string, blocked: boolean }
         ) => {
-            await candidateRepository.update({ id: parseInt(id) }, { blocked });
-            return await candidateRepository.findOne({
+            const updatedCandidate = await candidateRepository.update({ id: parseInt(id) }, { blocked });
+            const returnData = candidateRepository.findOne({
                 where: { id: parseInt(id) },
                 relations: ['user']
             });
+            if (blocked) {
+                pubsub.publish("CANDIDATE_UNAVAILABLE", { candidateUpdated: returnData })
+            }
+            return returnData;
         },
     },
-    // Subscription: {
-    //     candidateUnavailable: {
-    //         subscribe: () => pubsub.asyncIterator(["CANDIDATE_UNAVAILABLE"]),
-    //     },
-    // },
+    Subscription: {
+        candidateUnavailable: {
+            subscribe: () => pubsub.asyncIterator(["CANDIDATE_UNAVAILABLE"]),
+        },
+    },
 };

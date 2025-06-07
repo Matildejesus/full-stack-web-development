@@ -175,8 +175,6 @@ export const GET_CANDIDATE = gql`
     }
 `;
 
-// get candidates is missing applications implement later
-
 // MUTATION
 export const CREATE_COURSE = gql`
     mutation CreateCourse(
