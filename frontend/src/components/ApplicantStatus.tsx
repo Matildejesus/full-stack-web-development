@@ -9,7 +9,7 @@ export default function ApplicantStatus() {
     leastChosen,
     leastChosenCount,
     notChosen,
-    byCandidate 
+    // byCandidate 
   } = useApplicantStats();
 
 
@@ -27,14 +27,17 @@ export default function ApplicantStatus() {
             <div className="mt-6 flex flex-col md:flex-row gap-6">
               <div className="flex-1 p-6 rounded-md shadow-lg bg-red-100 border-2 border-red-500">
                 <ul className="list-disc list-inside ml-4">
-                  {mostChosen.map((applicant, index) => (
-                    applicant ? (
-                    <li key={index}>
-                      {applicant.firstName ?? "Unknown"} - ({applicant.email ?? "No email"})
+                  {mostChosen.map(({ user, applications }) => (
+                    <li key={user.id}>
+                      {user.firstName} ({user.email})
+                      <ul>
+                        {applications.map((app, i) => (
+                          <li key={i}>
+                            {app.course.name} – {app.role}
+                          </li>
+                        ))}
+                      </ul>
                     </li>
-                  ) : (
-                    <li key={index}>Invalid user</li>
-                    )
                   ))}
                 </ul>
               </div>
@@ -51,9 +54,16 @@ export default function ApplicantStatus() {
             <div className="mt-6 flex flex-col md:flex-row gap-6">
               <div className="flex-1 p-6 rounded-md shadow-lg bg-red-100 border-2 border-red-500">
                 <ul className="list-disc list-inside ml-4">
-                  {leastChosen.map((applicant, index) => (
-                    <li key={index}>
-                      {applicant.firstName} - ({applicant.email})
+                  {leastChosen.map(({ user, applications }) => (
+                    <li key={user.id}>
+                      {user.firstName} ({user.email})
+                      <ul>
+                        {applications.map((app, i) => (
+                          <li key={i}>
+                            {app.course.name} – {app.role}
+                          </li>
+                        ))}
+                      </ul>
                     </li>
                   ))}
                 </ul>
@@ -71,17 +81,18 @@ export default function ApplicantStatus() {
             <div className="mt-6 flex flex-col md:flex-row gap-6">
               <div className="flex-1 p-6 rounded-md shadow-lg bg-red-100 border-2 border-red-500">
                 <ul className="list-disc list-inside ml-4">
-                  {notChosen.map((applicant, index) => (
-                        applicant ? (
-                        <li key={index}>
-                            {applicant.firstName} - ({applicant.email})
-                        </li>
-                        ) : (
-                            
-                        <li key={index}>In valid user</li>
-                        
-                        )
-                    ))}
+                  {notChosen.map(({ user, applications }) => (
+                    <li key={user.id}>
+                      {user.firstName} ({user.email})
+                      <ul>
+                        {applications.map((app, i) => (
+                          <li key={i}>
+                            {app.course.name} – {app.role}
+                          </li>
+                        ))}
+                      </ul>
+                    </li>
+                  ))}
                 </ul>
               </div>
             </div>

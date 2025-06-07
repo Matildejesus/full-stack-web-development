@@ -3,15 +3,15 @@ import { User,Application } from "@/types/types";
 import { useState, useEffect } from "react";
 interface PerCandidateInfo {
   user: User;
-  courseRoles: string[];          
+  applications: Application[];        
 }
 interface Stats {
-  mostChosen: User[];
+  mostChosen: PerCandidateInfo[];
   mostChosenCount: number;
-  leastChosen: User[];
+  leastChosen: PerCandidateInfo[];
   leastChosenCount: number;
-  notChosen: User[];
-  byCandidate: Record<number, PerCandidateInfo>; 
+  notChosen: PerCandidateInfo[];
+  // byCandidate: Record<number, PerCandidateInfo>; 
 }
 export function useApplicantStats(): Stats {
   const { cUsers, assignedApplications, candidatesLec } = useAuth();
@@ -22,7 +22,7 @@ export function useApplicantStats(): Stats {
     leastChosen: [],
     leastChosenCount: 0,
     notChosen: [],
-    byCandidate: {}
+    // byCandidate: {}
   });
 
   useEffect(() => {
@@ -33,7 +33,7 @@ export function useApplicantStats(): Stats {
         leastChosen: [],
         leastChosenCount: 0,
         notChosen: [],
-        byCandidate: {}
+        // byCandidate: {}
       });
       return;
     }
@@ -43,17 +43,17 @@ export function useApplicantStats(): Stats {
 
     assignedApplications.forEach(app => {
       const cid = app.candidate.id;
-      const label = `${app.course.name} – ${app.role}`;
       countMap[cid] = (countMap[cid] || 0) + (app.selectedCount ?? 0);
 
-      const u = cUsers.find(u => u.candidate?.id === cid);
-      if (!u) return;
+      const user = cUsers.find(u => u.candidate?.id === cid);
+      if (!user) return;
 
       if (!byCandidate[cid]) {
-        byCandidate[cid] = { user: u, courseRoles: [label] };
-      } else if (!byCandidate[cid].courseRoles.includes(label)) {
-        byCandidate[cid].courseRoles.push(label);
+        byCandidate[cid] = { user, applications: [app] };
+      } else {
+        byCandidate[cid].applications.push(app);
       }
+
     });
 
     const allCounts = Object.values(countMap);
@@ -61,25 +61,45 @@ export function useApplicantStats(): Stats {
     const nonZeroCounts = allCounts.filter(c => c > 0);
     const minNonZero = nonZeroCounts.length > 1 ? Math.min(...nonZeroCounts) : Infinity;
 
-    const most: User[] = [];
-    const least: User[] = [];
-    const not: User[] = [];
+    const most: PerCandidateInfo[] = [];
+    const least: PerCandidateInfo[] = [];
+    const not: PerCandidateInfo[] = [];
 
-    candidatesLec.forEach(cand => {
-      const cid = cand.id;
-      const tot = countMap[cid] ?? 0;
-      const u = cUsers.find(u => u.candidate?.id === cid);
-      if (!u) return;
+    // candidatesLec.forEach(cand => {
+    // const cid = cand.id;
+    // const total = countMap[cid] ?? 0;
+    // const candidateInfo = byCandidate[cid];
 
-      if (tot === 0) {
-        not.push(u);
-      } else {
-        if (tot === max) most.push(u);
+    // if (total === 0) {
+    // const user = cUsers.find(u => u.candidate?.id === cid);
+    // if (user) not.push({ user, applications: [] });
+    // } else {
+    // if (total === max && candidateInfo) most.push(candidateInfo);
+    // if (total === minNonZero && minNonZero !== Infinity && minNonZero !== max && candidateInfo) {
+    //   least.push(candidateInfo);
+    // }
+    // }
+    // });
+    Object.entries(byCandidate).forEach(([cidStr, info]) => {
+    const cid = Number(cidStr);
+    const total = countMap[cid] ?? 0;
 
-        if (tot === minNonZero && minNonZero !== Infinity && minNonZero !== max) {
-          least.push(u);
-        }      }
-    });
+    if (total === max) {
+      most.push(info);
+    } else if (total === minNonZero && minNonZero !== Infinity && minNonZero !== max) {
+      least.push(info);
+    }
+  });
+
+  // Handle candidates with no selections
+  candidatesLec.forEach(cand => {
+    const cid = cand.id;
+    if (!countMap[cid]) {
+      const user = cUsers.find(u => u.candidate?.id === cid);
+      if (user) not.push({ user, applications: [] });
+    }
+  });
+
 
     setStats({
       mostChosen: most,
@@ -87,7 +107,7 @@ export function useApplicantStats(): Stats {
       leastChosen: least,
       leastChosenCount: least.length ? minNonZero : 0,
       notChosen: not,
-      byCandidate
+      // byCandidate
     });
   }, [assignedApplications, candidatesLec, cUsers]);
 
