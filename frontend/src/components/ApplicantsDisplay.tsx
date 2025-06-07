@@ -3,7 +3,7 @@ import React from "react";
 import ApplicationDisplay from "./ApplicationDisplay";
 import { LecturerSelection, Candidate } from "@/types/types";
 import { useApplicantsLogic } from "@/hooks/useApplicantsLogic"; // 👈 import logic hook
-
+import { useState } from "react";
 interface ApplicantsDisplayProps {
   selectedSubject: string | null;
   handleRankingChange: (rank: number, applicantId: number) => void;
@@ -28,6 +28,15 @@ const ApplicantsDisplay: React.FC<ApplicantsDisplayProps> = ({
   lecturerCourseIds
 }) => {
   const { filteredByLecturerCourses } = useApplicantsLogic(filteredCandidates, sort || null, lecturerCourseIds);
+  
+  const [uiSelectedIds, setUiSelectedIds] = useState<number[]>([]);
+
+  const handleUISelect = (id: number) => {
+    if (!uiSelectedIds.includes(id)) {
+      setUiSelectedIds(prev => [...prev, id]);
+    }
+  };
+
 
   return (
     <>
@@ -42,7 +51,16 @@ const ApplicantsDisplay: React.FC<ApplicantsDisplayProps> = ({
               <div key={candidate.id} className="mb-6 p-4">
                 <div className="flex gap-7 row ">
                   <h3 className="font-bold text-lg">{candidate.user.firstName}</h3>
-
+                  {!selected && !uiSelectedIds.includes(candidate.id) ? (
+                    <button
+                      onClick={() => handleUISelect(candidate.id)}
+                      className="bg-red-800 text-white"
+                    >
+                      Select
+                    </button>
+                  ) : (
+                    <>
+                  
                   <select
                     value={selected?.rank || ""}
                     onChange={(e) =>
@@ -63,6 +81,8 @@ const ApplicantsDisplay: React.FC<ApplicantsDisplayProps> = ({
                       );
                     })}
                   </select>
+                  </>
+                  )}
                 </div>
 
                 <ApplicationDisplay

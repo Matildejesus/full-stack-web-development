@@ -67,7 +67,25 @@ export const userService = {
     ): Promise<User> => {
         const { data } = await axios.put<User>(`${API_BASE_URL}/users/${id}`, user);
         return data;
-    }
+    },
+
+    uploadAvatar: async (file: File): Promise<{ url: string }> => {
+        const formData = new FormData();
+        formData.append("avatar", file);
+
+        const { data } = await axios.post<{ url: string }>(
+        `${API_BASE_URL}/users/upload-avatar`,
+        formData,
+        {
+            headers: {
+            "Content-Type": "multipart/form-data",
+            },
+        }
+        );
+
+        return data;
+    },
+
 }
 
 export const courseService = {
