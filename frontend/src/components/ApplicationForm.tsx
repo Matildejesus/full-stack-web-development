@@ -4,7 +4,7 @@ import { NewAppPayload } from "@/hooks/useApplicationForm";
 
 interface ApplicationFormData {
     course: string;
-    role: string;
+    role: AppRole;
     availability: string;
     skills: string;
     academic: string;
