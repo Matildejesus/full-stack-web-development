@@ -19,9 +19,6 @@ export default function ApplicationPage() {
     refreshApps,
   } = useApplicationsData();
 
-  if (loading) return <p className="p-8">Loading …</p>;
-  if (!meAsCandidate) return <p className="p-8">Candidate profile not found.</p>;
-
   const {
     form,
     update,
