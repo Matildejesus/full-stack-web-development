@@ -141,6 +141,7 @@ export const GET_CANDIDATES = gql`
         candidates {
             id
             blocked
+            available
             user {
                 id
                 firstName
@@ -164,6 +165,7 @@ export const GET_CANDIDATE = gql`
         candidate(id: $id) {
             id
             blocked
+            available
             user {
                 id
                 firstName
@@ -244,6 +246,30 @@ export const UPDATE_CANDIDATE_BLOCKED = gql`
         ) {
             id
             blocked
+            available
+            user {
+                id
+                firstName
+                lastName
+                email
+                avatarUrl
+            }
+        }
+    }
+`;
+
+export const UPDATE_CANDIDATE_AVAILABLE = gql`
+    mutation UpdateCandidateAvailable(
+        $id: ID!
+        $available: Boolean!
+    ) {
+        updateCandidateAvailable(
+            id: $id
+            available: $available
+        ) {
+            id
+            blocked
+            available
             user {
                 id
                 firstName

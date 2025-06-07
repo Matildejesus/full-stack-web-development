@@ -41,6 +41,7 @@ export const typeDefs = gql`
         id: ID!
         user: User!
         blocked: Boolean
+        available: Boolean
         applications: [Application!]!
     }
 
@@ -123,6 +124,7 @@ export const typeDefs = gql`
         logout: Boolean
         createLecturerCourse(lecturerId: ID!, courseId: ID!, semester: Semester!): LecturerCourse!
         updateCandidateBlocked(id: ID!, blocked: Boolean!): Candidate
+        updateCandidateAvailable(id: ID!, available: Boolean!): Candidate
     }
     
     type Subscription {

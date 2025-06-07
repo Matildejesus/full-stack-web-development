@@ -157,7 +157,18 @@ export const resolvers = {
                 where: { id: parseInt(id) },
                 relations: ['user']
             });
-            if (blocked) {
+            return returnData;
+        },
+        updateCandidateAvailable: async (
+            _: any,
+            { id, available }: { id: string, available: boolean }
+        ) => {
+            const updatedCandidate = await candidateRepository.update({ id: parseInt(id) }, { available });
+            const returnData = candidateRepository.findOne({
+                where: { id: parseInt(id) },
+                relations: ['user']
+            });
+            if (!available) {
                 pubsub.publish("CANDIDATE_UNAVAILABLE", { candidateUpdated: returnData })
             }
             return returnData;
