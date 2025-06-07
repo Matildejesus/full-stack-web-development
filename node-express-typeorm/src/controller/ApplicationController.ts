@@ -73,4 +73,29 @@ export class ApplicationController {
                 .json({ message: "Error saving Application", error });
         }
     }
+    /* src/controller/ApplicationController.ts */
+
+    async incrementSelectedCount(req: Request, res: Response) {
+    try {
+        const { applicationId } = req.params;       // URL /applications/:applicationId/selected
+        const incrementBy = Number(req.body.increment ?? 1); // default +1
+
+        const repo = AppDataSource.getRepository(Application);
+        const application = await repo.findOneBy({ id: +applicationId });
+
+        if (!application) {
+        return res.status(404).json({ message: "Application not found" });
+        }
+
+        application.selectedCount = (application.selectedCount || 0) + incrementBy;
+        await repo.save(application);
+
+        return res.json({ success: true, application });
+    } catch (err) {
+        console.error("incrementSelectedCount error:", err);
+        return res.status(500).json({ message: "Server error" });
+    }
+    }
+
+
 }

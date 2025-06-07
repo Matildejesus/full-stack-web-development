@@ -1,55 +1,70 @@
-import { Application, Candidate } from "@/types/types";
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { Candidate } from "@/types/types";
+import { useApplicationList } from "@/hooks/useApplicationList";
 
 interface ApplicationDisplayProps {
-    candidate?: Candidate | null;
-    isLoggedInUser?: boolean;
-    sort?: string | null;
-    lecturerCourseIds: number[];
+  candidate?: Candidate | null;
+  sort?: string | null;
+  lecturerCourseIds: number[];
 }
 
-const ApplicationDisplay: React.FC<ApplicationDisplayProps> = ({ candidate, sort, lecturerCourseIds }) => {
-    const [sortedList, setSortedList] = useState<Application[]>([]);
+const ApplicationDisplay: React.FC<ApplicationDisplayProps> = ({
+  candidate,
+  sort,
+  lecturerCourseIds,
+}) => {
 
-    useEffect(() => {
-        if (!candidate?.applications) {
-            setSortedList([]);
-            return;
-        }
+  const applications = useApplicationList(candidate, sort, lecturerCourseIds);
 
-        let applications = candidate.applications.filter(app => 
-            lecturerCourseIds.includes(app.course.id)
-        );
+  if (!candidate) return <p>No candidate data available.</p>;
 
-        if (sort === "course") {
-            applications.sort((a, b) => a.course.name.localeCompare(b.course.name));
-        } else if (sort === "availability") {
-            applications.sort((a, b) => a.availability.localeCompare(b.availability));
-        }
+  const avatarUrl = candidate.user.avatarUrl;
+  const showAvatar = avatarUrl && avatarUrl.startsWith("blob:");
 
-        setSortedList(applications);
-    }, [candidate, sort, lecturerCourseIds]);
+  return (
+    <ul className="space-y-6">
+      {applications.map(app => (
+        <li
+          key={app.id}
+          className="flex gap-4 p-5 rounded-2xl shadow-sm bg-white border"
+        >
+          {showAvatar && (
+            <img
+              src={avatarUrl}
+              alt={`${candidate.user.firstName} ${candidate.user.lastName}`}
+              className="w-16 h-16 rounded-full object-cover border border-gray-300 shrink-0"
+            />
+          )}
 
-    if (!candidate) {
-        return <p>No candidate data available.</p>;
-    }
-
-    return (
-        <ul className="space-y-4">
-            {sortedList.map((u, index) => (
-                <li key={index} className="border p-4 rounded bg-white">
-                    <p><strong>Application Id: </strong>{u.id}</p>
-                    <p><strong>Candidate Id: </strong>{u.candidate.id}</p>
-                    <p><strong>Course Name: </strong>{u.course.name}</p>
-                    <p><strong>Job Role:</strong> {u.role}</p>
-                    <p><strong>Previous Role:</strong> {u.previousRole}</p>
-                    <p><strong>Availability:</strong> {u.availability}</p>
-                    <p><strong>Skills:</strong> {u.skills.join(", ")}</p>
-                    <p><strong>Academic Credentials:</strong> {u.academic}</p>
-                </li>
-            ))}
-        </ul>
-    );
+          <div className="space-y-1 text-sm">
+            <p>
+              <span className="font-semibold">Application ID:</span> {app.id}
+            </p>
+            <p>
+              <span className="font-semibold">Course:</span> {app.course.name}
+            </p>
+            <p>
+              <span className="font-semibold">Job Role:</span> {app.role}</p>
+            <p>
+              <span className="font-semibold">Previous Role:</span>{" "}
+              {app.previousRole}
+            </p>
+            <p>
+              <span className="font-semibold">Availability:</span>{" "}
+              {app.availability}
+            </p>
+            <p>
+              <span className="font-semibold">Skills:</span>{" "}
+              {app.skills.join(", ")}
+            </p>
+            <p>
+              <span className="font-semibold">Academic:</span> {app.academic}
+            </p>
+          </div>
+        </li>
+      ))}
+    </ul>
+  );
 };
 
 export default ApplicationDisplay;

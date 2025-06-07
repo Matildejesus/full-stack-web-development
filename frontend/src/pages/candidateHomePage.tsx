@@ -10,18 +10,20 @@ export default function CandidateHomePage() {
 
     const router = useRouter();
     const [courses, setCourses] = useState<Course[]>([]);
+    // console.log("Courses are ", courses)
         
     useEffect(() => {
-        const fetchCourses = async () => {
-            const data = await courseService.getAllCourses();
-            setCourses(data);
-            console.log(data);
-        };
-
-        if (setCourses.length === 0) {
-            fetchCourses();
-        }
-    }, []);
+           const fetchCourses = async () => {
+                const data = await courseService.getAllCourses();
+                setCourses(data);
+                console.log("subjetcs are ",data);
+            };
+    
+            if (courses.length === 0) {
+                fetchCourses();
+            }
+          
+      }, []);
 
     return (
         <>

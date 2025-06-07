@@ -20,6 +20,27 @@ export class LecturerController {
         const lecturers = await this.lecturerRepository.find({relations:["user"]});
         return response.json(lecturers);
     }
+    async getLecturerByUserId(request: Request, response: Response) {
+    const userId = parseInt(request.params.userId);
+
+    try {
+      const lecturer = await this.lecturerRepository.findOne({
+        where: { user: { id: userId } },
+        relations: ["user", "lecturerCourses", "lecturerSelections"], // add more relations if needed
+      });
+
+      if (!lecturer) {
+        return response.status(404).json({ message: "Lecturer not found" });
+      }
+
+      return response.json(lecturer);
+    } catch (error) {
+      console.error("Error in getByUserId:", error);
+      return response.status(500).json({ message: "Internal server error" });
+    }
+  }
+    
+
 }
 //     async getLecturerCourses(request: Request, response: Response) {
 //         const id = parseInt(request.params.id);

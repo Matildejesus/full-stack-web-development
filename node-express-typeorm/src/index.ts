@@ -10,6 +10,7 @@ import applicationRoutes from "./routes/application.routes";
 import candidateRoutes from "./routes/candidate.routes";
 import lecturerRoutes from "./routes/lecturer.routes";
 import lecturerCourseRoutes from "./routes/lecturerCourse.routes";
+import lecturerSelectionRoutes from "./routes/lecturerSelection.routes"
 import cors from "cors";
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -22,6 +23,7 @@ app.use("/api", applicationRoutes);
 app.use("/api", candidateRoutes);
 app.use("/api", lecturerRoutes);
 app.use("/api", lecturerCourseRoutes);
+app.use("/api", lecturerSelectionRoutes);
 
 console.log("AppDataSource:", AppDataSource);
 AppDataSource.initialize()

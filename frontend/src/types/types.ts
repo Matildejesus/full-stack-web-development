@@ -1,3 +1,7 @@
+import { NewAppPayload } from "@/hooks/useApplicationForm";
+
+export type ApplicationFormData = Omit<NewAppPayload, "candidateId">;
+
 export enum Role {
     ADMIN = "admin",
     CANDIDATE = "candidate",

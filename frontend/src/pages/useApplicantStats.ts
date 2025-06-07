@@ -1,68 +1,95 @@
 import { useAuth } from "@/context/AuthContext";
-import { LecturerSelection, User, Candidate, Application ,Lecturer, Course} from "@/types/types";
+import { User,Application } from "@/types/types";
 import { useState, useEffect } from "react";
-
-interface useApplicantStatsResult {
+interface PerCandidateInfo {
+  user: User;
+  courseRoles: string[];          
+}
+interface Stats {
   mostChosen: User[];
   mostChosenCount: number;
   leastChosen: User[];
   leastChosenCount: number;
   notChosen: User[];
+  byCandidate: Record<number, PerCandidateInfo>; 
 }
+export function useApplicantStats(): Stats {
+  const { cUsers, assignedApplications, candidatesLec } = useAuth();
 
-export function useApplicantStats(): useApplicantStatsResult {
-  const [mostChosen, setMostChosen] = useState<User[]>([]);
-  const [leastChosen, setLeastChosen] = useState<User[]>([]);
-  const [notChosen, setNotChosen] = useState<User[]>([]);
-  const [mostChosenCount, setMostChoseCount] = useState<number>(0);
-  const [leastChosenCount, setLeastChosenCount] = useState<number>(0);
-  const { user } = useAuth();
+  const [stats, setStats] = useState<Stats>({
+    mostChosen: [],
+    mostChosenCount: 0,
+    leastChosen: [],
+    leastChosenCount: 0,
+    notChosen: [],
+    byCandidate: {}
+  });
 
   useEffect(() => {
-    let count = 0;
-    let minCount = 0;
-    let maxCount = 0;
+    if (!assignedApplications.length) {
+      setStats({
+        mostChosen: [],
+        mostChosenCount: 0,
+        leastChosen: [],
+        leastChosenCount: 0,
+        notChosen: [],
+        byCandidate: {}
+      });
+      return;
+    }
 
-    user?.forEach((u) => {
-        if (u.role === "Tutor") {
-        u.jobSummary.forEach((summary) => {
-          count += summary.selectedCount;
-        });
-        
-        if (count === 0) {
-          setNotChosen((prev) => [...prev, u]);
-        }
-        else {
-          if (maxCount === 0 && minCount == 0) {
-            maxCount = count;
-            minCount = count;
-            setMostChosen((prev) => [...prev, u]);
-            setLeastChosen((prev) => [...prev, u]);
-          } else if (count > maxCount) {
-            maxCount = count;
-            setMostChosen([u]);
-          } else if (count === maxCount) {
-            setMostChosen((prev) => [...prev, u]);
-          } else if (count < minCount) {
-            minCount = count;
-            setLeastChosen([u]);
-          } else if (count === minCount) {
-            setLeastChosen((prev) => [...prev, u]);
-          }
-        }
-      count = 0;
-        }
+    const byCandidate: Record<number, PerCandidateInfo> = {};
+    const countMap: Record<number, number> = {};
+
+    assignedApplications.forEach(app => {
+      const cid = app.candidate.id;
+      const label = `${app.course.name} – ${app.role}`;
+      countMap[cid] = (countMap[cid] || 0) + (app.selectedCount ?? 0);
+
+      const u = cUsers.find(u => u.candidate?.id === cid);
+      if (!u) return;
+
+      if (!byCandidate[cid]) {
+        byCandidate[cid] = { user: u, courseRoles: [label] };
+      } else if (!byCandidate[cid].courseRoles.includes(label)) {
+        byCandidate[cid].courseRoles.push(label);
+      }
     });
 
-    setMostChoseCount(maxCount);
-    setLeastChosenCount(minCount);
-  }, [users]);
+    const allCounts = Object.values(countMap);
+    const max = Math.max(...allCounts);
+    const nonZeroCounts = allCounts.filter(c => c > 0);
+    const minNonZero = nonZeroCounts.length > 1 ? Math.min(...nonZeroCounts) : Infinity;
 
-  return {
-    mostChosen,
-    mostChosenCount,
-    leastChosen,
-    leastChosenCount,
-    notChosen,
-  };
+    const most: User[] = [];
+    const least: User[] = [];
+    const not: User[] = [];
+
+    candidatesLec.forEach(cand => {
+      const cid = cand.id;
+      const tot = countMap[cid] ?? 0;
+      const u = cUsers.find(u => u.candidate?.id === cid);
+      if (!u) return;
+
+      if (tot === 0) {
+        not.push(u);
+      } else {
+        if (tot === max) most.push(u);
+
+        if (tot === minNonZero && minNonZero !== Infinity && minNonZero !== max) {
+          least.push(u);
+        }      }
+    });
+
+    setStats({
+      mostChosen: most,
+      mostChosenCount: max,
+      leastChosen: least,
+      leastChosenCount: least.length ? minNonZero : 0,
+      notChosen: not,
+      byCandidate
+    });
+  }, [assignedApplications, candidatesLec, cUsers]);
+
+  return stats;
 }

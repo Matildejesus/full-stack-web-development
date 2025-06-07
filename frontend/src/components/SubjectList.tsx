@@ -14,12 +14,16 @@ interface SubjectListProps {
 }
 
 const SubjectList: React.FC<SubjectListProps> = ({ courses }) => {
-    return (
+    return courses.length === 0 ? (
+  <p className="text-gray-500 font-serif">No subjects available.</p>
+) :(
         <table className="w-[70%] mb-8 border-collapse border border-gray-300">
         <thead>
           <tr>
             <th className="border border-gray-300 p-6 font-serif text-left">Course Code</th>
             <th className="border border-gray-300 p-4 font-serif text-left">Course name</th>
+            <th className="border border-gray-300 p-4 font-serif text-left">Semester</th>
+
           </tr>
         </thead>
         <tbody>
@@ -27,6 +31,8 @@ const SubjectList: React.FC<SubjectListProps> = ({ courses }) => {
                 <tr  key={u.id}>
                     <td className="border border-gray-300 p-6 font-serif text-left">{u.code}</td>
                     <td className="border border-gray-300 p-1 font-serif text-left">{u.name}</td>
+                    <td className="border border-gray-300 p-1 font-serif text-left">{u.semester}</td>
+
             </tr>
                 ))}
         </tbody>

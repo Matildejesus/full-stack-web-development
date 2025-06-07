@@ -3,12 +3,13 @@ import Header from "../components/Header";
 import { useAuth } from "../context/AuthContext";
 import { useToast } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { applicationApi, candidateApi, courseService, userService,lecturerCourseService, lecturerService } from "@/services/api";
+import { useEffect, useState, useMemo } from "react";
+import { applicationApi, candidateApi, courseService, userService,lecturerCourseService, lecturerService, lecturerSelectionApi } from "@/services/api";
 import ApplicantsDisplay from "@/components/ApplicantsDisplay";
 import SelectionBar from "@/components/SelectionBar";
 import Sidebar from "@/components/SideBar";
 import { LecturerSelection, User, Candidate, Application ,Lecturer, Course, LecturerCourse} from "@/types/types";
+import { l } from "framer-motion/dist/types.d-CtuPurYT";
 
 
 export default function LecturerHome() {
@@ -30,9 +31,12 @@ export default function LecturerHome() {
     const [applications, setApplications] = useState<Application[]>([]);
     const { user } = useAuth();
     const[lecturerCourses,setLecturerCourses]=useState<LecturerCourse[]>([]);
-
     const [courses, setCourses] = useState<Course[]>([]);
-    
+    const [lecturerCourseIds, setLecturerCourseIds] = useState<number[]>([]);
+    const lecturerDetails = useMemo(() => {
+        return users.find(u => u.id === user?.id)?.lecturer;
+    }, [users, user]);
+    const [filteredCourses, setFilteredCourses] = useState<Course[]>([]);
       useEffect(() => {
            const fetchCourses = async () => {
                 const data = await courseService.getAllCourses();
@@ -98,6 +102,7 @@ export default function LecturerHome() {
 
         fetchLecturer();
     }, []);
+
         useEffect(() => {
         const fetchlectCourses = async () => {
             try {
@@ -111,17 +116,7 @@ export default function LecturerHome() {
 
         fetchlectCourses();
     }, []);
-    // old
-    // useEffect(() => {
-    //     setInputText("");
-    //     setSelectedCandidates([]);
-    //     let applicationList = users.map(u => ({
-    //         ...u,
-    //         applicationSummary: u.applicationSummary.filter(summary => summary.course === selectedSubject)
-    //     })).filter(user => user.applicationSummary.length > 0); 
-    //     setFilteredUsers(applicationList);
-    // }, [users, selectedSubject]);
-    // new
+
     useEffect(() => {
         setInputText("");
         setSelectedCandidates([]);
@@ -155,30 +150,58 @@ export default function LecturerHome() {
 
 
     const filteredCandidatesLength = filteredCandidates.length;
-    // Ranking
 
-    const handleRankingChange = (rank: number, applicantId: number) => {
-        const currSelection = selectedCandidates.find((u) => u.id === applicantId);
+    const handleRankingChange = (rank: number, candidateId: number) => {
+  // Find candidate details from filteredCandidates or somewhere
+    const candidate = filteredCandidates.find(c => c.id === candidateId);
+    if (!candidate) return;
 
-        if (currSelection) {
-            const updatedSelection = selectedCandidates.map((candidate) =>
-                candidate.id === applicantId ? { ...currSelection, rank } : candidate);
-            setSelectedCandidates(updatedSelection);
+    const application = candidate.applications.find(app => lecturerCourseIds.includes(app.course.id));
+    if (!application) return;
 
-        }
-        else {
-            const newSelection: LecturerSelection = {
-            id: 0, // This can be replaced when the object is persisted
-            rank: rank,
-            comment: "",
-            lecturer: {} as Lecturer, // Placeholder lecturer (replace this with actual data)
-            application: {} as Application, // Placeholder application (replace this with actual data)
-        };
-            setSelectedCandidates((prevState) => [
-                ...prevState,newSelection
-            ]);
-        }
+    // Update or add new selection
+    setSelectedCandidates(prev => {
+    // const lecturerDetails = users.find(u => u.id === user?.id)?.lecturer;
+
+    if (!lecturerDetails) {
+        console.error("Lecturer details not found");
+        return prev;
     }
+
+    // Check if the candidate is already selected
+    const existing = prev.find(sel => sel.id === candidateId);
+
+    if (existing) {
+        return prev.map(sel =>
+        sel.id === candidateId
+            ? { ...sel, rank, application, lecturer: lecturerDetails }
+            : sel
+        );
+    } else {
+        return [...prev, { id: candidateId, rank, comment: "", application, lecturer: lecturerDetails }];
+    }
+    });
+
+    };
+    const [savedSelections, setSavedSelections] = useState<LecturerSelection[]>([]);
+    // console.log("LEC, ",lecturerDetails?.id)
+        useEffect(() => {
+        if (!lecturerDetails) return;
+        
+
+        const fetchSelections = async () => {
+            try {
+            const data = await lecturerSelectionApi.getByLecturer(lecturerDetails.id);
+            setSavedSelections(data);
+            } catch (err) {
+            console.error("Error fetching lecturer selections", err);
+            }
+        };
+
+        fetchSelections();
+        }, [lecturerDetails]);
+
+        // const applicantStats = useApplicantsStats(savedSelections);
 
     // validation: comments must be shorter than 500 characters
     const handleAddComment = (comment: string, applicantId: number) => {
@@ -214,24 +237,76 @@ export default function LecturerHome() {
                 setPlaceholder("Please select a search option...");
             }
         },[selectedSearch]);
-    
-    const handleSubmit = () => {
-        const success = saveSelection(selectedCandidates);
 
-        // selectedCandidates.map(candidate => updateJobApplications(candidate));
-
-        if (success) {
-            router.push('/lecturerSelection');
-            toast({
-                title: "Selection Updated",
-                description: "You have successfully ranked and commented.",
-                status: "success",
-                duration: 3000,
-                isClosable: true,
-            });
-
+     useEffect(() => {
+        const currentLecturer = users.find(currentUser => currentUser.id === user?.id);
+        console.log("CURRENTLEC, ",currentLecturer)
+        if (!currentLecturer || !currentLecturer.lecturer) {
+        console.error("Lecturer details not found yet!");
+        setLecturerCourseIds([]); // clear state if not found
+        return;
         }
+
+        const lecturerId = currentLecturer.lecturer.id;
+
+        // Get all course IDs assigned to the current lecturer
+        const courseIds = lecturerCourses
+        .filter(lc => lc.lecturerId === lecturerId)
+        .map(lc => lc.courseId);
+
+        setLecturerCourseIds(courseIds);
+    }, [users, user, lecturerCourses]);
+    
+    useEffect(() => {
+    // Filter to only courses assigned to lecturer
+        const filtered = courses.filter(c => lecturerCourseIds.includes(c.id));
+        setFilteredCourses(filtered);
+    }, [courses, lecturerCourseIds]);
+
+
+    const handleSubmit = async () => {
+    if (selectedCandidates.length === 0) {
+        toast({ title: "Nothing selected", status: "error", duration: 3000, isClosable: true });
+        return;
     }
+    console.log("Selected candiates are, ",selectedCandidates)
+
+    // Map UI objects → DTO expected by backend
+    const payload = selectedCandidates.map((sel) => ({
+        lecturerId: sel.lecturer.id,
+        applicationId: sel.application.id,
+        ranking: sel.rank!,   // whichever field you kept
+        comment: sel.comment,
+    }));
+    console.log("Payload d is ",payload)
+    try {
+        await lecturerSelectionApi.saveSelections(payload);
+        await Promise.all(
+            selectedCandidates.map(sel =>
+            applicationApi.incrementSelectedCount(sel.application.id)
+            )
+        );
+
+        await fetchSavedApplications();
+
+        toast({
+        title: "Selection saved",
+        description: "Your rankings and comments were stored.",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+        });
+        router.push("/ApplicantStatus");
+    } catch (err) {
+        toast({
+        title: "Save failed",
+        description: "Could not save selections to the server.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+        });
+    }
+    };
 
     // Searching is only allowed if an option is selected
     // users can type anything, but will not locate any users unless they type correctly
@@ -295,19 +370,10 @@ export default function LecturerHome() {
         setFilteredCandidates(sorted);
         };
 
+
     console.log('Users: ', users);
     console.log("Applications:", applications); //displays all applications
     console.log("Current user - lecturer details: ", users.find(currentUser=>currentUser.id===user?.id))
-    const lecturerDetails=users.find(currentUser=>currentUser.id===user?.id)
-    const lecturerId=lecturerDetails?.lecturer?.id;
-
-    // Get all course IDs assigned to the current lecturer
-    const lecturerCourseIds = lecturerCourses
-        .filter(lc => lc.lecturerId === lecturerId)
-        .map(lc => lc.courseId);
-
-    console.log("Courses assigned to current lecturer:", lecturerCourseIds);
-
     // Filter applications where the course is taught by this lecturer
     const applicationWithUserDetails = applications
         .filter(app => lecturerCourseIds.includes(app.course?.id))
@@ -320,11 +386,12 @@ export default function LecturerHome() {
         });
 
 
+
     return (
         <div className="flex flex-col min-h-screen">
             <Header />
             <div className="flex">
-                <Sidebar onClick={setSelectedSubject} courses={courses} />
+                <Sidebar onClick={setSelectedSubject} courses={filteredCourses} />
                 <div className="flex-row flex-grow pr-20 pt-8 pl-5">
                     <SelectionBar
                         selectedSort={selectedSort}

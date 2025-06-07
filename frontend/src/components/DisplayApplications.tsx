@@ -13,16 +13,10 @@ const DisplayApplications: React.FC<DisplayApplicationsProps> =
     if (!userId || !candidates || !applications) {
       return <p>Loading user applications...</p>;
     }
-
-    // const candidateId=
-    console.log("Unexpected application data", applications);
-    console.log("Current user is ", userId);
-    console.log("Candidate id of user is ", candidates)
     const matchedCandidate = candidates?.find(candidate => candidate?.user?.id === userId);
     const candidateId = matchedCandidate?.id;
-    console.log("!!!!!!Candidate id of USER is ", candidateId)
     const userApplications = candidateId ? applications.filter(app => app?.candidate?.id === candidateId) : [];
-    console.log("Applications of user is ", userApplications)
+
     return (
       <div className="shadow-sm p-8 bg-gray-100 border-2 border-gray-400">
         <p className="text-2xl font-serif text-center">Submitted Applications</p>

@@ -36,14 +36,14 @@ const ProfileContent: React.FC<ProfileContentProps> = ({ user, onSubmit, onChang
             <p><strong>Date of Joining:</strong> {user?.createdAt && new Date(user.createdAt).toLocaleDateString()}</p>
             {user?.role === Role.LECTURER && lecturerCourses && (
             <>
-                <h2 className="text-xl font-semibold mt-6">My Courses</h2>
+                <p><strong>My Courses</strong></p>
                 <ul className="list-disc pl-6">
                     {lecturerCourses.length > 0 ? (
                         lecturerCourses.map(({ course, semester }) => (
                             <div key={course.id}>
-                                <p>Course Name: {course.name}</p>
-                                <p>Course Code: {course.code}</p>
-                                <p>Teaching Semester: {semester}</p>
+                                <p><strong>Course Name: </strong>{course.name}</p>
+                                <p> <strong>Course Code: </strong>{course.code}</p>
+                                <p><strong>Teaching Semester:</strong> {semester}</p>
                             </div>
                         ))
                     ) : (

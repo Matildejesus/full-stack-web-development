@@ -11,4 +11,9 @@ router.get("/applications",async(req,res)=>{
     await controller.all(req,res);
 });
 
+router.patch(
+  "/applications/:applicationId/selected",(req, res) => 
+    controller.incrementSelectedCount(req, res)
+);
+
 export default router;

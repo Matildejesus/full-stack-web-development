@@ -1,4 +1,6 @@
 import { applicationApi } from "@/services/api";
+import { AppRole } from "@/types/types";
+import { NewAppPayload } from "@/hooks/useApplicationForm";
 
 interface ApplicationFormData {
     course: string;
@@ -10,13 +12,16 @@ interface ApplicationFormData {
     //   userId?: number;
 }
 interface ApplicationFormProps {
-    onSubmit: (e: React.FormEvent) => Promise<void>;
-    newApplication: ApplicationFormData;
-    setNewApplication: React.Dispatch<React.SetStateAction<ApplicationFormData>>;
-    errors: { [key: string]: string };
-    success: string | null;
-    error: string | null;
-    subjects: { id: number; code: string; name: string }[];
+  onSubmit: (e: React.FormEvent) => Promise<void>;
+  newApplication: ApplicationFormData;
+  setNewApplication: (patch: Partial<ApplicationFormData>) => void;
+  errors: { [key in keyof ApplicationFormData]?: string };
+// errors: { [key: string]: string };
+  success: string | null;
+  error: string | null;
+  subjects: { id: number; code: string; name: string }[];
+  status: "idle" | "saving";
+  clearSuccess: () => void;
 
 }
 
@@ -78,7 +83,9 @@ export default function ApplicationForm({
                         <select id="role" name="role"
                             value={newApplication.role}
                             onChange={(e) =>
-                                setNewApplication({ ...newApplication, role: e.target.value })
+                                setNewApplication({ 
+                                    // ...newApplication, 
+                                    role: e.target.value  as AppRole})
                             }
                             tabIndex={2}
                             className="border p-2 rounded"

@@ -1,4 +1,4 @@
-import { User, Candidate, Role, Course, Application, LecturerCourse, Lecturer, Semester, AppRole } from "../types/types";
+import { User, Candidate, Role, Course, Application, LecturerCourse, Lecturer, Semester, AppRole, LecturerSelection } from "../types/types";
 import axios from "axios";
 
 const API_BASE_URL = "http://localhost:4000/api";
@@ -48,14 +48,14 @@ export const userService = {
 
     login: async (email: string, password: string): Promise<User | null> => {
         const { data } = await axios.post<User>(`${API_BASE_URL}/login`, { email, password });
-        if (data.role === Role.CANDIDATE) {
-            const { data: candData } = await axios.get<Candidate>(`${API_BASE_URL}/candidates`,
-                {params:{userId: data.id}
-            });
-            if (candData.blocked) {
-                return null;
-            }
-        }
+        // if (data.role === Role.CANDIDATE) {
+        //     const { data: candData } = await axios.get<Candidate>(`${API_BASE_URL}/candidates`,
+        //         {params:{userId: data.id}
+        //     });
+        //     if (candData.blocked) {
+        //         return null;
+        //     }
+        // }
         return data;
     },
 
@@ -73,6 +73,7 @@ export const userService = {
 export const courseService = {
     getAllCourses: async (): Promise<Course[]> => {
         const { data } = await axios.get<Course[]>(`${API_BASE_URL}/courses`);
+        console.log("data are ", data)
         return data;
     },
     getCourse: async (): Promise<Course> => {
@@ -83,6 +84,7 @@ export const courseService = {
 }
 
 export const lecturerService = { 
+    
     getLecturer: async (id: number): Promise<Lecturer> => {
         const { data } = await axios.get<Lecturer>(`${API_BASE_URL}/lecturers/${id}`);
         console.log("This is shown in profile: ", data);
@@ -92,6 +94,10 @@ export const lecturerService = {
         const { data } = await axios.get<Lecturer[]>(`${API_BASE_URL}/lecturers`);
         return data;
     },
+    // getLecturerByUserId: async (userId: number): Promise<Lecturer> => {
+    // const { data } = await axios.get<Lecturer>(`${API_BASE_URL}/lecturers/user/:${userId}`);
+    // return data;
+// }
 }
 
 export const lecturerCourseService = {
@@ -127,7 +133,7 @@ export const applicationApi ={
     availability: string;
     skills: string;
     academic: string;
-    candidateId:number
+    // candidateId:number
   } ):Promise<Application>=>{
     console.log("Req is ", application)
     const {data} = await axios.post<Application>(`${API_BASE_URL}/applications`, application);
@@ -145,5 +151,33 @@ export const applicationApi ={
         console.error("Error fetching applications:", error);
         throw error;
         }
-    }
+    },
+
+    incrementSelectedCount: async (applicationId: number,increment = 1
+    ): Promise<Application> => {
+    const { data } = await axios.patch<Application>(`${API_BASE_URL}/applications/${applicationId}/selected`,
+        { increment }
+    );
+    return data;
+    },
+}
+export const lecturerSelectionApi = {
+     saveSelections: async (
+        selections: {
+        lecturerId: number;
+        applicationId: number;
+        ranking: number;
+        comment: string;
+        }[]
+    ): Promise<void> => {
+        await axios.post(`${API_BASE_URL}/lecturer-selections`, selections);
+    },
+    
+    getByLecturer: async (lecturerId: number) => {
+        const { data } = await axios.get(`${API_BASE_URL}/lecturer-selections`, {
+        params: { lecturerId },
+        });
+        
+        return data as LecturerSelection[];
+    },
 }
