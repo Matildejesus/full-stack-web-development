@@ -18,7 +18,7 @@ export default function Candidates() {
     const router = useRouter();
     const [candidates, setCandidates] = useState<Candidate[]>([]);
     const [blocked, setBlocked] = useState<boolean>();
-    const [blockedText, setBlockedText] = useState("");
+    const [available, setAvailable] = useState<boolean>();
 
     useEffect(() => {
         fetchCandidates();
@@ -37,14 +37,17 @@ export default function Candidates() {
         const data = await candidateService.getCandidate(id.toString());
         const newBlocked = !data.blocked;
         setBlocked(newBlocked);
-        if (newBlocked) {
-            setBlockedText("blocked");
-        } else {
-            setBlockedText("active");
-        }
         const newData = await candidateService.updateCandidateBlocked(id.toString(), { blocked: newBlocked });
         await fetchCandidates();
     }
+
+    const handleAvailable = async (id: number) => {
+        const data = await candidateService.getCandidate(id.toString());
+        const newAvailable = !data.available;
+        setAvailable(newAvailable);
+        await candidateService.updateCandidateAvailable(id.toString(), { available: newAvailable });
+        await fetchCandidates();
+    } 
 
     return (
         <div className={"min-h-screen p-8 bg-gray-50 text-black"}>
@@ -55,7 +58,7 @@ export default function Candidates() {
             <CandidateList 
                 candidates={candidates} 
                 handleBlocked={handleBlocked}  
-                blockedText={blockedText}
+                handleAvailable={handleAvailable}
                 />
             <ButtonComp
                 handleRouter={() => router.push('/candidates/candidatesData')}

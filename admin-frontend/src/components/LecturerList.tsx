@@ -26,7 +26,7 @@ export default function LecturerList({ lecturers, allLecturers, chosenLecturer, 
         <div>
             <h2>Lecturers</h2>
             {lecturers.map((u) => (
-                <div className="bg-white p-6 rounded-lg shadow">
+                <div key={`${u.lecturerId}-${u.courseId}`} className="bg-white p-6 rounded-lg shadow">
                     <h3>{u.lecturer.user.firstName} {u.lecturer.user.lastName}</h3>
                     <h3>{u.lecturer.user.email}</h3>
                 </div>
