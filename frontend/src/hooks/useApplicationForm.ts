@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AppRole } from "@/types/types";
+import { AppRole ,Semester} from "@/types/types";
 import { applicationApi } from "@/services/api";
 
 export interface NewAppPayload {
@@ -10,6 +10,7 @@ export interface NewAppPayload {
   academic: string;
   availability: string;
   candidateId: number;
+  semester:Semester
 }
 export type ApplicationFormData = Omit<NewAppPayload, "candidateId">;
 export function useApplicationForm(onSuccess: () => void) {
@@ -21,6 +22,7 @@ export function useApplicationForm(onSuccess: () => void) {
     academic: "",
     availability: "",
     candidateId: 0,
+    semester:Semester.ONE
   });
 
   const update = (patch: Partial<ApplicationFormData>) => {

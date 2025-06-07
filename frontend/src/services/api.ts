@@ -151,6 +151,7 @@ export const applicationApi ={
     availability: string;
     skills: string;
     academic: string;
+    semester:Semester;
     // candidateId:number
   } ):Promise<Application>=>{
     console.log("Req is ", application)

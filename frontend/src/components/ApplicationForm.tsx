@@ -1,5 +1,5 @@
 import { applicationApi } from "@/services/api";
-import { AppRole } from "@/types/types";
+import { AppRole,Semester } from "@/types/types";
 import { NewAppPayload } from "@/hooks/useApplicationForm";
 
 interface ApplicationFormData {
@@ -9,6 +9,7 @@ interface ApplicationFormData {
     skills: string;
     academic: string;
     previousRole: string;
+    semester:Semester;
     //   userId?: number;
 }
 interface ApplicationFormProps {
@@ -19,7 +20,7 @@ interface ApplicationFormProps {
 // errors: { [key: string]: string };
   success: string | null;
   error: string | null;
-  subjects: { id: number; code: string; name: string }[];
+  subjects: { id: number; code: string; name: string; semester: Semester }[];
   status: "idle" | "saving";
   clearSuccess: () => void;
 
@@ -57,10 +58,19 @@ export default function ApplicationForm({
                         {/* drop down to select course */}
                         <select id="course" name="course"
                             value={newApplication.course}
-                            onChange={(e) =>
-                                setNewApplication({ ...newApplication, course: e.target.value })
+                            // onChange={(e) =>
+                            //     setNewApplication({ ...newApplication, course: e.target.value })
 
+                            // }
+                            onChange={(e) => {
+                            const selectedCourse = subjects.find((c) => c.name === e.target.value);
+                            if (selectedCourse) {
+                            setNewApplication({
+                                course: selectedCourse.name,
+                                semester: selectedCourse.semester, // <-- auto-fills semester
+                            });
                             }
+                        }}
                             className="border p-2 rounded"
                             tabIndex={1}
                         >
@@ -74,6 +84,19 @@ export default function ApplicationForm({
 
                         {errors.course && <p className="text-red-500">{errors.course}</p>}
                     </div>
+                    <div className="rounded-md shadow-sm -space-y-px mx-8 mt-4">
+                        <label htmlFor="semester" className="p-7 text-l font-serif text-center">
+                            Semester (auto-filled from course)
+                        </label>
+                        <input
+                            id="semester"
+                            name="semester"
+                            value={newApplication.semester || ""}
+                            readOnly
+                            className="border p-2 rounded bg-gray-100"
+                        />
+                        </div>
+
 
                     <div className="rounded-md shadow-sm -space-y-px mx-8">
                         <label htmlFor="role" className="p-7 text-l font-serif text-center">

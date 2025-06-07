@@ -32,7 +32,7 @@ export class ApplicationController {
      * @returns JSON response containing the created Application or error message
      */
     async save(request: Request, response: Response) {
-        const { course, previousRole, role, availability, skills, academic, candidateId } = request.body;
+        const { course, previousRole, role, availability, skills, academic, candidateId,semester } = request.body;
         try {
             const applicationRepository = AppDataSource.getRepository(Application);
 
@@ -59,6 +59,7 @@ export class ApplicationController {
             application.academic = academic;
             application.previousRole = previousRole;
             application.candidate = candidateId;
+            application.semester=semester
             // if(candidateEntity!= null){
             //     application.candidate= candidateEntity;
             // }

@@ -31,6 +31,7 @@ const DisplayApplications: React.FC<DisplayApplicationsProps> =
               <p className="text-gray-800">Availability: {application.availability}</p>
               <p className="text-gray-800">Highest Academic Qualification: {application.academic}</p>
               <p className="text-gray-800">Course Name: {application.course.name}</p>
+              <p className="text-gray-800">Semester: {application.course.semester}</p>
               <p className="text-gray-800">Previous Role: {application.previousRole}</p>
             </div>
           ))
