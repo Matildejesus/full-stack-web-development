@@ -137,11 +137,15 @@ export default function LecturerHome() {
             return null;
         }).filter(can => can !== null); // Remove users with no matching apps
 
-        // Step 2: Save to state
         console.log("Candidates with selected subjects", candidatesWithSelectedSubject)
-        setSubjectFilteredCandidates(candidatesWithSelectedSubject);
-        setFilteredCandidates(candidatesWithSelectedSubject);
+        const filteredCandidates = candidatesWithSelectedSubject.filter(
+            (candidate): candidate is Candidate => candidate !== null
+            );
+        setSubjectFilteredCandidates(filteredCandidates);
+        setFilteredCandidates(filteredCandidates);
     }, [candidates, applications, selectedSubject]);
+
+
    useEffect(() => {
         if (selectedSort) {
             handleSorting();

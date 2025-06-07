@@ -1,6 +1,6 @@
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import { useApplicantStats } from "../pages/useApplicantStats";
+import { useApplicantStats } from "../hooks/useApplicantStats";
 
 export default function ApplicantStatus() {
   const {
