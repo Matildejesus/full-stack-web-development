@@ -1,6 +1,14 @@
 import { Course } from "@/types/types";
 import React from "react";
 
+/**
+ * Presenter Component:
+ * Handles UI rendering related to:
+ *   - Displaying The Subjects available in the semester
+ * 
+ * Receives props from SignIn (container)
+ */
+
 interface SubjectListProps {
     courses: Course[];
 }

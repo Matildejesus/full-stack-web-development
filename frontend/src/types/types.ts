@@ -34,6 +34,7 @@ export interface Application {
     role: AppRole;
     availability: Availability;
     skills: string[];
+    semester: Semester;
     academic: string;
     selectedCount: number;
     lecturerSelections: LecturerSelection[];
