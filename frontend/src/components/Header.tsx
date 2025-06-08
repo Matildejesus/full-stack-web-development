@@ -1,10 +1,8 @@
-import React, { FormEvent, useEffect, useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { userService } from "@/services/api";
-import { Role, User } from "@/types/types";
+import { Role } from "@/types/types";
 import { useAuth } from "@/context/AuthContext";
-
 
 const Header: React.FC = () => {
     const [isOpen, setIsOpen] = useState<boolean>(false);

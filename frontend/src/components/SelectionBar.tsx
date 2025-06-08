@@ -1,5 +1,5 @@
-import { Button, FormControl, FormLabel, Input, Text } from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
+import { Button, FormControl, Input } from "@chakra-ui/react";
+import React from "react";
 
 interface SelectionBarProps {
     selectedSort: string ;

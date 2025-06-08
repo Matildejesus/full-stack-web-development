@@ -1,5 +1,5 @@
 import { Lecturer, LecturerCourse, Semester } from "@/types/types"
-import { Button, Select } from "@chakra-ui/react";
+import { Button, Select, Text } from "@chakra-ui/react";
 
 /**
  * Presenter Component:
@@ -19,9 +19,10 @@ interface LecturerListProps {
     lecturerSemester?: Semester;
     setLecturerSemester: (value: Semester) => void;
     courseSemester: Semester;
+    lecturerError: string | "";
 }
 
-export default function LecturerList({ lecturers, allLecturers, chosenLecturer, setChosenLecturer, addLecturerToCourse, lecturerSemester, setLecturerSemester, courseSemester }: LecturerListProps) {
+export default function LecturerList({ lecturers, allLecturers, chosenLecturer, setChosenLecturer, addLecturerToCourse, lecturerSemester, setLecturerSemester, courseSemester, lecturerError }: LecturerListProps) {
     return (
         <div>
             <h2>Lecturers</h2>
@@ -53,6 +54,9 @@ export default function LecturerList({ lecturers, allLecturers, chosenLecturer, 
                         <option value="both">both semester</option>
                 </Select>
             )} 
+            {lecturerError && 
+                <Text color="red.500">{lecturerError}</Text>
+            }
             <Button
                 type="button" className="z-50 px-6 py-4"
                 onClick={() => addLecturerToCourse(chosenLecturer, lecturerSemester )}

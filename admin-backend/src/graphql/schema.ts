@@ -87,7 +87,7 @@ export const typeDefs = gql`
 
     type Application {
         id: ID!
-        candidate: Candidate!
+        candidate: Candidate
         course: Course!
         previousRole: String!
         semester: Semester!

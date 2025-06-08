@@ -1,7 +1,5 @@
-import React, { useEffect, useState } from "react";
-import Link from "next/link";
-import { Course } from "@/types/types";
-import { courseService, LecturerCoursesResponse } from "@/services/api";
+import React from "react";
+import { LecturerCoursesResponse } from "@/services/api";
 
 interface SidebarProps {
   courses: LecturerCoursesResponse[];

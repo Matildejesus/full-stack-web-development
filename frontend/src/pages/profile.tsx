@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import { useAuth } from "../context/AuthContext";
-import { lecturerCourseService, LecturerCoursesResponse, lecturerService, userService } from "@/services/api";
-import { LecturerCourse, Role, Semester, User } from "@/types/types";
+import { lecturerCourseService, LecturerCoursesResponse, lecturerService } from "@/services/api";
+import { Role, User } from "@/types/types";
 import ProfileContent from "@/components/ProfileContent";
 
 export default function Profile(){

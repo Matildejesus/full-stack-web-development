@@ -1,15 +1,5 @@
 import React, { useState } from "react";
-import {
-  Button,
-  FormLabel,
-  Input,
-  FormControl,
-  useToast,
-  VStack,
-  Text,
-  Select
-} from "@chakra-ui/react";
-import Link from "next/link";
+import { useToast } from "@chakra-ui/react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useRouter } from "next/router";

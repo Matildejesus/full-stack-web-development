@@ -5,13 +5,11 @@ import { client } from "../services/apollo-client";
 import { ChakraProvider } from "@chakra-ui/react";
 
 export default function App({ Component, pageProps }: AppProps) {
-  return (
-    <ApolloProvider client={client}>
-        <ChakraProvider>
-            <main className="container mx-auto p-4">
+    return (
+        <ApolloProvider client={client}>
+            <ChakraProvider>       
                 <Component {...pageProps} />
-            </main>
-        </ChakraProvider>
-    </ApolloProvider>
-  );
+            </ChakraProvider>
+        </ApolloProvider>
+    );
 }

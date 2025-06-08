@@ -1,5 +1,4 @@
 import { LecturerCoursesResponse } from "@/services/api";
-import { LecturerCourse, Role, User } from "@/types/types"
 import { Button, Input } from "@chakra-ui/react";
 
 interface ProfileContentProps {

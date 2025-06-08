@@ -1,18 +1,9 @@
 import React, { useRef, useState, FormEvent } from "react";
-import {
-    Button,
-    FormLabel,
-    Input,
-    FormControl,
-    useToast,
-    VStack,
-    Text
-} from "@chakra-ui/react";
+import { useToast } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import ReCAPTCHA from "react-google-recaptcha";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { userService } from "@/services/api";
 import { Role } from "@/types/types";
 import { useAuth } from "../context/AuthContext"
 import SignInForm from "@/components/SignInForm";

@@ -5,6 +5,7 @@ import { courseService, lecturerCoursesService, lecturerService } from "../../se
 import CreateCourse from "@/components/CreateCourse";
 import LecturerList from "@/components/LecturerList";
 import ButtonComp from "@/components/ButtonComp";
+import { useToast } from "@chakra-ui/react";
 
 /**
  * Container Component:
@@ -31,6 +32,8 @@ export default function CoursePage() {
     const [chosenLecturer, setChosenLecturer] = useState("");
     const [lecturerIds, setLecturerIds] = useState<number[]>([]);
     const [lecturerSemester, setLecturerSemester] = useState<Semester>();
+    const [addLecturerError, setAddLecturerError] = useState("");
+    const toast = useToast();
 
     useEffect(() => {
         if (id) {
@@ -83,7 +86,12 @@ export default function CoursePage() {
     };
 
     const addLecturerToCourse = async () => {
+        if (!chosenLecturer) {
+            setAddLecturerError("Please select a lecturer before clicking 'Add Lecturer'.");
+            return;
+        }
         try {
+            setAddLecturerError("");
             let sem;
             if (semester == Semester.BOTH && lecturerSemester) {
                 sem = lecturerSemester;
@@ -95,6 +103,17 @@ export default function CoursePage() {
                 id as string, 
                 sem
             )
+            if (data) {
+                toast({
+                    title: "Lecturer Added",
+                    description: "Successfully added a lecturer to course",
+                    status: "success",
+                    duration: 3000,
+                    isClosable: true,
+                });
+            }
+            await fetchLecturerCourses();
+
         } catch (error) {
             console.error("Error adding lecturer to course: ", error);
         }
@@ -108,11 +127,20 @@ export default function CoursePage() {
                 setCreateError("Code is in wrong format. Ex. COSC1030");
                 return;
             }
-            await courseService.updateCourse(id as string, {
+            const result = await courseService.updateCourse(id as string, {
                 name,
                 code: code.toUpperCase(),
                 semester, 
             }); 
+            if (result) {
+                toast({
+                    title: "Course Updated",
+                    description: "Successfully updated course data",
+                    status: "success",
+                    duration: 3000,
+                    isClosable: true,
+                });
+            }
             await fetchCourse(); 
             setCreateError("");
         } catch (error) {
@@ -155,6 +183,7 @@ export default function CoursePage() {
                         lecturerSemester={lecturerSemester}
                         setLecturerSemester={setLecturerSemester}
                         courseSemester={semester}
+                        lecturerError={addLecturerError}
                     />
                 )}
             </div>

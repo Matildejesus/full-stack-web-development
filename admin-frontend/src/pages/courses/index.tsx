@@ -5,6 +5,7 @@ import { courseService } from "../../services/api";
 import CourseList from "@/components/CourseList";
 import CreateCourse from "@/components/CreateCourse";
 import ButtonComp from "@/components/ButtonComp";
+import { useToast } from "@chakra-ui/react";
 
 /**
  * Container Component:
@@ -29,6 +30,8 @@ export default function Courses() {
     const [createError, setCreateError] = useState("");
     const [isAdding, setIsAdding] = useState(false);
 
+    const toast = useToast();
+
     useEffect(() => {
         fetchCourses();
     }, []);
@@ -52,7 +55,7 @@ export default function Courses() {
                 setCreateError("Code is in wrong format. Ex. COSC1030");
                 return;
             }
-            await courseService.createCourse({
+            const created = await courseService.createCourse({
                 name,
                 code: code.toUpperCase(),
                 semester, 
@@ -64,6 +67,16 @@ export default function Courses() {
 
             setIsAdding(false);
             setCreateError("");
+            if (created) {
+                toast({
+                    title: "Course Added",
+                    description: "Successfully created a course",
+                    status: "success",
+                    duration: 3000,
+                    isClosable: true,
+                });
+            }
+            
         } catch (error) {
             setCreateError("Error creating course.");
         }
@@ -77,9 +90,20 @@ export default function Courses() {
         setError("");
 
         try {
-            await courseService.deleteCourse(id);
+            const deleted =await courseService.deleteCourse(id);
             await fetchCourses();
-            router.push("/courses");
+            if (deleted) {
+                toast({
+                    title: "Course Deleted",
+                    description: "Successfully deleted a course",
+                    status: "success",
+                    duration: 3000,
+                    isClosable: true,
+                });
+                router.push("/courses");
+            }
+            
+            
         } catch (error) {
             setError("Failed to delete course. Please try again.");
         }
