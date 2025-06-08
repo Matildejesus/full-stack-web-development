@@ -35,7 +35,7 @@ const SelectionBar: React.FC<SelectionBarProps>  = ({
                     className=" border p-2 rounded w-48 shadow"
                 >
                     <option value={""}>Search By</option>
-                    <option value="tutor">Candidate Name</option>
+                    <option value="tutor">Tutor Name</option>
                     <option value="availability">Availability</option>
                     <option value="skillset">Skill Set</option>
                     <option value="jobRole">Job Role</option>

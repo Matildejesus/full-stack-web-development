@@ -42,22 +42,33 @@ export function useUnavailableCandidates() {
 
     useEffect(() => {
         let isAvailable = true;
+        
 
         const unsubscribe = wsClient.subscribe<CandidateUnavailableData>(
         {
             query: `
-                subscription CandidateUnavailable {
-                    candidateUnavailable {
+            subscription CandidateUnavailable {
+                candidateUnavailable {
+                    id
+                    blocked
+                    available
+                    user {
                         id
                         firstName
                         lastName
+                        email
+                        avatarUrl
                     }
                 }
-                `,
+            }
+        `,
         },
         {
             next: ({ data }) => {
-                if (!isAvailable) return;
+                if (!isAvailable || !data?.candidateUnavailable) return;
+
+                // if (!isAvailable) return;
+                // if(!data) return;
 
                 const candidate = data.candidateUnavailable;
                 console.log("Candidate unavailable:", candidate);
@@ -76,6 +87,7 @@ export function useUnavailableCandidates() {
         unsubscribe();
         };
   }, []);
-
-  return unavailableCandidates;
+  console.log("unavailableCandidates",unavailableCandidates)
+  
+  return {unavailableCandidates};
 }

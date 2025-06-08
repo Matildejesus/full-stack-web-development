@@ -128,6 +128,6 @@ export const typeDefs = gql`
     }
     
     type Subscription {
-        candidateUnavailable: User!
+        candidateUnavailable: Candidate!
     }
 `;

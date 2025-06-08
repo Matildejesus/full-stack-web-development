@@ -1,22 +1,25 @@
 import React from "react";
-import { Application, Candidate } from "@/types/types";
+import { Candidate } from "@/types/types";
 import { useApplicationList } from "@/hooks/useApplicationList";
 
 interface ApplicationDisplayProps {
-  applications?: Application[] | null;
-  // sort?: string | null;
-  // lecturerCourseIds: number[];
+  candidate?: Candidate | null;
+  sort?: string | null;
+  lecturerCourseIds: number[];
 }
 
 const ApplicationDisplay: React.FC<ApplicationDisplayProps> = ({
-  applications,
-  // sort,
-  // lecturerCourseIds,
+  candidate,
+  sort,
+  lecturerCourseIds,
 }) => {
 
-  // const applications = useApplicationList(candidate, sort, lecturerCourseIds);
+  const applications = useApplicationList(candidate, sort, lecturerCourseIds);
 
-  if (!applications) return <p>No candidate data available.</p>;
+  if (!candidate) return <p>No candidate data available.</p>;
+
+  const avatarUrl = candidate.user.avatarUrl;
+  const showAvatar = avatarUrl && avatarUrl.startsWith("blob:");
 
   return (
     <ul className="space-y-6">
@@ -25,19 +28,20 @@ const ApplicationDisplay: React.FC<ApplicationDisplayProps> = ({
           key={app.id}
           className="flex gap-4 p-5 rounded-2xl shadow-sm bg-white border"
         >
-          {app.candidate.user.avatarUrl && (
+          {/* {showAvatar && (
             <img
-              src={app.candidate.user.avatarUrl}
+              src={avatarUrl}
+              alt={`${candidate.user.firstName} ${candidate.user.lastName}`}
               className="w-16 h-16 rounded-full object-cover border border-gray-300 shrink-0"
             />
-          )}
+          )} */}
 
           <div className="space-y-1 text-sm">
             <p>
               <span className="font-semibold">Application ID:</span> {app.id}
             </p>
             <p>
-              <span className="font-semibold">Course:</span> {app.course.code} 
+              <span className="font-semibold">Course:</span> {app.course.name}
             </p>
             <p>
               <span className="font-semibold">Job Role:</span> {app.role}</p>

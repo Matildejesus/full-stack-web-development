@@ -1,8 +1,10 @@
-import React from "react";
-import { LecturerCoursesResponse } from "@/services/api";
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import { Course } from "@/types/types";
+import { courseService } from "@/services/api";
 
 interface SidebarProps {
-  courses: LecturerCoursesResponse[];
+  courses: Course[];
   onClick: (subject: string) => void;
 }
 
@@ -12,7 +14,7 @@ const Sidebar: React.FC<SidebarProps> = ({ courses, onClick }) => {
       <nav>
         <ul className="space-y-2">
         {courses.map((u) => (
-          <li key={u.id}  onClick={() => onClick(u.course.name)} className="hover:bg-gray-200 p-2 rounded">{u.course.code} {u.course.name}</li>
+          <li key={u.id}  onClick={() => onClick(u.name)} className="hover:bg-gray-200 p-2 rounded">{u.code} {u.name}</li>
         ))}
         <li key={"all"}  onClick={() => onClick("all")} className="hover:bg-gray-200 p-2 rounded">All Applications</li>
         </ul>

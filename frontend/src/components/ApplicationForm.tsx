@@ -1,6 +1,4 @@
-import { applicationService } from "@/services/api";
 import { AppRole,Semester } from "@/types/types";
-import { NewAppPayload } from "@/hooks/useApplicationForm";
 
 interface ApplicationFormData {
     course: string;
@@ -17,7 +15,6 @@ interface ApplicationFormProps {
   newApplication: ApplicationFormData;
   setNewApplication: (patch: Partial<ApplicationFormData>) => void;
   errors: { [key in keyof ApplicationFormData]?: string };
-// errors: { [key: string]: string };
   success: string | null;
   error: string | null;
   subjects: { id: number; code: string; name: string; semester: Semester }[];
@@ -208,30 +205,6 @@ export default function ApplicationForm({
                     </div>
                 </form>
             </div>
-
-
-
-            {/* Displaying submitted applications from db */}
-            {/* <div className="shadow-sm p-8 bg-gray-100 border-2 border-gray-400">
-                <p className="text-2xl font-serif text-center ">Submitted Applications</p>
-                {applicationService.getAllApplications.filter(app => app.candidate.id === user?.id).length === 0 ? (
-                    <p className="text-center text-gray-500">No applications submitted yet.</p>
-                ) : (
-                    applications.
-                    filter((applicatn=>applicatn.candidate.id===user?.id))
-                    .map((application,index) => (
-                        <div key={index} className="p-4 border rounded">
-                          <h3 className="font-semibold text-xl">JobRole: {application.role}</h3>
-                          <p className="text-gray-800">Skills: {application.skills}</p>
-                          <p className="text-gray-800">Availability: {application.availability}</p>
-                          <p className="text-gray-800 mt-2">Highest Academic Qualification:{application.academic}</p>
-                          <p className="text-gray-800">Course Name: {application.course.name}</p>
-                          <p className="text-gray-800">Previous Role: {application.previousRole}</p>
-                          
-                        </div>
-                      ))
-                )}
-            </div> */}
         </div>
 
     );

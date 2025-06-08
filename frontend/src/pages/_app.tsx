@@ -2,13 +2,18 @@ import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import { ChakraProvider } from "@chakra-ui/react"; 
 import { AuthProvider } from "@/context/AuthContext";
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+
+const muiTheme = createTheme();
 
 export default function App({ Component, pageProps }: AppProps) {
     return (
-        <AuthProvider >
-            <ChakraProvider>
-                <Component {...pageProps} />
-            </ChakraProvider>
+        <AuthProvider>
+            <ThemeProvider theme={muiTheme}>
+                <ChakraProvider>
+                    <Component {...pageProps} />
+                </ChakraProvider>
+            </ThemeProvider>
         </AuthProvider>
-    )
+    );
 }

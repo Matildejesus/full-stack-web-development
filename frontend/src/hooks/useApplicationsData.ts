@@ -10,14 +10,12 @@ import { useAuth } from "@/context/AuthContext";
 export function useApplicationsData() {
   const { user } = useAuth();
 
-  /* ---------- shared state ---------- */
   const [candidates,  setCandidates]  = useState<Candidate[]>([]);
   const [applications,setApplications]= useState<Application[]>([]);
   const [courses,     setCourses]     = useState<Course[]>([]);
   const [loading,     setLoading]     = useState(true);
   const [error,       setError]       = useState<string | null>(null);
 
-  /* ---------- load on mount ---------- */
   useEffect(() => {
     const load = async () => {
       try {

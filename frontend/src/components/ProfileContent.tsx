@@ -1,6 +1,6 @@
 import { LecturerCoursesResponse } from "@/services/api";
 import { Button, Input } from "@chakra-ui/react";
-
+import { User, Role } from "@/types/types";
 interface ProfileContentProps {
     user: User;
     onSubmit: (e: React.FormEvent) => void;

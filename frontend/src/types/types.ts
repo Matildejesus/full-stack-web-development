@@ -1,3 +1,4 @@
+
 import { NewAppPayload } from "@/hooks/useApplicationForm";
 
 export type ApplicationFormData = Omit<NewAppPayload, "candidateId">;
@@ -74,6 +75,7 @@ export interface LecturerSelection {
     comment: string;
     lecturer: Lecturer;
     application: Application;
+   
 }
 
 export interface User {

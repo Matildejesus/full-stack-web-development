@@ -9,27 +9,27 @@ import { NewAppPayload } from "@/hooks/useApplicationForm";
 
 export type ApplicationFormData = Omit<NewAppPayload, "candidateId">;
 export default function ApplicationPage() {
-    const {
-        loading,
-        error,
-        courses,
-        applications,
-        candidates,
-        meAsCandidate,
-        refreshApps,
-    } = useApplicationsData();
+  const {
+    loading,
+    error,
+    courses,
+    applications,
+    candidates,
+    meAsCandidate,
+    refreshApps,
+  } = useApplicationsData();
 
-    const {
-        form,
-        update,
-        save,
-        status,
-        errors,
-        serverError,
-        successMsg,
-        setSuccessMsg,
-        setForm
-    } = useApplicationForm(refreshApps);
+  const {
+    form,
+    update,
+    save,
+    status,
+    errors,
+    serverError,
+    successMsg,
+    setSuccessMsg,
+    setForm
+  } = useApplicationForm(refreshApps);
 
     useEffect(() => {
         if (meAsCandidate && form.candidateId === 0) {
@@ -42,31 +42,31 @@ export default function ApplicationPage() {
 
 
 
-    return (
-        <div className="min-h-screen flex flex-col">
-        <Header />
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Header />
 
-        <main className="flex-1 p-6 space-y-10">
-            <ApplicationForm
-            onSubmit={save}
-            newApplication={form}
-            setNewApplication={update}
-            subjects={courses}
-            errors={errors}
-            success={successMsg}
-            error={serverError ?? error}
-            status={status}
-            clearSuccess={() => setSuccessMsg(null)}
-            />
+      <main className="flex-1 p-6 space-y-10">
+        <ApplicationForm
+          onSubmit={save}
+          newApplication={form}
+          setNewApplication={update}
+          subjects={courses}
+          errors={errors}
+          success={successMsg}
+          error={serverError ?? error}
+          status={status}
+          clearSuccess={() => setSuccessMsg(null)}
+        />
 
-            <DisplayApplications
-            userId={meAsCandidate.user.id}
-            applications={applications}
-            candidates={candidates}
-            />
-        </main>
+        <DisplayApplications
+          userId={meAsCandidate.user.id}
+          applications={applications}
+          candidates={candidates}
+        />
+      </main>
 
-        <Footer />
-        </div>
-    );
+      <Footer />
+    </div>
+  );
 }

@@ -65,21 +65,6 @@ export function useApplicantStats(): Stats {
     const least: PerCandidateInfo[] = [];
     const not: PerCandidateInfo[] = [];
 
-    // candidatesLec.forEach(cand => {
-    // const cid = cand.id;
-    // const total = countMap[cid] ?? 0;
-    // const candidateInfo = byCandidate[cid];
-
-    // if (total === 0) {
-    // const user = cUsers.find(u => u.candidate?.id === cid);
-    // if (user) not.push({ user, applications: [] });
-    // } else {
-    // if (total === max && candidateInfo) most.push(candidateInfo);
-    // if (total === minNonZero && minNonZero !== Infinity && minNonZero !== max && candidateInfo) {
-    //   least.push(candidateInfo);
-    // }
-    // }
-    // });
     Object.entries(byCandidate).forEach(([cidStr, info]) => {
     const cid = Number(cidStr);
     const total = countMap[cid] ?? 0;
@@ -89,16 +74,19 @@ export function useApplicantStats(): Stats {
     } else if (total === minNonZero && minNonZero !== Infinity && minNonZero !== max) {
       least.push(info);
     }
+    else{
+      not.push(info)
+    }
   });
 
   // Handle candidates with no selections
-  candidatesLec.forEach(cand => {
-    const cid = cand.id;
-    if (!countMap[cid]) {
-      const user = cUsers.find(u => u.candidate?.id === cid);
-      if (user) not.push({ user, applications: [] });
-    }
-  });
+  // candidatesLec.forEach(cand => {
+  //   const cid = cand.id;
+  //   if (!countMap[cid]) {
+  //     const user = cUsers.find(u => u.candidate?.id === cid);
+  //     if (user) not.push({ user, applications: [] });
+  //   }
+  // });
 
 
     setStats({
