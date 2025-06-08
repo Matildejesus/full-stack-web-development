@@ -1,5 +1,17 @@
 # s4085733-s4058115-a2
 ## References
-Week 9 Lecture (Used in admin frontend and backend)
-Week 11 Lecture (Used in admin frontend and backend)
+- Week 9 Lecture and Tutorial (Used in admin frontend and backend)
+    - graphql, schema, resolver
+    - the connection to graphql
+    - apolloclient
+- Week 11 Lecture and Tutorial (Used in admin frontend and backend)
+    - the connection to wsClient
+    - subscription
+- Week 7 Lecture and Tutorial (Used in TT website)
+    - controller, api
+    - application routes
+    - create entities
+- Week 8 Lecture Tutorial (Used in TT website )
+    -  controller
+    -  services
 
