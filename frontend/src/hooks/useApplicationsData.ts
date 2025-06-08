@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import {
-  applicationApi,
-  candidateApi,
+  applicationService,
+  candidateService,
   courseService,
 } from "@/services/api";
 import { Application, Candidate, Course } from "@/types/types";
@@ -22,8 +22,8 @@ export function useApplicationsData() {
     const load = async () => {
       try {
         const [cands, apps, crs] = await Promise.all([
-          candidateApi.getAllCandidates(),
-          applicationApi.getAllApplications(),
+          candidateService.getAllCandidates(),
+          applicationService.getAllApplications(),
           courseService.getAllCourses(),
         ]);
         setCandidates(cands);
@@ -41,7 +41,7 @@ export function useApplicationsData() {
 
   const refreshApps = async () => {
     try {
-      const data = await applicationApi.getAllApplications();
+      const data = await applicationService.getAllApplications();
       setApplications(data);
     } catch {
       setError("Could not refresh applications");

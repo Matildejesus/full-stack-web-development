@@ -74,7 +74,6 @@ export interface LecturerSelection {
     comment: string;
     lecturer: Lecturer;
     application: Application;
-   
 }
 
 export interface User {

@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
  *    - Identifying all candidates chosen for each course 
  *    - Rerouting to home pages 
  * 
- * Passes props to ... (presenter)
+ * Passes props to CandidatesData.tsx (presenter)
  */
 
 export interface CandidatesInCourses {

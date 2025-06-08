@@ -15,7 +15,7 @@ export class ApplicationController {
      * @returns JSON response containing an array of all applications
      */
     async all(request: Request, response: Response) {
-        const applications = await this.applicationRepository.find({ relations: ["course", "candidate"] });
+        const applications = await this.applicationRepository.find({ relations: ["course", "candidate", "candidate.user"] });
         const flattenedApplications = applications.map((app) => ({
             ...app,
             // courseName: app.course

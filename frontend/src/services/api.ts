@@ -13,6 +13,11 @@ export interface LecturerCoursesResponse {
     };
 }
 
+export interface CourseApplications {
+  course: Course;
+  applications: Application[];
+}
+
 export const userService = {
     getAllUsers: async (): Promise<User[]> => {
         const { data } = await axios.get<User[]>(`${API_BASE_URL}/users`);
@@ -97,7 +102,20 @@ export const courseService = {
     getCourse: async (): Promise<Course> => {
         const { data } = await axios.get<Course>(`${API_BASE_URL}/courses`);
         return data;
-    }
+    },
+    getCoursesWithCourseId: async (courses: LecturerCourse[]) : Promise<Course[]> => {
+        try {
+            const { data } = await axios.get<Course[]>(`${API_BASE_URL}/courses`);
+            
+            const courseIds = courses.map(c => c.course.id);
+            
+            const filteredCourses = data.filter(app => courseIds.includes(app.id));
+            return filteredCourses;
+        } catch (error) {
+            console.error("Error fetching applications:", error);
+            throw error;
+        }
+    },
 
 }
 
@@ -129,7 +147,7 @@ export const lecturerCourseService = {
     }
 }
 
-export const candidateApi={
+export const candidateService = {
     getCandidateByUserId: async (userId: number):Promise<Candidate | null > =>{
         const {data}=await axios.get<Candidate>(`${API_BASE_URL}/candidates`,
             {params:{userId}
@@ -142,45 +160,59 @@ export const candidateApi={
     },
 }
 
-export const applicationApi ={
+export const applicationService = {
+    saveApplication: async (application: {
+        course: string;
+        previousRole: string;
+        role: AppRole;
+        availability: string;
+        skills: string;
+        academic: string;
+        semester:Semester;
+        // candidateId:number
+    }): Promise<Application> => {
+        console.log("Req is ", application)
+        const {data} = await axios.post<Application>(`${API_BASE_URL}/applications`, application);
+        console.log("Body is ",data)
+        
+        return data ;
+    },
 
-  saveApplication:async(application:{
-    course: string;
-    previousRole: string;
-    role: AppRole;
-    availability: string;
-    skills: string;
-    academic: string;
-    semester:Semester;
-    // candidateId:number
-  } ):Promise<Application>=>{
-    console.log("Req is ", application)
-    const {data} = await axios.post<Application>(`${API_BASE_URL}/applications`, application);
-    console.log("Body is ",data)
-    
-    return data ;
-  },
-
-    getAllApplications: async ():Promise<Application[]> => {
+    getAllApplications: async (): Promise<Application[]> => {
         try {
-        const {data }= await axios.get<Application[]>(`${API_BASE_URL}/applications`);
-        console.log("List of submitted Appplications",data);
-        return data;
+            const {data }= await axios.get<Application[]>(`${API_BASE_URL}/applications`);
+            console.log("List of submitted Appplications",data);
+            return data;
         } catch (error) {
-        console.error("Error fetching applications:", error);
-        throw error;
+            console.error("Error fetching applications:", error);
+            throw error;
         }
     },
-
-    incrementSelectedCount: async (applicationId: number,increment = 1
+    getApplicationsWithCourseId: async (lecturerCourses: LecturerCoursesResponse[]) : Promise<Application[]> => {
+        try {
+            const { data } = await axios.get<Application[]>(`${API_BASE_URL}/applications`);
+            
+            const courseIds = lecturerCourses.map(c => c.course.id);
+            
+            const filteredApplications = data.filter(app => courseIds.includes(app.course.id));
+            return filteredApplications;
+        } catch (error) {
+            console.error("Error fetching applications:", error);
+            throw error;
+        }
+    },
+    incrementSelectedCount: async (
+        applicationId: number,
+        increment = 1
     ): Promise<Application> => {
-    const { data } = await axios.patch<Application>(`${API_BASE_URL}/applications/${applicationId}/selected`,
-        { increment }
-    );
-    return data;
+        const { data } = await axios.patch<Application>(`${API_BASE_URL}/applications/${applicationId}/selected`,
+            { increment }
+        );
+        return data;
     },
 }
-export const lecturerSelectionApi = {
+
+export const lecturerSelectionService = {
      saveSelections: async (
         selections: {
         lecturerId: number;

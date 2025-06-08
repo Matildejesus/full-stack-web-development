@@ -1,6 +1,14 @@
 import { CandidatesInCourses } from "@/pages/candidates/candidatesData";
 import { Candidate } from "@/types/types";
 
+/**
+ * Presenter Component:
+ * Handles UI rendering related to:
+ *   - displaying candidates based on criteria
+ * 
+ * Receives props from candidates/candidatesData.tsx (container)
+ */
+
 interface CandidatesDataDisplayProps {
     courses: CandidatesInCourses[];
     candidates: Candidate[];

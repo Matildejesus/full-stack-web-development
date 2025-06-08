@@ -1,4 +1,4 @@
-import { applicationApi } from "@/services/api";
+import { applicationService } from "@/services/api";
 import { AppRole,Semester } from "@/types/types";
 import { NewAppPayload } from "@/hooks/useApplicationForm";
 
@@ -214,7 +214,7 @@ export default function ApplicationForm({
             {/* Displaying submitted applications from db */}
             {/* <div className="shadow-sm p-8 bg-gray-100 border-2 border-gray-400">
                 <p className="text-2xl font-serif text-center ">Submitted Applications</p>
-                {applicationApi.getAllApplications.filter(app => app.candidate.id === user?.id).length === 0 ? (
+                {applicationService.getAllApplications.filter(app => app.candidate.id === user?.id).length === 0 ? (
                     <p className="text-center text-gray-500">No applications submitted yet.</p>
                 ) : (
                     applications.

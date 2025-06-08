@@ -16,10 +16,12 @@ export class LecturerController {
         }
         return response.json(lecturer);
     }
+
     async all(request: Request, response: Response) {
         const lecturers = await this.lecturerRepository.find({relations:["user"]});
         return response.json(lecturers);
     }
+    
     async getLecturerByUserId(request: Request, response: Response) {
     const userId = parseInt(request.params.userId);
 
@@ -42,28 +44,3 @@ export class LecturerController {
     
 
 }
-//     async getLecturerCourses(request: Request, response: Response) {
-//         const id = parseInt(request.params.id);
-
-//         try {
-//             const lecturer = await this.lecturerRepository.findOne({
-//                 where: { user: { id } },
-//                 relations: ["lecturerCourses", "lecturerCourses.course"]   
-//             });
-
-//             const courses = lecturer?.lecturerCourses.map(u => ({
-//                 course: u.course,
-//                 semester: u.semester
-//             }));
-//             // console.log("lecturer: ", lecturer?.lecturerCourses);
-
-//             if (!lecturer) {
-//                 return response.status(404).json({ message: "Lecturer not found" });
-//             }
-//             return response.json({ courses });
-//         } catch (error) {
-//             console.error("Error fetching lecturer courses by id:", error);
-//             return response.status(500).json({ message: "Server error" });
-//         }
-//     }
-// }

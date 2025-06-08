@@ -1,5 +1,5 @@
 import React from "react";
-import { applicationApi } from "@/services/api";
+import { applicationService } from "@/services/api";
 import { Application, Availability, Candidate, Role } from "@/types/types";
 
 interface DisplayApplicationsProps {
