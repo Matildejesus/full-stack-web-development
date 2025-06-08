@@ -14,7 +14,6 @@ export function useApplicationList(
       return;
     }
 
-    //  filter: only apps that belong to this lecturer’s courses
     let filtered = candidate.applications.filter(app =>
       lecturerCourseIds.includes(app.course.id)
     );

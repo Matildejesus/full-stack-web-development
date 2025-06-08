@@ -1,4 +1,4 @@
-// pages/ApplicantStatus.tsx
+
 import React from "react";
 import ApplicantStatus from "@/components/ApplicantStatus";
 

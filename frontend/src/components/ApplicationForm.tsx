@@ -55,10 +55,7 @@ export default function ApplicationForm({
                         {/* drop down to select course */}
                         <select id="course" name="course"
                             value={newApplication.course}
-                            // onChange={(e) =>
-                            //     setNewApplication({ ...newApplication, course: e.target.value })
-
-                            // }
+                         
                             onChange={(e) => {
                             const selectedCourse = subjects.find((c) => c.name === e.target.value);
                             if (selectedCourse) {

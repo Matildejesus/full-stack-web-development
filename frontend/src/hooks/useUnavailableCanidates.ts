@@ -67,9 +67,6 @@ export function useUnavailableCandidates() {
             next: ({ data }) => {
                 if (!isAvailable || !data?.candidateUnavailable) return;
 
-                // if (!isAvailable) return;
-                // if(!data) return;
-
                 const candidate = data.candidateUnavailable;
                 console.log("Candidate unavailable:", candidate);
 

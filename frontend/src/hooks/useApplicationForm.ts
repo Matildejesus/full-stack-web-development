@@ -69,7 +69,6 @@ export function useApplicationForm(onSuccess: () => void) {
         previousRole: "",
         academic: "",
         availability: "",
-        // candidateId stays unchanged
       }));
     } catch {
       setServerError("Failed to save application");

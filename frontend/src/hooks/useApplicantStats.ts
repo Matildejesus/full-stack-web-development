@@ -11,7 +11,6 @@ interface Stats {
   leastChosen: PerCandidateInfo[];
   leastChosenCount: number;
   notChosen: PerCandidateInfo[];
-  // byCandidate: Record<number, PerCandidateInfo>; 
 }
 export function useApplicantStats(): Stats {
   const { cUsers, assignedApplications, candidatesLec } = useAuth();
@@ -22,7 +21,6 @@ export function useApplicantStats(): Stats {
     leastChosen: [],
     leastChosenCount: 0,
     notChosen: [],
-    // byCandidate: {}
   });
 
   useEffect(() => {
@@ -33,7 +31,6 @@ export function useApplicantStats(): Stats {
         leastChosen: [],
         leastChosenCount: 0,
         notChosen: [],
-        // byCandidate: {}
       });
       return;
     }
@@ -79,23 +76,12 @@ export function useApplicantStats(): Stats {
     }
   });
 
-  // Handle candidates with no selections
-  // candidatesLec.forEach(cand => {
-  //   const cid = cand.id;
-  //   if (!countMap[cid]) {
-  //     const user = cUsers.find(u => u.candidate?.id === cid);
-  //     if (user) not.push({ user, applications: [] });
-  //   }
-  // });
-
-
     setStats({
       mostChosen: most,
       mostChosenCount: max,
       leastChosen: least,
       leastChosenCount: least.length ? minNonZero : 0,
       notChosen: not,
-      // byCandidate
     });
   }, [assignedApplications, candidatesLec, cUsers]);
 
