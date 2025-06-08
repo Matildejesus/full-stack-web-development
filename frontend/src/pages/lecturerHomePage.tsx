@@ -89,65 +89,11 @@ export default function LecturerHome() {
     fetchAllData();
     }, []);
 
-    // useEffect(() => {
-    //    fetchLecturerCourses();
-    // }, []);
-
-    // const fetchLecturerCourses = async () => {
-    //     let lecturerData;
-    //     let lecturerCoursesData;
-    //     let applicationData;
-    //     if (user) {
-    //         lecturerData = await lecturerService.getLecturer(user.id);
-    //         setLecturer(lecturerData);
-    //         console.log("gets lecturer id: ", lecturerData);
-    //     }
-
-    //     if (lecturerData) {
-    //         lecturerCoursesData = await lecturerCourseService.getLecturerCourses(lecturerData.id);
-    //         setLecturerCourses(lecturerCoursesData);
-    //         console.log("list of courses the lecturer teaches: ", lecturerCoursesData);
-    //         const lecturerSelectionData = await lecturerSelectionService.getByLecturer(lecturerData.id);
-    //         if (lecturerSelectionData) {
-    //             setLecturerSelections(lecturerSelectionData);
-    //         }
-    //     }
-
-    //     if (lecturerCoursesData) {
-    //         applicationData = await applicationService.getApplicationsWithCourseId(lecturerCoursesData);
-    //         setApplications(applicationData); 
-    //         console.log("list of applications belonging to the courses: ", applicationData);
-    //     }
-
-    // };
-
     const unavailableApplicationIds = useMemo(() => {
         return applications
             .filter(app => unavailableCandidates.includes(String(app.candidate.id)))
             .map(app => app.id);
         }, [applications, unavailableCandidates]);
-    
-
-    // const filteredSortedApplications = useMemo(() => {
-    //     let courseApplications = applications;
-
-    //     if (selectedSubject !== "all") {
-    //         courseApplications = applications.filter((app) => app.course.name === selectedSubject);
-    //     }
-
-    //     if (selectedSort === "course") {
-    //         courseApplications = [...courseApplications].sort((a, b) =>
-    //             a.course.name.toLowerCase().localeCompare(b.course.name.toLowerCase())
-    //         );
-    //     } else if (selectedSort === "availability") {
-    //         courseApplications = [...courseApplications].sort((a, b) =>
-    //             a.availability.toLowerCase().localeCompare(b.availability.toLowerCase())
-    //         );
-    //     }
-
-    //     return courseApplications;
-    // }, [applications, selectedSubject, selectedSort]);
-
 
     useEffect(() => {
         setInputText("");
@@ -187,15 +133,13 @@ export default function LecturerHome() {
 
     const filteredCandidatesLength = filteredCandidates.length;
 
-    const handleRankingChange = (rank: number, candidateId: number) => {
-  // Find candidate details from filteredCandidates or somewhere
+    const handleRankingChange = (rank: number, applicationId: number, candidateId: number) => {
     const candidate = filteredCandidates.find(c => c.id === candidateId);
     if (!candidate) return;
 
     const application = candidate.applications.find(app => lecturerCourseIds.includes(app.course.id));
     if (!application) return;
 
-    // Update or add new selection
     setSelectedCandidates(prev => {
     // const lecturerDetails = users.find(u => u.id === user?.id)?.lecturer;
 
@@ -259,7 +203,7 @@ export default function LecturerHome() {
             setSelectedCandidates(updatedComment);
         }
     }
-
+    console.log("SELCTD CAND-LECTURE SEL",selectedCandidates)
     useEffect(() => {
             if (selectedSearch === "tutor") {
                 setPlaceholder("Please enter tutor's name...");
@@ -321,7 +265,6 @@ export default function LecturerHome() {
             applicationService.incrementSelectedCount(sel.application.id)
             )
         );
-
         await fetchSavedApplications();
 
         toast({
@@ -342,7 +285,6 @@ export default function LecturerHome() {
         });
     }
     };
-
     // Searching is only allowed if an option is selected
     // users can type anything, but will not locate any users unless they type correctly
     // it does not matter if it is uppercase or lowercase
@@ -404,8 +346,6 @@ export default function LecturerHome() {
 
         setFilteredCandidates(sorted);
         };
-
-
     console.log('Users: ', users);
     console.log("Applications:", applications); //displays all applications
     console.log("Current user - lecturer details: ", users.find(currentUser=>currentUser.id===user?.id))
