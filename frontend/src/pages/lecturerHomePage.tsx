@@ -276,9 +276,8 @@ export default function LecturerHome() {
 
      useEffect(() => {
         const currentLecturer = users.find(currentUser => currentUser.id === user?.id);
-        console.log("CURRENTLEC, ",currentLecturer)
         if (!currentLecturer || !currentLecturer.lecturer) {
-        console.error("Lecturer details not found yet!");
+        console.log("Lecturer details not found yet!");
         setLecturerCourseIds([]); // clear state if not found
         return;
         }

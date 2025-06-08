@@ -1,7 +1,7 @@
 import { useAuth } from "@/context/AuthContext";
 import { User,Application } from "@/types/types";
 import { useState, useEffect } from "react";
-interface PerCandidateInfo {
+export interface PerCandidateInfo {
   user: User;
   applications: Application[];        
 }
