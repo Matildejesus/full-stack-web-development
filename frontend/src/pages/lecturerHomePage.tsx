@@ -10,6 +10,7 @@ import SelectionBar from "@/components/SelectionBar";
 import Sidebar from "@/components/SideBar";
 import { LecturerSelection, Application ,Lecturer,} from "@/types/types";
 import ApplicationDisplay from "@/components/ApplicationDisplay";
+import { useUnavailableCandidates } from "@/hooks/useUnavailableCanidates";
 
 export default function LecturerHome() {
     const [selectedSubject, setSelectedSubject] = useState<string>("all");
@@ -35,6 +36,9 @@ export default function LecturerHome() {
     const [filteredApplications, setFilteredApplications] = useState<Application[]>([]);
 
     const [lecturerSelections, setLecturerSelections] = useState<LecturerSelection[]>([]);
+
+    // notif
+    const { unavailableCandidates } = useUnavailableCandidates();
 
     useEffect(() => {
        fetchLecturerCourses();
@@ -67,6 +71,13 @@ export default function LecturerHome() {
         }
 
     };
+
+    const unavailableApplicationIds = useMemo(() => {
+        return applications
+            .filter(app => unavailableCandidates.includes(app.candidate.id))
+            .map(app => app.id);
+        }, [applications, unavailableCandidates]);
+
     const filteredSortedApplications = useMemo(() => {
         let courseApplications = applications;
 
