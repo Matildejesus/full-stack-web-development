@@ -134,26 +134,26 @@ export default function LecturerHome() {
     const filteredCandidatesLength = filteredCandidates.length;
 
     const handleRankingChange = (rank: number, applicationId: number, candidateId: number) => {
-    const candidate = filteredCandidates.find(c => c.id === candidateId);
+        const app        = applications.find(a => a.id === applicationId);
+        if (!app || !lecturerDetails) return;
+        const candidate = filteredCandidates.find(c => c.id === candidateId);
     if (!candidate) return;
 
     const application = candidate.applications.find(app => lecturerCourseIds.includes(app.course.id));
     if (!application) return;
 
     setSelectedCandidates(prev => {
-    // const lecturerDetails = users.find(u => u.id === user?.id)?.lecturer;
-
     if (!lecturerDetails) {
         console.error("Lecturer details not found");
         return prev;
     }
 
     // Check if the candidate is already selected
-    const existing = prev.find(sel => sel.id === candidateId);
+    const existing = prev.find(sel => sel.application.id === applicationId);
 
     if (existing) {
         return prev.map(sel =>
-        sel.id === candidateId
+        sel.application.id === applicationId
             ? { ...sel, rank, application, lecturer: lecturerDetails }
             : sel
         );
@@ -199,7 +199,7 @@ export default function LecturerHome() {
 
         if (currSelection) {
             const updatedComment = selectedCandidates.map((candidate) =>
-                candidate.id === applicantId ? { ...currSelection, comment } : candidate);
+                candidate.application.id === applicantId ? { ...currSelection, comment } : candidate);
             setSelectedCandidates(updatedComment);
         }
     }

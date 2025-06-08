@@ -1,20 +1,30 @@
-import { Button, FormControl, FormLabel, Input } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
+import {
+  Button,
+  FormControl,
+  FormLabel,
+  Input,
+  Heading,
+  Divider,
+  Box,
+  SimpleGrid,
+  NumberDecrementStepperProps,
+} from "@chakra-ui/react";
 import ApplicationDisplay from "./ApplicationDisplay";
-import { LecturerSelection, Candidate } from "@/types/types";
+import { LecturerSelection, Candidate, Application, AppRole } from "@/types/types";
 import { useApplicantsLogic } from "@/hooks/useApplicantsLogic";
 
 interface ApplicantsDisplayProps {
   selectedSubject: string | null;
-  handleRankingChange: (rank: number, applicantId: number) => void;
-  handleAddComment: (comment: string, applicantId: number) => void;
+  handleRankingChange: (rank: number, applicationId: number, candidateId: number) => void;
+  handleAddComment: (comment: string, applicationId: number) => void;
   filteredCandidates: Candidate[];
-  selectedCandidates: LecturerSelection[];
+  selectedCandidates: LecturerSelection[]; 
   handleSubmit: () => void;
   filteredCandidatesLength: number;
   sort?: string | null;
   lecturerCourseIds: number[];
-  unavailableApplicationIds: number[];
+  unavailableApplicationIds:number[];
 }
 
 const ApplicantsDisplay: React.FC<ApplicantsDisplayProps> = ({
@@ -27,7 +37,7 @@ const ApplicantsDisplay: React.FC<ApplicantsDisplayProps> = ({
   filteredCandidatesLength,
   sort,
   lecturerCourseIds,
-  unavailableApplicationIds,
+  unavailableApplicationIds
 }) => {
   const { filteredByLecturerCourses } = useApplicantsLogic(
     filteredCandidates,
@@ -35,99 +45,135 @@ const ApplicantsDisplay: React.FC<ApplicantsDisplayProps> = ({
     lecturerCourseIds
   );
 
-  const [uiSelectedIds, setUiSelectedIds] = useState<number[]>([]);
-  const handleUISelect = (id: number) => {
-    if (!uiSelectedIds.includes(id)) {
-      setUiSelectedIds((prev) => [...prev, id]);
+  const [uiSelectedIds, setUiSelectedIds] = useState<number[]>([]); // Track selected application IDs
+
+  const handleUISelect = (applicationId: number) => {
+    if (!uiSelectedIds.includes(applicationId)) {
+      setUiSelectedIds((prev) => [...prev, applicationId]);
     }
   };
-  
+
+  // Group applications by role: Tutor or Lab Assistant
+  type CandidateWithApp = { candidate: Candidate; application: Application };
+
+  const groupedApplications = useMemo(() => {
+    const tutorApps: CandidateWithApp[] = [];
+    const labAssistantApps: CandidateWithApp[] = [];
+
+    filteredByLecturerCourses.forEach(candidate => {
+      candidate.applications?.forEach(app => {
+        const role = app.role.toLowerCase();
+        if (role.includes(AppRole.TUTOR.toLowerCase())) {
+          tutorApps.push({ candidate, application: app });
+        }
+        if (role.includes(AppRole.LAB_ASSISTANT.toLowerCase())) {
+          labAssistantApps.push({ candidate, application: app });
+        }
+      });
+    });
+
+    return { tutorApps, labAssistantApps };
+  }, [filteredByLecturerCourses]);
+
+  const renderApplication = ({ candidate, application }: CandidateWithApp) => {
+    // Find selection by applicationId
+    const selectedApp = selectedCandidates.find(c => c.application.id === application.id);
+
+    return (
+  <Box key={application.id} borderWidth="1px" borderRadius="lg" p={4} mb={6} boxShadow="sm">
+    <Box display="flex" alignItems="center" mb={3} gap={4}>
+      <Heading size="md" flex="1">{candidate.user.firstName} {candidate.user.lastName}</Heading>
+
+      {!selectedApp && !uiSelectedIds.includes(application.id) ? (
+        <Button colorScheme="red" size="sm" onClick={() => handleUISelect(application.id)}>
+          Select
+        </Button>
+      ) : (
+        <select
+          value={selectedApp?.rank || ""}
+          onChange={(e) => handleRankingChange(Number(e.target.value), application.id, candidate.id)}
+          style={{
+            padding: "8px",
+            borderRadius: "6px",
+            borderColor: "#CBD5E0",
+            borderWidth: "1px",
+            minWidth: "80px",
+          }}
+        >
+          <option value="">...</option>
+          {Array.from({ length: filteredCandidatesLength }, (_, i) => {
+            const rank = i + 1;
+            const alreadyUsed = selectedCandidates.find(
+              (c) => c.rank === rank && c.application.id!== application.id
+            );
+            if (alreadyUsed) return null;
+            return (
+              <option key={rank} value={rank}>
+                {rank}
+              </option>
+            );
+          })}
+        </select>
+      )}
+    </Box>
+
+    <ApplicationDisplay
+      candidate={candidate}
+      application={application}
+      sort={sort}
+      lecturerCourseIds={lecturerCourseIds}
+    />
+
+    {selectedApp && (
+      <FormControl mt={3} isRequired>
+        <FormLabel>Comment</FormLabel>
+        <Input
+          name="comment"
+          type="text"
+          value={selectedApp.comment }
+          onChange={(e) => handleAddComment(e.target.value,application.id)}
+          placeholder="Enter remarks for applicant..."
+        />
+      </FormControl>
+    )}
+  </Box>
+);  };
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-4">
-        {filteredByLecturerCourses.length === 0 ? (
-          <h3 className="mb-6 p-8">No Applications Right Now!...</h3>
-        ) : (
-          filteredByLecturerCourses.map((candidate) => {
-            const selected = selectedCandidates.find((c) => c.id === candidate.id);
-            const safeUnavailableApplicationIds = unavailableApplicationIds ?? [];
-            const isUnavailable = safeUnavailableApplicationIds.includes(candidate.id);
+      {/* Tutor Applicants Section */}
+      <Heading as="h2" size="lg" mb={4}>
+        Tutor Applicants
+      </Heading>
+      {groupedApplications.tutorApps.length === 0 ? (
+        <Box mb={6} fontStyle="italic" color="gray.600">
+          No tutor applications available.
+        </Box>
+      ) : (
+        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6} mb={10}>
+          {groupedApplications.tutorApps.map(renderApplication)}
+        </SimpleGrid>
+      )}
 
-            return (
-              <div
-                key={candidate.id}
-                className="mb-6 p-4"
-                style={{
-                  color: isUnavailable ? "grey" : "inherit",
-                  opacity: isUnavailable ? 0.5 : 1,
-                  pointerEvents: isUnavailable ? "none" : "auto", 
-                }}
-              >
-                <div className="flex gap-7 row ">
-                  <h3 className="font-bold text-lg">
-                    {candidate.user.firstName}{" "}
-                    {isUnavailable && (
-                      <span style={{ marginLeft: 8, color: "red", fontWeight: "bold" }}>
-                        Unavailable
-                      </span>
-                    )}
-                  </h3>
+      <Divider />
 
-                  {!selected && !uiSelectedIds.includes(candidate.id) && !isUnavailable ? (
-                    <button onClick={() => handleUISelect(candidate.id)} className="bg-red-800 text-white">
-                      Select
-                    </button>
-                  ) : (
-                    <>
-                      <select
-                        value={selected?.rank || ""}
-                        onChange={(e) =>
-                          handleRankingChange(Number(e.target.value), candidate.id)
-                        }
-                        className="border p-2 rounded"
-                      >
-                        <option value="">...</option>
-                        {Array.from({ length: filteredCandidatesLength }, (_, index) => {
-                          const rank = index + 1;
-                          const alreadyUsed = selectedCandidates.find(
-                            (c) => c.rank === rank && c.id !== candidate.id
-                          );
-                          if (alreadyUsed) return null;
+      {/* Lab Assistant Applicants Section */}
+      <Heading as="h2" size="lg" my={4}>
+        Lab Assistant Applicants
+      </Heading>
+      {groupedApplications.labAssistantApps.length === 0 ? (
+        <Box mb={6} fontStyle="italic" color="gray.600">
+          No lab assistant applications available.
+        </Box>
+      ) : (
+        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={6} mb={10}>
+          {groupedApplications.labAssistantApps.map(renderApplication)}
+        </SimpleGrid>
+      )}
 
-                          return (
-                            <option key={rank} value={rank}>
-                              {rank}
-                            </option>
-                          );
-                        })}
-                      </select>
-                    </>
-                  )}
-                </div>
-
-                <ApplicationDisplay candidate={candidate} sort={sort} lecturerCourseIds={lecturerCourseIds} />
-
-                {selected && (
-                  <FormControl isRequired>
-                    <FormLabel>Comment</FormLabel>
-                    <Input
-                      name="comment"
-                      type="text"
-                      value={selected.comment || ""}
-                      onChange={(e) => handleAddComment(e.target.value, candidate.id)}
-                      placeholder="Enter remarks for applicant..."
-                    />
-                  </FormControl>
-                )}
-              </div>
-            );
-          })
-        )}
-      </div>
-
+      {/* Submit Button */}
       {selectedSubject && filteredCandidates.length > 0 && (
-        <Button type="button" className="z-50 px-6 py-4" onClick={handleSubmit}>
+        <Button colorScheme="blue" size="lg" onClick={handleSubmit}>
           Submit+
         </Button>
       )}
