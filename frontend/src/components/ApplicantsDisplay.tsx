@@ -76,13 +76,30 @@ const ApplicantsDisplay: React.FC<ApplicantsDisplayProps> = ({
   }, [filteredByLecturerCourses]);
 
   const renderApplication = ({ candidate, application }: CandidateWithApp) => {
+    const isUnavailable = unavailableApplicationIds.includes(application.id);
+
     // Find selection by applicationId
+
     const selectedApp = selectedCandidates.find(c => c.application.id === application.id);
 
     return (
   <Box key={application.id} borderWidth="1px" borderRadius="lg" p={4} mb={6} boxShadow="sm">
     <Box display="flex" alignItems="center" mb={3} gap={4}>
-      <Heading size="md" flex="1">{candidate.user.firstName} {candidate.user.lastName}</Heading>
+      <Box flex="1">
+  <Heading
+    size="md"
+    color={isUnavailable ? "gray.400" : "black"}
+    mb={isUnavailable ? 1 : 0}
+  >
+    {candidate.user.firstName} {candidate.user.lastName}
+  </Heading>
+  {isUnavailable && (
+    <Box color="red.500" fontSize="sm" fontWeight="medium">
+     Candidate is unavailable for selection
+    </Box>
+  )}
+</Box>
+
 
       {!selectedApp && !uiSelectedIds.includes(application.id) ? (
         <Button colorScheme="red" size="sm" onClick={() => handleUISelect(application.id)}>
@@ -91,7 +108,7 @@ const ApplicantsDisplay: React.FC<ApplicantsDisplayProps> = ({
       ) : (
         <select
           value={selectedApp?.rank || ""}
-          onChange={(e) => handleRankingChange(Number(e.target.value), application.id, candidate.id)}
+          onChange={(e) => handleRankingChange(Number(e.target.value), candidate.id, application.id)}
           style={{
             padding: "8px",
             borderRadius: "6px",
@@ -101,7 +118,8 @@ const ApplicantsDisplay: React.FC<ApplicantsDisplayProps> = ({
           }}
         >
           <option value="">...</option>
-          {Array.from({ length: filteredCandidatesLength }, (_, i) => {
+          {Array.from({ length: groupedApplications.tutorApps.length + groupedApplications.labAssistantApps.length }, (_, i) => {
+
             const rank = i + 1;
             const alreadyUsed = selectedCandidates.find(
               (c) => c.rank === rank && c.application.id!== application.id

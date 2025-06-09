@@ -1,4 +1,6 @@
-import { AppRole,Semester } from "@/types/types";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
+import { Semester,AppRole } from "@/types/types";
 
 interface ApplicationFormData {
     course: string;
@@ -8,18 +10,15 @@ interface ApplicationFormData {
     academic: string;
     previousRole: string;
     semester:Semester;
-    //   userId?: number;
 }
 interface ApplicationFormProps {
-  onSubmit: (e: React.FormEvent) => Promise<void>;
-  newApplication: ApplicationFormData;
-  setNewApplication: (patch: Partial<ApplicationFormData>) => void;
-  errors: { [key in keyof ApplicationFormData]?: string };
-  success: string | null;
-  error: string | null;
-  subjects: { id: number; code: string; name: string; semester: Semester }[];
-  status: "idle" | "saving";
-  clearSuccess: () => void;
+    onSubmit: (e: React.FormEvent) => Promise<void>;
+    newApplication: ApplicationFormData;
+    setNewApplication: React.Dispatch<React.SetStateAction<ApplicationFormData>>;
+    errors: { [key: string]: string };
+    success: string | null;
+    error: string | null;
+    subjects: { id: number; code: string; name: string;semester: Semester}[];
 
 }
 
@@ -35,6 +34,7 @@ export default function ApplicationForm({
 }: ApplicationFormProps) {
     return (
         <div>
+        <Header />
             <div className=" shadow-sm -space-y-px mb-12 mx-1 bg-red-100 border-2 border-red-500">
                 <p className="p-8 text-2xl font-serif text-center mb-8">Application Form for Tutor/ Lab-Assistants Roles</p>
                 {success && <p className="text-green-600 text-center font-semibold">{success}</p>}
@@ -53,16 +53,16 @@ export default function ApplicationForm({
                             Select the course interested to Teach.
                         </label>
                         {/* drop down to select course */}
-                        <select id="course" name="course"
+                        <select 
+                            id="course" 
+                            name="course"
                             value={newApplication.course}
-                         
                             onChange={(e) => {
                             const selectedCourse = subjects.find((c) => c.name === e.target.value);
+                            
                             if (selectedCourse) {
-                            setNewApplication({
-                                course: selectedCourse.name,
-                                semester: selectedCourse.semester, // <-- auto-fills semester
-                            });
+                                const semster=selectedCourse.semester;
+                                setNewApplication({ ...newApplication, course: e.target.value,semester:semster })
                             }
                         }}
                             className="border p-2 rounded"
@@ -75,7 +75,6 @@ export default function ApplicationForm({
                                 </option>
                             ))}
                         </select>
-
                         {errors.course && <p className="text-red-500">{errors.course}</p>}
                     </div>
                     <div className="rounded-md shadow-sm -space-y-px mx-8 mt-4">
@@ -85,13 +84,11 @@ export default function ApplicationForm({
                         <input
                             id="semester"
                             name="semester"
-                            value={newApplication.semester || ""}
+                            value={ newApplication.semester}
                             readOnly
                             className="border p-2 rounded bg-gray-100"
                         />
                         </div>
-
-
                     <div className="rounded-md shadow-sm -space-y-px mx-8">
                         <label htmlFor="role" className="p-7 text-l font-serif text-center">
                             Select the Job Role interested to apply
@@ -100,9 +97,7 @@ export default function ApplicationForm({
                         <select id="role" name="role"
                             value={newApplication.role}
                             onChange={(e) =>
-                                setNewApplication({ 
-                                    // ...newApplication, 
-                                    role: e.target.value  as AppRole})
+                                setNewApplication({ ...newApplication, role: e.target.value as AppRole})
                             }
                             tabIndex={2}
                             className="border p-2 rounded"
@@ -142,7 +137,7 @@ export default function ApplicationForm({
                             name="skills"
                             // required
                             className="border p-5 rounded w-[70%] h-40"
-                            placeholder="Enter your skills with comma(,) separation."
+                            placeholder="Enter your skills."
                             value={newApplication.skills}
                             onChange={(e) =>
                                 setNewApplication({ ...newApplication, skills: e.target.value })
@@ -202,6 +197,7 @@ export default function ApplicationForm({
                     </div>
                 </form>
             </div>
+            <Footer />
         </div>
 
     );

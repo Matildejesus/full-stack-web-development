@@ -23,6 +23,7 @@ const MainContent: React.FC<MainContentProps> = ({ user }) => {
                             their applications, and lecturers can review and select the most suitable candidates.
                         </p>
                     </div>
+                    
                 </div>
             </section>
 
@@ -31,7 +32,7 @@ const MainContent: React.FC<MainContentProps> = ({ user }) => {
                 <div className="mt-6 flex flex-col md:flex-row gap-6">
                 {/* Tutor Applicants */}
                     <div className="flex-1 bg-gray-100 p-6 rounded-md shadow-lg">
-                        <p className="text-xl font-serif font-semibold text-blue-800">For Tutor Applicants</p>
+                        <p className="text-xl font-serif font-semibold text-blue-800">For  Applicants</p>
                         <p className="mt-4 font-serif text-gray-700">
                             As an applicant, you can submit your credentials, teaching experience, and areas of expertise through
                             our simple application form. Once submitted, lecturers can review your profile and contact you if they are
@@ -53,7 +54,7 @@ const MainContent: React.FC<MainContentProps> = ({ user }) => {
 
             {/* Key Features for Applicants */}
             <section className=" p-8 mb-6">
-                <h3 className="text-2xl font-serif font-semibold text-blue-800">Features for Tutor Applicants</h3>
+                <h3 className="text-2xl font-serif font-semibold text-blue-800">Features for Applicants</h3>
                 <ul className="mt-4 list-disc list-inside font-serif">
                     <li>Submit your application with detailed academic credentials and teaching experience.</li>
                     <li>Highlight your areas of expertise and preferred subjects to teach.</li>

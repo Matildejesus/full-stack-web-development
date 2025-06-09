@@ -61,6 +61,13 @@ const Header: React.FC = () => {
                         </Link>
                     </li>
                     )}
+                    {user?.role === Role.CANDIDATE && router.pathname !== "/CandidateHomePage" && (
+                    <li>
+                        <Link href="/CandidateHomePage">
+                            CandidateHomePage
+                        </Link>
+                    </li>
+                    )}
                 {user && router.pathname === "/tutorProfile" && <li><Link href="/CandidateHomePage">Application</Link></li>}
                 {!user && (
                 <>
