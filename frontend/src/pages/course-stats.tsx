@@ -20,3 +20,7 @@ export default function CourseStatsPage() {
     </div>
   );
 }
+// here in course statistics, green bar shows no of cand that were chosen for that subject
+// orange bar no of candidates that were least chosen
+//  red bar no of candidates that were not chosen
+// no bar reprsents that candidates that applied for that course were chosen atleast once(no not chosen candidates)

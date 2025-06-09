@@ -1,9 +1,11 @@
+// here most chosen ,leastchosen and not chosen is based on the selection count on applications of courses
+// that is assiogned to the lecturer
 import { useAuth } from "@/context/AuthContext";
-import { User,Application } from "@/types/types";
+import { User, Application } from "@/types/types";
 import { useState, useEffect } from "react";
 export interface PerCandidateInfo {
   user: User;
-  applications: Application[];        
+  applications: Application[];
 }
 interface Stats {
   mostChosen: PerCandidateInfo[];
@@ -27,6 +29,7 @@ export function useApplicantStats(): Stats {
     if (!assignedApplications.length) {
       setStats({
         mostChosen: [],
+
         mostChosenCount: 0,
         leastChosen: [],
         leastChosenCount: 0,
@@ -63,18 +66,18 @@ export function useApplicantStats(): Stats {
     const not: PerCandidateInfo[] = [];
 
     Object.entries(byCandidate).forEach(([cidStr, info]) => {
-    const cid = Number(cidStr);
-    const total = countMap[cid] ?? 0;
+      const cid = Number(cidStr);
+      const total = countMap[cid] ?? 0;
 
-    if (total === max) {
-      most.push(info);
-    } else if (total === minNonZero && minNonZero !== Infinity && minNonZero !== max) {
-      least.push(info);
-    }
-    else{
-      not.push(info)
-    }
-  });
+      if (total === max) {
+        most.push(info);
+      } else if (total === minNonZero && minNonZero !== Infinity && minNonZero !== max) {
+        least.push(info);
+      }
+      else if (total === 0) {
+        not.push(info)
+      }
+    });
 
     setStats({
       mostChosen: most,
