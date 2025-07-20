@@ -37,30 +37,33 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "node-express-typeorm/src/index.ts"
+      "dest": "node-express-typeorm/src/index.ts",
+      "continue": true
+    },
+    {
+      "src": "/graphql",
+      "dest": "/graphql-api/graphql",
+      "continue": true
     },
     {
       "src": "/graphql-api/(.*)",
-      "dest": "admin-backend/src/index.ts"
+      "dest": "admin-backend/src/index.ts",
+      "continue": true
     },
     {
       "src": "/admin(/?.*)",
-      "dest": "admin-frontend"
+      "dest": "admin-frontend",
+      "continue": true
     },
     {
       "src": "/(.*)",
-      "dest": "frontend"
+      "dest": "frontend",
+      "continue": true
     },
     {
       "src": "/.*",
       "status": 404,
       "dest": "frontend/404"
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/graphql",
-      "destination": "/graphql-api/graphql"
     }
   ]
 }
