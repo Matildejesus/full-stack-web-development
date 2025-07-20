@@ -41,8 +41,8 @@ const Header: React.FC = () => {
             <ul className="flex flex-col space-y-2">
                 {user && router.pathname != "/" && <li><Link href="/">Home</Link></li>}
                 {user && router.pathname != "/profile" && <li><Link href="/profile">Profile</Link></li>}
-                {user?.role === Role.CANDIDATE && router.pathname != "/CandidateHomePage" && <li><Link href="/applicationPage">Application</Link></li>}
-                {user?.role === Role.CANDIDATE && router.pathname == "/CandidateHomePage" && <li><Link href="/Profile">Profile</Link></li>}
+                {user?.role === Role.CANDIDATE && router.pathname != "/candidateHomePage" && <li><Link href="/applicationPage">Application</Link></li>}
+                {user?.role === Role.CANDIDATE && router.pathname == "/candidateHomePage" && <li><Link href="/Profile">Profile</Link></li>}
 
                 {user?.role === Role.LECTURER && router.pathname !="/lecturerHomePage" && <li><Link href="/lecturerHomePage">Lecturer Page</Link></li>}
                 {user?.role === Role.LECTURER && router.pathname !="./ApplicantStatus" && <li><Link href="./ApplicantStatus">Application Status</Link></li>}
@@ -61,14 +61,14 @@ const Header: React.FC = () => {
                         </Link>
                     </li>
                     )}
-                    {user?.role === Role.CANDIDATE && router.pathname !== "/CandidateHomePage" && (
+                    {user?.role === Role.CANDIDATE && router.pathname !== "/candidateHomePage" && (
                     <li>
-                        <Link href="/CandidateHomePage">
+                        <Link href="/candidateHomePage">
                             CandidateHomePage
                         </Link>
                     </li>
                     )}
-                {user && router.pathname === "/tutorProfile" && <li><Link href="/CandidateHomePage">Application</Link></li>}
+                {user && router.pathname === "/tutorProfile" && <li><Link href="/candidateHomePage">Application</Link></li>}
                 {!user && (
                 <>
                     {router.pathname != "/signIn" && <li><Link href="/signIn">Sign In</Link></li>}
