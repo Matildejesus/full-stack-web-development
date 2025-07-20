@@ -1,0 +1,66 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/next",
+      "config": { 
+        "distDir": ".next",
+        "runtime": "nodejs18.x"
+      }
+    },
+    {
+      "src": "admin-frontend/package.json",
+      "use": "@vercel/next",
+      "config": { 
+        "distDir": ".next",
+        "runtime": "nodejs18.x"
+      }
+    },
+    {
+      "src": "node-express-typeorm/src/index.ts",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["node-express-typeorm/src/**/*.ts"],
+        "runtime": "nodejs18.x"
+      }
+    },
+    {
+      "src": "admin-backend/src/index.ts",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["admin-backend/src/**/*.ts"],
+        "runtime": "nodejs18.x"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "node-express-typeorm/src/index.ts"
+    },
+    {
+      "src": "/graphql-api/(.*)",
+      "dest": "admin-backend/src/index.ts"
+    },
+    {
+      "src": "/admin(/?.*)",
+      "dest": "admin-frontend"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "frontend"
+    },
+    {
+      "src": "/.*",
+      "status": 404,
+      "dest": "frontend/404"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/graphql",
+      "destination": "/graphql-api/graphql"
+    }
+  ]
+}
