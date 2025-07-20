@@ -15,7 +15,15 @@ import cors from "cors";
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(cors());
+// Update your CORS configuration to include your Vercel domain
+app.use(cors({
+  origin: [
+    'https://full-stack-web-development-theta.vercel.app',
+    'http://localhost:3000' // For local development
+  ],
+  credentials: true
+}));
+
 app.use(express.json());
 app.use("/api", userRoutes);
 app.use("/api", courseRoutes);

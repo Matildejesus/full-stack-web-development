@@ -16,7 +16,14 @@ const app = express();
 const PORT = process.env.PORT || 4001;
 const httpServer = createServer(app);
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    'https://full-stack-web-development-theta.vercel.app/admin',
+    'http://localhost:4000' 
+  ],
+  credentials: true
+}));
+
 app.use(express.json());
 
 const wsServer = new WebSocketServer({
