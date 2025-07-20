@@ -13,7 +13,7 @@ import lecturerCourseRoutes from "./routes/lecturerCourse.routes";
 import lecturerSelectionRoutes from "./routes/lecturerSelection.routes"
 import cors from "cors";
 const app = express();
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
