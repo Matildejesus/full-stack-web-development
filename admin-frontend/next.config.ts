@@ -1,10 +1,11 @@
 import type { NextConfig } from "next";
 
-const nextConfig = {
+const nextConfig: NextConfig = {
+  /* config options here */
   output: 'standalone',
   reactStrictMode: true,
-  basePath: '/admin', 
-  assetPrefix: '/admin'
-}
+  basePath: '', // Ensure this is empty
+  assetPrefix: ''
+};
 
 export default nextConfig;
