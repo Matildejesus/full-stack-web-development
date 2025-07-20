@@ -1,7 +1,7 @@
 import { User, Candidate, Role, Course, Application, LecturerCourse, Lecturer, Semester, AppRole, LecturerSelection } from "../types/types";
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:3001/api";
+const API_BASE_URL = "https://full-stack-web-development-k1qn.vercel.app/api"; 
 
 export interface LecturerCoursesResponse {
     id: number;
